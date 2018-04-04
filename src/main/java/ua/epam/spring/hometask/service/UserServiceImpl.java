@@ -12,6 +12,7 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     private Map<Long, User> userMap;
+    private long lastId;
 
     public UserServiceImpl() {
         userMap = new HashMap<>();
@@ -30,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(@Nonnull User object) {
+        if (object.getId() == null) {
+            object.setId(++lastId);
+        }
         return userMap.put(object.getId(), object);
     }
 
