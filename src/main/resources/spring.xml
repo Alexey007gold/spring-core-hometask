@@ -7,4 +7,6 @@
 
     <bean id="userService" class="ua.epam.spring.hometask.service.UserServiceImpl"/>
 
+    <bean id="eventService" class="ua.epam.spring.hometask.service.EventServiceImpl"/>
+
 </beans>
