@@ -25,4 +25,17 @@
         <constructor-arg index="2" value="${auditorium.vipSeats}"/>
     </bean>
 
+    <bean id="bookingService" class="ua.epam.spring.hometask.service.BookingServiceImpl">
+        <constructor-arg ref="discountService"/>
+        <constructor-arg ref="userService"/>
+        <constructor-arg>
+            <map>
+                <entry key="HIGH" value="${movie.rating.high.price_rate}"/>
+                <entry key="MID" value="${movie.rating.mid.price_rate}"/>
+                <entry key="LOW" value="${movie.rating.low.price_rate}"/>
+            </map>
+        </constructor-arg>
+        <constructor-arg value="${vip_seat.price_rate}"/>
+    </bean>
+
 </beans>
