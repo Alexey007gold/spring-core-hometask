@@ -25,7 +25,8 @@ public class EventServiceImpl extends AbstractDomainObjectServiceImpl<Event> imp
     public Set<Event> getForDateRange(@Nonnull LocalDate from, @Nonnull LocalDate to) {
         return domainObjectMap.values().stream()
                 .filter(e -> e.getAirDates().stream()
-                        .anyMatch(d -> d.isAfter(LocalDateTime.from(from)) && d.isBefore(LocalDateTime.from(to))))
+                        .anyMatch(d -> (LocalDate.from(d).isAfter(from) || LocalDate.from(d).isEqual(from)) &&
+                                (LocalDate.from(d).isBefore(to) || LocalDate.from(d).isEqual(to))))
                 .collect(Collectors.toSet());
     }
 
