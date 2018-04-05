@@ -7,8 +7,6 @@ import ua.epam.spring.hometask.service.UserService;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
@@ -16,11 +14,9 @@ import java.util.Map;
 public class Every10TicketStrategy implements DiscountStrategy {
 
     private UserService userService;
-    private Map<User, Long> userBoughtTickets;
 
     public Every10TicketStrategy(UserService userService) {
         this.userService = userService;
-        userBoughtTickets = new HashMap<>();
     }
 
     @Override
@@ -30,7 +26,7 @@ public class Every10TicketStrategy implements DiscountStrategy {
 
         byte disc = 0;
         if (isUserRegistered(user)) {
-            Long boughtTickets = userBoughtTickets.computeIfAbsent(user, k -> 0L);
+            int boughtTickets = user.getTickets().size();
 
             //check if first bought ticket is the tenth or ese if any other is the tenth
             boughtTickets += 1;
@@ -39,8 +35,6 @@ public class Every10TicketStrategy implements DiscountStrategy {
                 disc = 50;
             }
 
-            //update user total bought tickets count
-            userBoughtTickets.put(user, boughtTickets + numberOfTickets);
         } else if (numberOfTickets >= 10) {
             disc = 50;
         }
