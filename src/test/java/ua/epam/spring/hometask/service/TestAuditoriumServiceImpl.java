@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created on 4/4/2018.
+ * Created by Oleksii_Kovetskyi on 4/4/2018.
  */
 public class TestAuditoriumServiceImpl {
 
@@ -37,7 +37,7 @@ public class TestAuditoriumServiceImpl {
     }
 
     @Test
-    public void testGetAll() {
+    public void shouldReturnCorrectAuditoriumSetWhenCallingGetAll() {
         Map<String, Auditorium> auditoriumMap = auditoriumService.getAll().stream()
                 .collect(Collectors.toMap(Auditorium::getName, a -> a));
         assertEquals(6, auditoriumMap.size());
@@ -55,7 +55,7 @@ public class TestAuditoriumServiceImpl {
     }
 
     @Test
-    public void testGetByName() {
+    public void shouldReturnCorrectAuditoriumWhenCallingGetByName() {
         for (int i = 0; i < namesArr.length; i++) {
             Auditorium auditorium = auditoriumService.getByName(namesArr[i]);
             assertEquals(auditorium.getName(), namesArr[i]);
