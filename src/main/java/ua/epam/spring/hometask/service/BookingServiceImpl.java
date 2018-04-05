@@ -51,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
             totalPrice += vipSeats.contains(seat) ? vipSeatPrice : normalSeatPrice;
         }
 
-        totalPrice *= (discount / 100);
+        totalPrice *= ((100 - discount) / 100.0);
 
         return totalPrice;
     }
