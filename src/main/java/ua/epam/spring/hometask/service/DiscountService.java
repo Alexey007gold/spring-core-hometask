@@ -1,12 +1,11 @@
 package ua.epam.spring.hometask.service;
 
-import java.time.LocalDateTime;
+import ua.epam.spring.hometask.domain.Event;
+import ua.epam.spring.hometask.domain.User;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import ua.epam.spring.hometask.domain.Event;
-import ua.epam.spring.hometask.domain.User;
+import java.time.LocalDateTime;
 
 /**
  * @author Yuriy_Tkach

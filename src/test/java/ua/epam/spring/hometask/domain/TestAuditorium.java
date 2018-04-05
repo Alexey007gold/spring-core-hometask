@@ -1,12 +1,12 @@
 package ua.epam.spring.hometask.domain;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Yuriy_Tkach
