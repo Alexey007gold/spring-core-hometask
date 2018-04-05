@@ -25,7 +25,8 @@ public abstract class AbstractDomainObjectServiceImpl<T extends DomainObject> im
         if (object.getId() == null) {
             object.setId(++lastId);
         }
-        return domainObjectMap.put(lastId, object);
+        domainObjectMap.put(lastId, object);
+        return object;
     }
 
     @Override
