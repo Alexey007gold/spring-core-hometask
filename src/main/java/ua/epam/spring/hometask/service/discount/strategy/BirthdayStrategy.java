@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.service.discount.strategy;
 
+import org.springframework.stereotype.Component;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.User;
 
@@ -12,6 +13,7 @@ import java.time.Period;
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
  */
+@Component
 public class BirthdayStrategy implements DiscountStrategy {
 
     @Override

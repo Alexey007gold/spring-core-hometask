@@ -33,7 +33,7 @@ public class TestAuditoriumServiceImpl {
         seatsArr = seats.split(",");
         vipSeatsArr = vipSeats.split("\\|");
 
-        auditoriumService = new AuditoriumServiceImpl(names, seats, vipSeats);
+        auditoriumService = new AuditoriumServiceImpl();
     }
 
     @Test

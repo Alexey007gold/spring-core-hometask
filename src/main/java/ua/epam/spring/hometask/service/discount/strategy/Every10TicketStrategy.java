@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.service.discount.strategy;
 
+import org.springframework.stereotype.Component;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.UserService;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
  */
+@Component
 public class Every10TicketStrategy implements DiscountStrategy {
 
     private UserService userService;

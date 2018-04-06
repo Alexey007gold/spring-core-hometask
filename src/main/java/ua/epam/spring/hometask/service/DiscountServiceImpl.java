@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.service;
 
+import org.springframework.stereotype.Service;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.discount.strategy.DiscountStrategy;
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
  */
+@Service
 public class DiscountServiceImpl implements DiscountService {
 
     private List<DiscountStrategy> discountStrategies;

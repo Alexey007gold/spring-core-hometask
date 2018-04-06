@@ -1,16 +1,23 @@
 package ua.epam.spring.hometask.service;
 
+import org.springframework.stereotype.Service;
 import ua.epam.spring.hometask.domain.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ua.epam.spring.hometask.domain.EventRating.HIGH;
+import static ua.epam.spring.hometask.domain.EventRating.LOW;
+import static ua.epam.spring.hometask.domain.EventRating.MID;
+
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
  */
+@Service
 public class BookingServiceImpl implements BookingService {
 
     private DiscountService discountService;
@@ -20,14 +27,22 @@ public class BookingServiceImpl implements BookingService {
 
     private Map<Event, Set<Ticket>> bookedTickets;
 
-    public BookingServiceImpl(DiscountService discountService,
-                              UserService userService,
-                              Map<EventRating, Double> eventRatingPriceRate,
-                              double vipSeatPriceRate) {
+    public BookingServiceImpl(DiscountService discountService, UserService userService) throws IOException {
         this.discountService = discountService;
         this.userService = userService;
-        this.eventRatingPriceRate = new EnumMap<>(eventRatingPriceRate);
-        this.vipSeatPriceRate = vipSeatPriceRate;
+
+        Properties props = new Properties();
+        props.load(this.getClass().getClassLoader().getResourceAsStream("application.properties"));
+
+        Double highRate = Double.valueOf(props.getProperty("movie.rating.high.price_rate"));
+        Double midRate = Double.valueOf(props.getProperty("movie.rating.mid.price_rate"));
+        Double lowRate = Double.valueOf(props.getProperty("movie.rating.low.price_rate"));
+        this.eventRatingPriceRate = new EnumMap<>(EventRating.class);
+        this.eventRatingPriceRate.put(HIGH, highRate);
+        this.eventRatingPriceRate.put(MID, midRate);
+        this.eventRatingPriceRate.put(LOW, lowRate);
+
+        this.vipSeatPriceRate = Double.parseDouble(props.getProperty("vip_seat.price_rate"));
 
         bookedTickets = new HashMap<>();
     }

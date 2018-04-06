@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.service;
 
+import org.springframework.stereotype.Service;
 import ua.epam.spring.hometask.domain.Event;
 
 import javax.annotation.Nonnull;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
  */
+@Service
 public class EventServiceImpl extends AbstractDomainObjectServiceImpl<Event> implements EventService {
 
     @Nullable

@@ -1,25 +1,30 @@
 package ua.epam.spring.hometask.service;
 
+import org.springframework.stereotype.Service;
 import ua.epam.spring.hometask.domain.Auditorium;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.*;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
  */
+@Service
 public class AuditoriumServiceImpl implements AuditoriumService {
 
     private Map<String, Auditorium> auditoriumMap;
 
-    public AuditoriumServiceImpl(String auditoriumNames,String auditoriumSeatsNumbers,
-                                 String auditoriumVipSeats) {
+    public AuditoriumServiceImpl() throws IOException {
         auditoriumMap = new HashMap<>();
 
-        String[] names = auditoriumNames.split(",");
-        String[] seatsNumbers = auditoriumSeatsNumbers.split(",");
-        String[] vipSeats = auditoriumVipSeats.split("\\|");
+        Properties props = new Properties();
+        props.load(this.getClass().getClassLoader().getResourceAsStream("auditoriums.properties"));
+
+        String[] names = props.getProperty("auditorium.names").split(",");
+        String[] seatsNumbers = props.getProperty("auditorium.seatsNumber").split(",");
+        String[] vipSeats = props.getProperty("auditorium.vipSeats").split("\\|");
 
         for (int i = 0; i < names.length; i++) {
             Auditorium auditorium = new Auditorium();

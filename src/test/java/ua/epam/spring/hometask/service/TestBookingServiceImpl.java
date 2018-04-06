@@ -2,7 +2,10 @@ package ua.epam.spring.hometask.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import ua.epam.spring.hometask.domain.*;
+import ua.epam.spring.hometask.domain.Auditorium;
+import ua.epam.spring.hometask.domain.Event;
+import ua.epam.spring.hometask.domain.Ticket;
+import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.discount.strategy.DiscountStrategy;
 
 import java.io.IOException;
@@ -11,7 +14,7 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
-import static ua.epam.spring.hometask.domain.EventRating.*;
+import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/5/2018.
@@ -28,15 +31,11 @@ public class TestBookingServiceImpl {
         List<DiscountStrategy> strategies = new ArrayList<>();
         strategies.add((user, event, airDateTime, numberOfTickets) -> (byte) 20);
         DiscountService discountService = new DiscountServiceImpl(strategies);
-        Map<EventRating, Double> priceRateMap = new HashMap<EventRating, Double>() {{
-            put(HIGH, 1.2);
-            put(MID, 1.0);
-            put(LOW, 1.0);
-        }};
+
         UserServiceImpl userService = new UserServiceImpl();
         user = new User();
         userService.save(user);
-        bookingService = new BookingServiceImpl(discountService, userService, priceRateMap, 2);
+        bookingService = new BookingServiceImpl(discountService, userService);
 
 
         TreeSet<LocalDateTime> airDates = new TreeSet<>(Arrays.asList(
@@ -47,15 +46,7 @@ public class TestBookingServiceImpl {
                 LocalDateTime.of(4018, 4, 5, 10, 30)
         ));
 
-        Properties props = new Properties();
-        props.load(TestAuditoriumServiceImpl.class.getClassLoader()
-                .getResourceAsStream("auditoriums.properties"));
-
-        String names = props.getProperty("auditorium.names");
-        String seats = props.getProperty("auditorium.seatsNumber");
-        String vipSeats = props.getProperty("auditorium.vipSeats");
-
-        AuditoriumService auditoriumService = new AuditoriumServiceImpl(names, seats, vipSeats);
+        AuditoriumService auditoriumService = new AuditoriumServiceImpl();
 
         Map<LocalDateTime, Auditorium> auditoriumMap = airDates.stream().collect(toMap(e -> e, e -> auditoriumService.getByName("1")));
 
