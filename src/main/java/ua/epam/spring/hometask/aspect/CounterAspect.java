@@ -35,7 +35,12 @@ public class CounterAspect {
     @Before(value = "execution(* ua.epam.spring.hometask.service.BookingService.bookTickets(..))")
     public void eventBookTicketsCounter(JoinPoint joinPoint) {
         for (Ticket ticket : ((Set<Ticket>) joinPoint.getArgs()[0])) {
-            eventCounterStatsService.incrementPriceQueryCount(ticket.getEvent());
+            eventCounterStatsService.incrementTicketsBookedTimesCount(ticket.getEvent());
         }
+    }
+
+    @Before(value = "execution(* ua.epam.spring.hometask.service.BookingService.bookTicket(..))")
+    public void eventBookTicketCounter(JoinPoint joinPoint) {
+        eventCounterStatsService.incrementPriceQueryCount(((Ticket) joinPoint.getArgs()[0]).getEvent());
     }
 }

@@ -23,10 +23,7 @@ public class EventCounterStatsServiceImpl implements EventCounterStatsService {
 
     @Override
     public void incrementAccessByNameCount(Event event) {
-        EventStats stats = eventStatsCounterDAO.getByEventId(event.getId());
-        if (stats == null) {
-            stats = new EventStats();
-        }
+        EventStats stats = getEventStats(event);
         stats.incrementAccessByName();
         eventStatsCounterDAO.save(stats);
     }
@@ -39,10 +36,7 @@ public class EventCounterStatsServiceImpl implements EventCounterStatsService {
 
     @Override
     public void incrementPriceQueryCount(Event event) {
-        EventStats stats = eventStatsCounterDAO.getByEventId(event.getId());
-        if (stats == null) {
-            stats = new EventStats();
-        }
+        EventStats stats = getEventStats(event);
         stats.incrementPriceQuery();
         eventStatsCounterDAO.save(stats);
     }
@@ -55,11 +49,17 @@ public class EventCounterStatsServiceImpl implements EventCounterStatsService {
 
     @Override
     public void incrementTicketsBookedTimesCount(Event event) {
+        EventStats stats = getEventStats(event);
+        stats.incrementTicketsBookedTimes();
+        eventStatsCounterDAO.save(stats);
+    }
+
+    private EventStats getEventStats(Event event) {
         EventStats stats = eventStatsCounterDAO.getByEventId(event.getId());
         if (stats == null) {
             stats = new EventStats();
+            stats.setEventId(event.getId());
         }
-        stats.incrementTicketsBookedTimes();
-        eventStatsCounterDAO.save(stats);
+        return stats;
     }
 }
