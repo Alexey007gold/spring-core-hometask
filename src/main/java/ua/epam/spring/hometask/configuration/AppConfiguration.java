@@ -3,6 +3,7 @@ package ua.epam.spring.hometask.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -14,6 +15,7 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan({"ua.epam.spring.hometask.*"})
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class AppConfiguration {
 
     @Bean
