@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {AppConfiguration.class})
 @Transactional(rollbackFor = Exception.class)
-public class TestAbstractDomainObjectServiceImpl extends DBTest {
+public class TestAbstractDomainObjectServiceImpl {
 
     @Autowired
     private AbstractDomainObjectService<User> abstractDomainObjectService;

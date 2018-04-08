@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {AppConfiguration.class})
 @Transactional(rollbackFor = Exception.class)
-public class TestUserServiceImpl extends DBTest {
+public class TestUserServiceImpl {
 
     @Autowired
     private UserService userService;

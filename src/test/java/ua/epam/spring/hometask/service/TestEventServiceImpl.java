@@ -29,7 +29,7 @@ import static ua.epam.spring.hometask.domain.EventRating.LOW;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {AppConfiguration.class})
 @Transactional(rollbackFor = Exception.class)
-public class TestEventServiceImpl extends DBTest {
+public class TestEventServiceImpl {
 
     @Autowired
     private EventService eventService;
