@@ -1,6 +1,7 @@
 package ua.epam.spring.hometask.service;
 
 import org.springframework.stereotype.Service;
+import ua.epam.spring.hometask.dao.EventDAO;
 import ua.epam.spring.hometask.domain.Event;
 
 import javax.annotation.Nonnull;
@@ -14,19 +15,23 @@ import java.util.stream.Collectors;
  * Created by Oleksii_Kovetskyi on 4/4/2018.
  */
 @Service
-public class EventServiceImpl extends AbstractDomainObjectServiceImpl<Event> implements EventService {
+public class EventServiceImpl extends AbstractDomainObjectServiceImpl<Event, EventDAO> implements EventService {
+
+    public EventServiceImpl(EventDAO eventDAO) {
+        super(eventDAO);
+    }
 
     @Nullable
     @Override
     public Event getByName(@Nonnull String name) {
-        return domainObjectMap.values().stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
+        return domainObjectDAO.getByName(name);
     }
 
     @Nonnull
     @Override
     public Set<Event> getForDateRange(@Nonnull LocalDate from, @Nonnull LocalDate to) {
-        return domainObjectMap.values().stream()
-                .filter(e -> e.getAirDates().stream()
+        return domainObjectDAO.getAll().stream()
+                .filter(e -> e.getAirDates().keySet().stream()
                         .anyMatch(d -> (LocalDate.from(d).isAfter(from) || LocalDate.from(d).isEqual(from)) &&
                                 (LocalDate.from(d).isBefore(to) || LocalDate.from(d).isEqual(to))))
                 .collect(Collectors.toSet());
@@ -36,11 +41,9 @@ public class EventServiceImpl extends AbstractDomainObjectServiceImpl<Event> imp
     @Override
     public Set<Event> getNextEvents(@Nonnull LocalDateTime to) {
         LocalDateTime from = LocalDateTime.now();
-        return domainObjectMap.values().stream()
-                .filter(e -> e.getAirDates().stream()
+        return domainObjectDAO.getAll().stream()
+                .filter(e -> e.getAirDates().keySet().stream()
                         .anyMatch(d -> d.isAfter(from) && d.isBefore(to)))
                 .collect(Collectors.toSet());
     }
-
-
 }

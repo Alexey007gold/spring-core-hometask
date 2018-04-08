@@ -10,9 +10,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ua.epam.spring.hometask.domain.EventRating.HIGH;
-import static ua.epam.spring.hometask.domain.EventRating.LOW;
-import static ua.epam.spring.hometask.domain.EventRating.MID;
+import static ua.epam.spring.hometask.domain.EventRating.*;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
@@ -50,13 +48,13 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public double getTicketsPrice(@Nonnull Event event, @Nonnull LocalDateTime dateTime,
                                   @Nullable User user, @Nonnull Set<Long> seats) {
-        if (!event.getAirDates().contains(dateTime))
+        if (!event.getAirDates().containsKey(dateTime))
             throw new IllegalArgumentException("This event will not happen on the specified date");
 
         double normalSeatPrice = event.getBasePrice() * eventRatingPriceRate.get(event.getRating());
         double vipSeatPrice = normalSeatPrice * vipSeatPriceRate;
 
-        Auditorium auditorium = event.getAuditoriums().get(dateTime);
+        Auditorium auditorium = event.getAirDates().get(dateTime).getAuditorium();
         Set<Long> vipSeats = auditorium.getVipSeats();
 
         double totalPrice = 0;
@@ -101,7 +99,7 @@ public class BookingServiceImpl implements BookingService {
     @Nonnull
     @Override
     public Set<Ticket> getPurchasedTicketsForEvent(@Nonnull Event event, @Nonnull LocalDateTime dateTime) {
-        if (!event.getAirDates().contains(dateTime))
+        if (!event.getAirDates().containsKey(dateTime))
             throw new IllegalArgumentException("This event will not happen on the specified date");
 
         return getBookedTicketsForEvent(event).stream()
