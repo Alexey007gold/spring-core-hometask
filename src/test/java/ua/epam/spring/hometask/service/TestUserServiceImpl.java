@@ -2,6 +2,12 @@ package ua.epam.spring.hometask.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+import ua.epam.spring.hometask.configuration.AppConfiguration;
 import ua.epam.spring.hometask.domain.User;
 
 import java.time.LocalDate;
@@ -11,14 +17,16 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by Oleksii_Kovetskyi on 4/5/2018.
  */
-public class TestUserServiceImpl {
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {AppConfiguration.class})
+@Transactional(rollbackFor = Exception.class)
+public class TestUserServiceImpl extends DBTest {
 
+    @Autowired
     private UserService userService;
 
     @Before
     public void init() {
-        userService = new UserServiceImpl();
-
         User user1 = new User();
         user1.setFirstName("John");
         user1.setLastName("Doe");

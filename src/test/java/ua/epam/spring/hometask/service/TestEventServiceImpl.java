@@ -2,11 +2,18 @@ package ua.epam.spring.hometask.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+import ua.epam.spring.hometask.configuration.AppConfiguration;
+import ua.epam.spring.hometask.domain.Auditorium;
 import ua.epam.spring.hometask.domain.Event;
+import ua.epam.spring.hometask.domain.EventDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -19,35 +26,40 @@ import static ua.epam.spring.hometask.domain.EventRating.LOW;
 /**
  * Created by Oleksii_Kovetskyi on 4/5/4018.
  */
-public class TestEventServiceImpl {
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {AppConfiguration.class})
+@Transactional(rollbackFor = Exception.class)
+public class TestEventServiceImpl extends DBTest {
 
+    @Autowired
     private EventService eventService;
 
     @Before
     public void init() {
-        eventService = new EventServiceImpl();
 
-        TreeSet<LocalDateTime> airDates1 = new TreeSet<>(Arrays.asList(
-                LocalDateTime.of(4018, 4, 2, 10, 30),
-                LocalDateTime.of(4018, 4, 2, 18, 0),
-                LocalDateTime.of(4018, 4, 3, 10, 30),
-                LocalDateTime.of(4018, 4, 4, 10, 20),
-                LocalDateTime.of(4018, 4, 5, 10, 30)
-        ));
-        TreeSet<LocalDateTime> airDates2 = new TreeSet<>(Arrays.asList(
-                LocalDateTime.of(4018, 4, 2, 10, 30),
-                LocalDateTime.of(4018, 4, 2, 18, 0),
-                LocalDateTime.of(4018, 4, 3, 10, 30),
-                LocalDateTime.of(4018, 4, 4, 10, 20),
-                LocalDateTime.of(4018, 4, 5, 10, 30)
-        ));
-        TreeSet<LocalDateTime> airDates3 = new TreeSet<>(Arrays.asList(
-                LocalDateTime.of(4018, 4, 8, 10, 30),
-                LocalDateTime.of(4018, 4, 9, 10, 20),
-                LocalDateTime.of(4018, 4, 10, 10, 30),
-                LocalDateTime.of(4018, 4, 11, 10, 30),
-                LocalDateTime.of(4018, 4, 12, 18, 0)
-        ));
+        Auditorium auditorium = new Auditorium();
+        auditorium.setName("1");
+        TreeSet<EventDate> airDates1 = new TreeSet<EventDate>(){{
+            add(new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 3, 10, 30), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 4, 10, 20), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditorium));
+        }};
+        TreeSet<EventDate> airDates2 = new TreeSet<EventDate>() {{
+            add(new EventDate(LocalDateTime.of(4018, 4, 3, 10, 30), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 4, 10, 20), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditorium));
+        }};
+        TreeSet<EventDate> airDates3 = new TreeSet<EventDate>() {{
+            add(new EventDate(LocalDateTime.of(4018, 4, 8, 10, 30), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 9, 10, 20), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 10, 10, 30), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 11, 10, 30), auditorium));
+            add(new EventDate(LocalDateTime.of(4018, 4, 12, 18, 0), auditorium));
+        }};
 
         Event event1 = new Event();
         event1.setName("Titanik");

@@ -2,51 +2,62 @@ package ua.epam.spring.hometask.service.discount.strategy;
 
 import org.junit.Before;
 import org.junit.Test;
-import ua.epam.spring.hometask.domain.Event;
-import ua.epam.spring.hometask.domain.Ticket;
-import ua.epam.spring.hometask.domain.User;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+import ua.epam.spring.hometask.configuration.AppConfiguration;
+import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.service.DiscountService;
 import ua.epam.spring.hometask.service.DiscountServiceImpl;
+import ua.epam.spring.hometask.service.EventService;
 import ua.epam.spring.hometask.service.UserService;
-import ua.epam.spring.hometask.service.UserServiceImpl;
 
-import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
+import static ua.epam.spring.hometask.domain.EventRating.MID;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/5/2018.
  */
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {AppConfiguration.class})
+@Transactional(rollbackFor = Exception.class)
 public class TestEvery10TicketStrategy {
 
     private DiscountService discountService;
+    @Autowired
     private UserService userService;
+    @Autowired
+    private EventService eventService;
     private Event event;
 
+    private User user1;
+    private User user2;
     @Before
     public void init() {
-        userService = new UserServiceImpl();
-
-        NavigableSet<Ticket> tickets = new TreeSet<>();
-        for (int i = 0; i < 7; i++) {
-            byte[] array = new byte[7];
-            new Random().nextBytes(array);
-            String eventName = new String(array, Charset.forName("UTF-8"));
-            Event event = new Event();
-            event.setName(eventName);
-            tickets.add(new Ticket(new User(), event, LocalDateTime.now(), 0));
-        }
-        User user1 = new User();
+        user1 = new User();
         user1.setFirstName("John");
         user1.setLastName("Doe");
         user1.setEmail("example@gmail.com");
+
+        NavigableSet<Ticket> tickets = new TreeSet<>();
+        for (int i = 0; i < 7; i++) {
+            Event event = new Event();
+            event.setName(randomStr());
+            event.setRating(MID);
+            eventService.save(event);
+            tickets.add(new Ticket(user1, event, LocalDateTime.now(), 0));
+        }
         user1.setTickets(tickets);
         userService.save(user1);
 
-        User user2 = new User();
+        user2 = new User();
         user2.setFirstName("Jane");
         user2.setLastName("Doe");
         user2.setEmail("exampleJane@gmail.com");
@@ -59,21 +70,37 @@ public class TestEvery10TicketStrategy {
                 LocalDateTime.of(4018, 4, 4, 10, 20),
                 LocalDateTime.of(4018, 4, 5, 10, 30)
         ));
+        Auditorium auditorium = new Auditorium();
+        auditorium.setName("1");
+        Set<EventDate> auditoriumMap = airDates.stream().map(e -> new EventDate(e, auditorium)).collect(toSet());
+
         event = new Event();
         event.setName("Titanik");
         event.setBasePrice(40);
         event.setRating(HIGH);
-        event.setAirDates(airDates);
+        event.setAirDates(auditoriumMap);
+        event = eventService.save(event);
 
         List<DiscountStrategy> discountStrategies =
                 Arrays.asList(new BirthdayStrategy(), new Every10TicketStrategy(userService));
         discountService = new DiscountServiceImpl(discountStrategies);
     }
 
+    private String randomStr() {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = leftLimit + (int) (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        return buffer.toString();
+    }
+
     @Test
     public void shouldReturn_0_OnGetDiscountCallForUser1() {
-        User user1 = userService.getById(1L);
-
         byte discount = discountService.getDiscount(user1, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 2);
 
@@ -82,8 +109,6 @@ public class TestEvery10TicketStrategy {
 
     @Test
     public void shouldReturn_50_OnGetDiscountCallForUser1() {
-        User user1 = userService.getById(1L);
-
         byte discount = discountService.getDiscount(user1, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 3);
 
@@ -92,8 +117,6 @@ public class TestEvery10TicketStrategy {
 
     @Test
     public void shouldReturn_0_OnGetDiscountCallForUser2() {
-        User user2 = userService.getById(2L);
-
         byte discount = discountService.getDiscount(user2, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
 
@@ -102,8 +125,6 @@ public class TestEvery10TicketStrategy {
 
     @Test
     public void shouldReturn_50_OnGetDiscountCallForUser2() {
-        User user2 = userService.getById(2L);
-
         byte discount = discountService.getDiscount(user2, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 10);
 

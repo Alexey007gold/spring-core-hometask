@@ -23,10 +23,11 @@ public class TestEvent {
 		event.setRating(EventRating.HIGH);
 	
 		LocalDateTime now = LocalDateTime.now();
-		
-		event.addAirDateTime(now);
-		event.addAirDateTime(now.plusDays(1));
-		event.addAirDateTime(now.plusDays(2));
+
+		Auditorium auditorium = new Auditorium();
+		event.addAirDateTime(new EventDate(now, auditorium));
+		event.addAirDateTime(new EventDate(now.plusDays(1), auditorium));
+		event.addAirDateTime(new EventDate(now.plusDays(2), auditorium));
 	}
 	
 	@Test
@@ -35,15 +36,15 @@ public class TestEvent {
 		
 		LocalDateTime date = LocalDateTime.now().plusDays(5);
 		
-		event.addAirDateTime(date);
+		event.addAirDateTime(new EventDate(date, new Auditorium()));
 		
 		assertEquals(size+1, event.getAirDates().size());
-		assertTrue(event.getAirDates().contains(date));
+		assertTrue(event.getAirDates().containsKey(date));
 		
 		event.removeAirDateTime(date);
 		
 		assertEquals(size, event.getAirDates().size());
-		assertFalse(event.getAirDates().contains(date));		
+		assertFalse(event.getAirDates().containsKey(date));
 	}
 	
 	@Test
@@ -58,55 +59,10 @@ public class TestEvent {
 		assertFalse(event.airsOnDates(LocalDate.now().minusDays(10), LocalDate.now().minusDays(5)));
 		
 		LocalDateTime time = LocalDateTime.now().plusHours(4);
-		event.addAirDateTime(time);
+		event.addAirDateTime(new EventDate(time, new Auditorium()));
 		assertTrue(event.airsOnDateTime(time));
 		time = time.plusHours(30);
 		assertFalse(event.airsOnDateTime(time));
-	}
-	
-	@Test
-	public void testAddRemoveAuditoriums() {
-		LocalDateTime time = event.getAirDates().first();
-		
-		assertTrue(event.getAuditoriums().isEmpty());
-		
-		event.assignAuditorium(time, new Auditorium());
-		
-		assertFalse(event.getAuditoriums().isEmpty());
-		
-		event.removeAuditoriumAssignment(time);
-		
-		assertTrue(event.getAuditoriums().isEmpty());
-	}
-	
-	@Test
-	public void testAddRemoveAuditoriumsWithAirDates() {
-		LocalDateTime time = LocalDateTime.now().plusDays(10);
-		
-		assertTrue(event.getAuditoriums().isEmpty());
-		
-		event.addAirDateTime(time, new Auditorium());
-		
-		assertFalse(event.getAuditoriums().isEmpty());
-		
-		event.removeAirDateTime(time);
-		
-		assertTrue(event.getAuditoriums().isEmpty());
-	}
-	
-	@Test
-	public void testNotAddAuditoriumWithoutCorrectDate() {
-		LocalDateTime time = LocalDateTime.now().plusDays(10);
-		
-		boolean result = event.assignAuditorium(time, new Auditorium());
-		
-		assertFalse(result);
-		assertTrue(event.getAuditoriums().isEmpty());
-		
-		result = event.removeAirDateTime(time);
-		assertFalse(result);
-		
-		assertTrue(event.getAuditoriums().isEmpty());
 	}
 
 }

@@ -2,25 +2,39 @@ package ua.epam.spring.hometask.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import ua.epam.spring.hometask.domain.Auditorium;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+import ua.epam.spring.hometask.configuration.AppConfiguration;
 import ua.epam.spring.hometask.domain.Event;
+import ua.epam.spring.hometask.domain.EventDate;
 import ua.epam.spring.hometask.domain.Ticket;
 import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.discount.strategy.DiscountStrategy;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/5/2018.
  */
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {AppConfiguration.class})
+@Transactional(rollbackFor = Exception.class)
 public class TestBookingServiceImpl {
 
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private EventService eventService;
+    @Autowired
     private BookingService bookingService;
     private Event event;
     private User user;
@@ -32,30 +46,30 @@ public class TestBookingServiceImpl {
         strategies.add((user, event, airDateTime, numberOfTickets) -> (byte) 20);
         DiscountService discountService = new DiscountServiceImpl(strategies);
 
-        UserServiceImpl userService = new UserServiceImpl();
         user = new User();
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setEmail("mail");
+        user.setBirthDate(LocalDate.of(1990, 11, 11));
         userService.save(user);
         bookingService = new BookingServiceImpl(discountService, userService);
 
-
-        TreeSet<LocalDateTime> airDates = new TreeSet<>(Arrays.asList(
-                LocalDateTime.of(4018, 4, 2, 10, 30),
-                LocalDateTime.of(4018, 4, 2, 18, 0),
-                LocalDateTime.of(4018, 4, 3, 10, 30),
-                LocalDateTime.of(4018, 4, 4, 10, 20),
-                LocalDateTime.of(4018, 4, 5, 10, 30)
-        ));
-
         AuditoriumService auditoriumService = new AuditoriumServiceImpl();
 
-        Map<LocalDateTime, Auditorium> auditoriumMap = airDates.stream().collect(toMap(e -> e, e -> auditoriumService.getByName("1")));
+        TreeSet<EventDate> airDates = new TreeSet<>(Arrays.asList(
+                new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditoriumService.getByName("1")),
+                new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditoriumService.getByName("1")),
+                new EventDate(LocalDateTime.of(4018, 4, 3, 10, 30), auditoriumService.getByName("1")),
+                new EventDate(LocalDateTime.of(4018, 4, 4, 10, 20), auditoriumService.getByName("1")),
+                new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditoriumService.getByName("1"))
+        ));
 
         event = new Event();
         event.setName("Titanik");
         event.setBasePrice(40);
         event.setRating(HIGH);
         event.setAirDates(airDates);
-        event.setAuditoriums(new TreeMap<>(auditoriumMap));
+        event = eventService.save(event);
 
 
         tickets = new HashSet<>();
@@ -87,7 +101,7 @@ public class TestBookingServiceImpl {
     public void shouldAddTicketsToUserOnBookTicketsCall() {
         bookingService.bookTickets(tickets);
 
-        assertEquals(2, user.getTickets().size());
+        assertEquals(2, userService.getUserByEmail(user.getEmail()).getTickets().size());
     }
 
     @Test
