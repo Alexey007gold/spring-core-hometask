@@ -2,7 +2,12 @@ package ua.epam.spring.hometask.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.NavigableMap;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * @author Yuriy_Tkach
@@ -11,74 +16,25 @@ public class Event extends DomainObject {
 
     private String name;
 
-    private NavigableSet<LocalDateTime> airDates = new TreeSet<>();
-
     private double basePrice;
 
     private EventRating rating;
 
-    private NavigableMap<LocalDateTime, Auditorium> auditoriums = new TreeMap<>();
-
-    /**
-     * Checks if event is aired on particular <code>dateTime</code> and assigns
-     * auditorium to it.
-     * 
-     * @param dateTime
-     *            Date and time of aired event for which to assign
-     * @param auditorium
-     *            Auditorium that should be assigned
-     * @return <code>true</code> if successful, <code>false</code> if event is
-     *         not aired on that date
-     */
-    public boolean assignAuditorium(LocalDateTime dateTime, Auditorium auditorium) {
-        if (airDates.contains(dateTime)) {
-            auditoriums.put(dateTime, auditorium);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Removes auditorium assignment from event
-     * 
-     * @param dateTime
-     *            Date and time to remove auditorium for
-     * @return <code>true</code> if successful, <code>false</code> if not
-     *         removed
-     */
-    public boolean removeAuditoriumAssignment(LocalDateTime dateTime) {
-        return auditoriums.remove(dateTime) != null;
-    }
-
-    /**
-     * Add date and time of event air
-     * 
-     * @param dateTime
-     *            Date and time to add
-     * @return <code>true</code> if successful, <code>false</code> if already
-     *         there
-     */
-    public boolean addAirDateTime(LocalDateTime dateTime) {
-        return airDates.add(dateTime);
-    }
+    private NavigableMap<LocalDateTime, EventDate> airDates = new TreeMap<>();
 
     /**
      * Adding date and time of event air and assigning auditorium to that
      * 
-     * @param dateTime
-     *            Date and time to add
-     * @param auditorium
-     *            Auditorium to add if success in date time add
+     * @param eventDate EventDate object
      * @return <code>true</code> if successful, <code>false</code> if already
      *         there
      */
-    public boolean addAirDateTime(LocalDateTime dateTime, Auditorium auditorium) {
-        boolean result = airDates.add(dateTime);
-        if (result) {
-            auditoriums.put(dateTime, auditorium);
-        }
-        return result;
+    public boolean addAirDateTime(EventDate eventDate) {
+        if (airDates.containsKey(eventDate.getDateTime()))
+            return false;
+
+        airDates.put(eventDate.getDateTime(), eventDate);
+        return true;
     }
 
     /**
@@ -90,11 +46,7 @@ public class Event extends DomainObject {
      * @return <code>true</code> if successful, <code>false</code> if not there
      */
     public boolean removeAirDateTime(LocalDateTime dateTime) {
-        boolean result = airDates.remove(dateTime);
-        if (result) {
-            auditoriums.remove(dateTime);
-        }
-        return result;
+        return airDates.remove(dateTime) != null;
     }
 
     /**
@@ -105,7 +57,7 @@ public class Event extends DomainObject {
      * @return <code>true</code> event airs on that date and time
      */
     public boolean airsOnDateTime(LocalDateTime dateTime) {
-        return airDates.stream().anyMatch(dt -> dt.equals(dateTime));
+        return airDates.keySet().stream().anyMatch(dt -> dt.equals(dateTime));
     }
 
     /**
@@ -116,7 +68,7 @@ public class Event extends DomainObject {
      * @return <code>true</code> event airs on that date
      */
     public boolean airsOnDate(LocalDate date) {
-        return airDates.stream().anyMatch(dt -> dt.toLocalDate().equals(date));
+        return airDates.keySet().stream().anyMatch(dt -> dt.toLocalDate().equals(date));
     }
 
     /**
@@ -130,7 +82,7 @@ public class Event extends DomainObject {
      * @return <code>true</code> event airs on dates
      */
     public boolean airsOnDates(LocalDate from, LocalDate to) {
-        return airDates.stream()
+        return airDates.keySet().stream()
                 .anyMatch(dt -> dt.toLocalDate().compareTo(from) >= 0 && dt.toLocalDate().compareTo(to) <= 0);
     }
 
@@ -140,14 +92,6 @@ public class Event extends DomainObject {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public NavigableSet<LocalDateTime> getAirDates() {
-        return airDates;
-    }
-
-    public void setAirDates(NavigableSet<LocalDateTime> airDates) {
-        this.airDates = airDates;
     }
 
     public double getBasePrice() {
@@ -166,12 +110,16 @@ public class Event extends DomainObject {
         this.rating = rating;
     }
 
-    public NavigableMap<LocalDateTime, Auditorium> getAuditoriums() {
-        return auditoriums;
+    public NavigableMap<LocalDateTime, EventDate> getAirDates() {
+        return airDates;
     }
 
-    public void setAuditoriums(NavigableMap<LocalDateTime, Auditorium> auditoriums) {
-        this.auditoriums = auditoriums;
+    public void setAirDates(NavigableMap<LocalDateTime, EventDate> airDates) {
+        this.airDates = airDates;
+    }
+
+    public void setAirDates(Set<EventDate> airDates) {
+        this.airDates = new TreeMap<>(airDates.stream().collect(toMap(EventDate::getDateTime, d -> d)));
     }
 
     @Override
