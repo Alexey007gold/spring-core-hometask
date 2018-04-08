@@ -16,6 +16,7 @@ import java.util.Set;
 @Component
 public class LuckyWinnerAspect {
 
+    public static int bound = 1000;
     private Random random = new Random();
 
     @Before(value = "execution(* ua.epam.spring.hometask.service.BookingService.bookTicket(..))")
@@ -34,6 +35,6 @@ public class LuckyWinnerAspect {
     }
 
     private boolean isLucky() {
-        return random.nextInt(1000) == 500;
+        return random.nextInt(bound) == 0;
     }
 }

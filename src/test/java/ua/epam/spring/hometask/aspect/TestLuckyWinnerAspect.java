@@ -18,10 +18,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.TreeSet;
 
+import static org.junit.Assert.assertEquals;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
@@ -69,15 +68,13 @@ public class TestLuckyWinnerAspect {
 
 
     @Test
-    public void test() {
-        Set<Ticket> tickets = new HashSet<>();
-        tickets.add(new Ticket(user, event,
+    public void ticketPriceShouldBeZeroAfterBookTicketCall() {
+        Ticket ticket = new Ticket(user, event,
                 LocalDateTime.of(4018, 4, 3, 10, 30),
-                1, 40));
-        tickets.add(new Ticket(user, event,
-                LocalDateTime.of(4018, 4, 3, 10, 30),
-                2, 40));
+                1, 40);
 
-        bookingService.bookTickets(tickets);
+        LuckyWinnerAspect.bound = 1;
+        bookingService.bookTicket(ticket);
+        assertEquals(0, ticket.getPrice(), 0);
     }
 }
