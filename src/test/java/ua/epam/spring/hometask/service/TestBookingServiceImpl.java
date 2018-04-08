@@ -34,7 +34,7 @@ public class TestBookingServiceImpl {
     private UserService userService;
     @Autowired
     private EventService eventService;
-    @Autowired
+
     private BookingService bookingService;
     private Event event;
     private User user;
@@ -75,10 +75,10 @@ public class TestBookingServiceImpl {
         tickets = new HashSet<>();
         tickets.add(new Ticket(user, event,
                 LocalDateTime.of(4018, 4, 3, 10, 30),
-                1));
+                1, 40));
         tickets.add(new Ticket(user, event,
                 LocalDateTime.of(4018, 4, 3, 10, 30),
-                2));
+                2, 40));
     }
 
     @Test

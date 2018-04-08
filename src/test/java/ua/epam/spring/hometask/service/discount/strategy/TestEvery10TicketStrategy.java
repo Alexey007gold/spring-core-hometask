@@ -52,7 +52,7 @@ public class TestEvery10TicketStrategy {
             event.setName(randomStr());
             event.setRating(MID);
             eventService.save(event);
-            tickets.add(new Ticket(user1, event, LocalDateTime.now(), 0));
+            tickets.add(new Ticket(user1, event, LocalDateTime.now(), 0, 40));
         }
         user1.setTickets(tickets);
         userService.save(user1);

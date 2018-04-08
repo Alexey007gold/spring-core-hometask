@@ -42,6 +42,15 @@ public interface BookingService {
     public void bookTickets(@Nonnull Set<Ticket> tickets);
 
     /**
+     * Books a ticket in internal system. If user is not
+     * <code>null</code> in a ticket then booked tickets are saved with it
+     *
+     * @param ticket
+     *            The ticket
+     */
+    public void bookTicket(@Nonnull Ticket ticket);
+
+    /**
      * Getting all purchased tickets for event on specific air date and time
      * 
      * @param event

@@ -29,7 +29,8 @@ public class TicketDAO extends DomainObjectDAO<Ticket> {
         public Ticket mapRow(ResultSet rs, int rowNum) throws SQLException {
             Ticket ticket = new Ticket(userService.getById(rs.getLong(2)),
                     eventService.getById(rs.getLong(3)),
-                    rs.getTimestamp(4).toLocalDateTime(), rs.getLong(5));
+                    rs.getTimestamp(4).toLocalDateTime(), rs.getLong(5),
+                    rs.getDouble(6));
             ticket.setId(rs.getLong(1));
 
             return ticket;
@@ -47,7 +48,7 @@ public class TicketDAO extends DomainObjectDAO<Ticket> {
 
     @Override
     protected String getTableName() {
-        return "ticket";
+        return "tickets";
     }
 
     @Override
@@ -57,7 +58,7 @@ public class TicketDAO extends DomainObjectDAO<Ticket> {
         } else {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(con -> {
-                String sql = "INSERT INTO tickets (user_id, event_id, time, seat) VALUES (?, ?, ?, ?)";
+                String sql = String.format("INSERT INTO %s (user_id, event_id, time, seat) VALUES (?, ?, ?, ?)", getTableName());
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ps.setLong(1, ticket.getUser().getId());
                 ps.setLong(2, ticket.getEvent().getId());

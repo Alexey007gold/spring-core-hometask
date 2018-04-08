@@ -72,17 +72,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void bookTickets(@Nonnull Set<Ticket> tickets) {
         for (Ticket ticket : tickets) {
-            if (!getBookedTicketsForEvent(ticket.getEvent()).contains(ticket)) {//if ticket is not booked yet
-                User user = ticket.getUser();
-                if (user != null) {
-                    Long userId = user.getId();
-                    if (userId != null && userService.getById(userId) != null) {//if user is registered
-                        user.getTickets().add(ticket);
-                        userService.save(user);
-                    }
-                }
-                bookTicket(ticket);
-            }
+            bookTicket(ticket);
         }
     }
 
@@ -91,9 +81,20 @@ public class BookingServiceImpl implements BookingService {
         return tickets == null ? Collections.emptySet() : tickets;
     }
 
-    private void bookTicket(Ticket ticket) {
-        Set<Ticket> ticketSet = bookedTickets.computeIfAbsent(ticket.getEvent(), k -> new HashSet<>());
-        ticketSet.add(ticket);
+    @Override
+    public void bookTicket(@Nonnull Ticket ticket) {
+        if (!getBookedTicketsForEvent(ticket.getEvent()).contains(ticket)) {//if ticket is not booked yet
+            User user = ticket.getUser();
+            if (user != null) {
+                Long userId = user.getId();
+                if (userId != null && userService.getById(userId) != null) {//if user is registered
+                    user.getTickets().add(ticket);
+                    userService.save(user);
+                }
+            }
+            Set<Ticket> ticketSet = bookedTickets.computeIfAbsent(ticket.getEvent(), k -> new HashSet<>());
+            ticketSet.add(ticket);
+        }
     }
 
     @Nonnull

@@ -31,7 +31,8 @@ public class UserDAO extends DomainObjectDAO<User> {
     private RowMapper<Ticket> ticketRowMapper = (rs, i) -> {
         Ticket ticket = new Ticket(null,
                 eventService.getById(rs.getLong(3)),
-                rs.getTimestamp(4).toLocalDateTime(), rs.getLong(5));
+                rs.getTimestamp(4).toLocalDateTime(), rs.getLong(5),
+                rs.getDouble(6));
         ticket.setId(rs.getLong(1));
 
         return ticket;
@@ -49,8 +50,9 @@ public class UserDAO extends DomainObjectDAO<User> {
             user.setBirthDate(date.toLocalDate());
         }
 
+        String sql = String.format("SELECT * FROM tickets WHERE user_id = %d", user.getId());
         List<Ticket> tickets = jdbcTemplate
-                .query("SELECT * FROM " + "tickets" + " WHERE user_id = " + user.getId(), ticketRowMapper);
+                .query(sql, ticketRowMapper);
         for (Ticket ticket : tickets) {
             ticket.setUser(user);
         }
