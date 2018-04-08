@@ -19,7 +19,7 @@ public class DiscountStatsDAO extends DomainObjectDAO<DiscountStats> {
 
     private RowMapper<DiscountStats> rowMapper = (rs, rowNum) -> {
         DiscountStats discountStats = new DiscountStats();
-        discountStats.setUserId(rs.getLong(1));
+        discountStats.setId(rs.getLong(1));
         discountStats.setDiscountType(rs.getString(2));
         discountStats.setUserId(rs.getLong(3));
         discountStats.setTimes(rs.getLong(4));
@@ -62,7 +62,7 @@ public class DiscountStatsDAO extends DomainObjectDAO<DiscountStats> {
                 String sql = String.format("INSERT INTO %s (discount_type, user_id, times) VALUES (?, ?, ?)", getTableName());
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, stats.getDiscountType());
-                ps.setLong(2, stats.getUserId());
+                ps.setObject(2, stats.getUserId());
                 ps.setLong(3, stats.getTimes());
                 return ps;
             }, keyHolder);

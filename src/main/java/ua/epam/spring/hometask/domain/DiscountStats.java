@@ -7,7 +7,7 @@ public class DiscountStats extends DomainObject {
 
     private String discountType;
     private Long userId;
-    private Long times;
+    private long times;
 
     public DiscountStats() {
     }

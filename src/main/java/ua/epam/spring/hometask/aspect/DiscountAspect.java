@@ -19,11 +19,12 @@ public class DiscountAspect {
     private DiscountCounterService discountCounterService;
 
     @Around(value = "execution(* ua.epam.spring.hometask.service.discount.strategy.DiscountStrategy.getDiscount(..))")
-    public void discountCounter(ProceedingJoinPoint joinPoint) throws Throwable {
+    public byte discountCounter(ProceedingJoinPoint joinPoint) throws Throwable {
         byte res = (byte) joinPoint.proceed();
         if (res > 0) {
-            String className = joinPoint.getThis().getClass().getSimpleName();
+            String className = joinPoint.getTarget().getClass().getSimpleName();
             discountCounterService.count(className, (User) joinPoint.getArgs()[0]);
         }
+        return res;
     }
 }

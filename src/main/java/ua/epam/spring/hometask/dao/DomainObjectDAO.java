@@ -48,8 +48,11 @@ public abstract class DomainObjectDAO<T extends DomainObject> {
     public List<T> getBy(String[] columnNames, Object... values) {
         StringBuilder builder = new StringBuilder();
         builder.append("SELECT * FROM ").append(getTableName()).append(" WHERE ");
-        for (String columnName : columnNames) {
-            builder.append(columnName).append(" = ? ");
+        for (int i = 0; i < columnNames.length; i++) {
+            builder.append(columnNames[i]).append(" = ? ");
+            if (i + 1 < columnNames.length) {
+                builder.append(" and ");
+            }
         }
         try {
             return jdbcTemplate.query(builder.toString(), values, getRowMapper());
