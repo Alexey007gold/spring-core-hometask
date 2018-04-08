@@ -58,12 +58,13 @@ public class TicketDAO extends DomainObjectDAO<Ticket> {
         } else {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(con -> {
-                String sql = String.format("INSERT INTO %s (user_id, event_id, time, seat) VALUES (?, ?, ?, ?)", getTableName());
+                String sql = String.format("INSERT INTO %s (user_id, event_id, time, seat, price) VALUES (?, ?, ?, ?, ?)", getTableName());
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ps.setLong(1, ticket.getUser().getId());
                 ps.setLong(2, ticket.getEvent().getId());
                 ps.setTimestamp(3, Timestamp.valueOf(ticket.getDateTime()));
                 ps.setLong(4, ticket.getSeat());
+                ps.setDouble(4, ticket.getPrice());
                 return ps;
             }, keyHolder);
 
@@ -72,10 +73,10 @@ public class TicketDAO extends DomainObjectDAO<Ticket> {
     }
 
     private void update(Ticket ticket) {
-        String sql = String.format("UPDATE %s SET user_id = ?, event_id = ?, time = ?, seat = ? WHERE id = %d",
+        String sql = String.format("UPDATE %s SET user_id = ?, event_id = ?, time = ?, seat = ?, price = ? WHERE id = %d",
                 getTableName(), ticket.getId());
 
         jdbcTemplate.update(sql, ticket.getUser().getId(), ticket.getEvent().getId(),
-                Timestamp.valueOf(ticket.getDateTime()), ticket.getSeat());
+                Timestamp.valueOf(ticket.getDateTime()), ticket.getSeat(), ticket.getPrice());
     }
 }

@@ -114,9 +114,10 @@ public class UserDAO extends DomainObjectDAO<User> {
                 .map(ticket -> new Object[]{ticket.getUser().getId(),
                         ticket.getEvent().getId(),
                         Timestamp.valueOf(ticket.getDateTime()),
-                        ticket.getSeat()})
+                        ticket.getSeat(),
+                        ticket.getPrice()})
                 .collect(toList());
-        String sql = "INSERT INTO tickets (user_id, event_id, time, seat) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO tickets (user_id, event_id, time, seat, price) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.batchUpdate(sql, tickets);
     }
 

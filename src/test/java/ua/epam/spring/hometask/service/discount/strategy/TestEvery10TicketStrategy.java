@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.epam.spring.hometask.configuration.AppConfiguration;
 import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.service.DiscountService;
-import ua.epam.spring.hometask.service.DiscountServiceImpl;
 import ua.epam.spring.hometask.service.EventService;
 import ua.epam.spring.hometask.service.UserService;
 
@@ -29,7 +28,7 @@ import static ua.epam.spring.hometask.domain.EventRating.MID;
 @ContextConfiguration(classes = {AppConfiguration.class})
 @Transactional(rollbackFor = Exception.class)
 public class TestEvery10TicketStrategy {
-
+    @Autowired
     private DiscountService discountService;
     @Autowired
     private UserService userService;
@@ -80,10 +79,6 @@ public class TestEvery10TicketStrategy {
         event.setRating(HIGH);
         event.setAirDates(auditoriumMap);
         event = eventService.save(event);
-
-        List<DiscountStrategy> discountStrategies =
-                Arrays.asList(new BirthdayStrategy(), new Every10TicketStrategy(userService));
-        discountService = new DiscountServiceImpl(discountStrategies);
     }
 
     private String randomStr() {

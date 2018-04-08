@@ -36,7 +36,8 @@ CREATE TABLE public.tickets
   user_id BIGINT NOT NULL,
   event_id BIGINT NOT NULL,
   time TIMESTAMP NOT NULL,
-  seat BIGINT NOT NULL
+  seat BIGINT NOT NULL,
+  price DOUBLE PRECISION NOT NULL
 );
 CREATE UNIQUE INDEX tickets_id_uindex ON public.tickets (id);
 
