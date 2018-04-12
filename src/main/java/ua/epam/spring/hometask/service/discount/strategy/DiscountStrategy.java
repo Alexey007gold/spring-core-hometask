@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.service.discount.strategy;
 
+import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.User;
 
@@ -12,6 +13,6 @@ import java.time.LocalDateTime;
  */
 public interface DiscountStrategy {
 
-    byte getDiscount(@Nullable User user, @Nonnull Event event,
-                     @Nonnull LocalDateTime airDateTime, long numberOfTickets);
+    Discount getDiscount(@Nullable User user, @Nonnull Event event,
+                         @Nonnull LocalDateTime airDateTime, long numberOfTickets);
 }

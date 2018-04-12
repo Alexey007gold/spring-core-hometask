@@ -9,7 +9,7 @@ import java.util.Collection;
  * Created by Oleksii_Kovetskyi on 4/8/2018.
  */
 public interface DiscountCounterService {
-    void count(String className, User user);
+    void count(String type, User user);
     Collection<DiscountStats> getDiscountStatsForUser(User user);
     Collection<DiscountStats> getDiscountStatsForType(String discountType);
     long getTotalDiscountCountForType(String discountType);

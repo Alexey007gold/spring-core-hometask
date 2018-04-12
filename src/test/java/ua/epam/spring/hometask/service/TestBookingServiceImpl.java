@@ -8,10 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ua.epam.spring.hometask.configuration.AppConfiguration;
-import ua.epam.spring.hometask.domain.Event;
-import ua.epam.spring.hometask.domain.EventDate;
-import ua.epam.spring.hometask.domain.Ticket;
-import ua.epam.spring.hometask.domain.User;
+import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.service.discount.strategy.DiscountStrategy;
 
 import java.io.IOException;
@@ -43,7 +40,7 @@ public class TestBookingServiceImpl {
     @Before
     public void init() throws IOException {
         List<DiscountStrategy> strategies = new ArrayList<>();
-        strategies.add((user, event, airDateTime, numberOfTickets) -> (byte) 20);
+        strategies.add((user, event, airDateTime, numberOfTickets) -> new Discount("a", (byte) 20));
         DiscountService discountService = new DiscountServiceImpl(strategies);
 
         user = new User();

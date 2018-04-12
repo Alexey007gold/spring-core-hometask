@@ -18,6 +18,7 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 import static ua.epam.spring.hometask.domain.EventRating.MID;
 
@@ -96,67 +97,67 @@ public class TestEvery10TicketStrategy {
 
     @Test
     public void shouldReturn_0_OnGetDiscountCallForUser1() {
-        byte discount = discountService.getDiscount(user1, event,
+        Discount discount = discountService.getDiscount(user1, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 2);
 
-        assertEquals(0, discount);
+        assertNull(discount);
     }
 
     @Test
     public void shouldReturn_50_OnGetDiscountCallForUser1() {
-        byte discount = discountService.getDiscount(user1, event,
+        Discount discount = discountService.getDiscount(user1, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 3);
 
-        assertEquals(50, discount);
+        assertEquals(50, discount.getPercent());
     }
 
     @Test
     public void shouldReturn_0_OnGetDiscountCallForUser2() {
-        byte discount = discountService.getDiscount(user2, event,
+        Discount discount = discountService.getDiscount(user2, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
 
-        assertEquals(0, discount);
+        assertNull(discount);
     }
 
     @Test
     public void shouldReturn_50_OnGetDiscountCallForUser2() {
-        byte discount = discountService.getDiscount(user2, event,
+        Discount discount = discountService.getDiscount(user2, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 10);
 
-        assertEquals(50, discount);
+        assertEquals(50, discount.getPercent());
     }
 
     @Test
     public void shouldReturn_0_OnGetDiscountCallForUnknownUser() {
         User user = new User();
 
-        byte discount1 = discountService.getDiscount(null, event,
+        Discount discount1 = discountService.getDiscount(null, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
-        byte discount2 = discountService.getDiscount(user, event,
+        Discount discount2 = discountService.getDiscount(user, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 4);
         user.setId(5L);
-        byte discount3 = discountService.getDiscount(user, event,
+        Discount discount3 = discountService.getDiscount(user, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
 
-        assertEquals(0, discount1);
-        assertEquals(0, discount2);
-        assertEquals(0, discount3);
+        assertNull(discount1);
+        assertNull(discount2);
+        assertNull(discount3);
     }
 
     @Test
     public void shouldReturn_50_OnGetDiscountCallForUnknownUser() {
         User user = new User();
 
-        byte discount1 = discountService.getDiscount(null, event,
+        Discount discount1 = discountService.getDiscount(null, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 10);
-        byte discount2 = discountService.getDiscount(user, event,
+        Discount discount2 = discountService.getDiscount(user, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 25);
         user.setId(5L);
-        byte discount3 = discountService.getDiscount(user, event,
+        Discount discount3 = discountService.getDiscount(user, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 10);
 
-        assertEquals(50, discount1);
-        assertEquals(50, discount2);
-        assertEquals(50, discount3);
+        assertEquals(50, discount1.getPercent());
+        assertEquals(50, discount2.getPercent());
+        assertEquals(50, discount3.getPercent());
     }
 }

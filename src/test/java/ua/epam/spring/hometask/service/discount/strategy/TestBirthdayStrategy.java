@@ -8,10 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ua.epam.spring.hometask.configuration.AppConfiguration;
-import ua.epam.spring.hometask.domain.Auditorium;
-import ua.epam.spring.hometask.domain.Event;
-import ua.epam.spring.hometask.domain.EventDate;
-import ua.epam.spring.hometask.domain.User;
+import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.service.UserService;
 
 import java.time.LocalDate;
@@ -22,6 +19,7 @@ import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
@@ -76,17 +74,17 @@ public class TestBirthdayStrategy {
 
     @Test
     public void shouldReturn_0_OnGetDiscountCall() {
-        byte discount = discountStrategy.getDiscount(user1, event,
+        Discount discount = discountStrategy.getDiscount(user1, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
 
-        assertEquals(0, discount);
+        assertNull(discount);
     }
 
     @Test
     public void shouldReturn_5O_nGetDiscountCall() {
-        byte discount = discountStrategy.getDiscount(user2, event,
+        Discount discount = discountStrategy.getDiscount(user2, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
 
-        assertEquals(5, discount);
+        assertEquals(5, discount.getPercent());
     }
 }

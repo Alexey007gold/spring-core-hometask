@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.service;
 
+import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.User;
 
@@ -26,6 +27,6 @@ public interface DiscountService {
      *            Number of tickets that user buys
      * @return discount value from 0 to 100
      */
-    byte getDiscount(@Nullable User user, @Nonnull Event event, @Nonnull LocalDateTime airDateTime, long numberOfTickets);
+    Discount getDiscount(@Nullable User user, @Nonnull Event event, @Nonnull LocalDateTime airDateTime, long numberOfTickets);
 
 }

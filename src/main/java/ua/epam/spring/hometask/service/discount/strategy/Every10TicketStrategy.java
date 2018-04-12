@@ -1,6 +1,7 @@
 package ua.epam.spring.hometask.service.discount.strategy;
 
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.UserService;
@@ -22,11 +23,11 @@ public class Every10TicketStrategy implements DiscountStrategy {
     }
 
     @Override
-    public byte getDiscount(@Nullable User user, @Nonnull Event event,
-                            @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
-        if (numberOfTickets == 0) return 0;
+    public Discount getDiscount(@Nullable User user, @Nonnull Event event,
+                                @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
+        if (numberOfTickets == 0) return null;
 
-        byte disc = 0;
+        Discount disc = null;
         if (isUserRegistered(user)) {
             int boughtTickets = user.getTickets().size();
 
@@ -34,11 +35,11 @@ public class Every10TicketStrategy implements DiscountStrategy {
             boughtTickets += 1;
             numberOfTickets--;
             if (boughtTickets % 10 == 0 || (boughtTickets % 10) + numberOfTickets >= 10) {
-                disc = 50;
+                disc = new Discount("Every10TicketStrategy", (byte) 50);
             }
 
         } else if (numberOfTickets >= 10) {
-            disc = 50;
+            disc = new Discount("Every10TicketStrategy", (byte) 50);
         }
         return disc;
     }

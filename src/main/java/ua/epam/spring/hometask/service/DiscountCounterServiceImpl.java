@@ -18,11 +18,11 @@ public class DiscountCounterServiceImpl implements DiscountCounterService {
     private DiscountStatsDAO discountStatsDAO;
 
     @Override
-    public void count(String className, User user) {
-        DiscountStats userStats = discountStatsDAO.getByUserIdAndDiscountType(user != null ? user.getId() : null, className);
-        DiscountStats totalStats = discountStatsDAO.getByUserIdAndDiscountType(null, className);
-        increment(className, user, userStats);
-        increment(className, null, totalStats);
+    public void count(String type, User user) {
+        DiscountStats userStats = discountStatsDAO.getByUserIdAndDiscountType(user != null ? user.getId() : null, type);
+        DiscountStats totalStats = discountStatsDAO.getByUserIdAndDiscountType(null, type);
+        increment(type, user, userStats);
+        increment(type, null, totalStats);
     }
 
     @Override
@@ -40,10 +40,10 @@ public class DiscountCounterServiceImpl implements DiscountCounterService {
         return discountStatsDAO.getByUserIdAndDiscountType(null, discountType).getTimes();
     }
 
-    private void increment(String className, User user, DiscountStats stats) {
+    private void increment(String type, User user, DiscountStats stats) {
         if (stats == null) {
             stats = new DiscountStats();
-            stats.setDiscountType(className);
+            stats.setDiscountType(type);
             stats.setUserId(user != null ? user.getId() : null);
         }
         stats.increment();

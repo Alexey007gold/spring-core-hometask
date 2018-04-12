@@ -58,13 +58,15 @@ public class BookingServiceImpl implements BookingService {
         Set<Long> vipSeats = auditorium.getVipSeats();
 
         double totalPrice = 0;
-        byte discount = discountService.getDiscount(user, event, dateTime, seats.size());
+        Discount discount = discountService.getDiscount(user, event, dateTime, seats.size());
 
         for (Long seat : seats) {
             totalPrice += vipSeats.contains(seat) ? vipSeatPrice : normalSeatPrice;
         }
 
-        totalPrice *= ((100 - discount) / 100.0);
+        if (discount != null) {
+            totalPrice *= ((100 - discount.getPercent()) / 100.0);
+        }
 
         return totalPrice;
     }

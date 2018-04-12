@@ -1,6 +1,7 @@
 package ua.epam.spring.hometask.service.discount.strategy;
 
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.User;
 
@@ -17,11 +18,11 @@ import java.time.Period;
 public class BirthdayStrategy implements DiscountStrategy {
 
     @Override
-    public byte getDiscount(@Nullable User user, @Nonnull Event event,
-                            @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
-        if (user == null || user.getBirthDate() == null) return 0;
+    public Discount getDiscount(@Nullable User user, @Nonnull Event event,
+                                @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
+        if (user == null || user.getBirthDate() == null) return null;
 
         int days = Period.between(LocalDate.from(airDateTime), user.getBirthDate()).getDays();
-        return (byte) (Math.abs(days) <= 5 ? 5 : 0);
+        return Math.abs(days) <= 5 ? new Discount("BirthdayStrategy", (byte) 5) : null;
     }
 }
