@@ -28,18 +28,19 @@ public class Every10TicketStrategy implements DiscountStrategy {
         if (numberOfTickets == 0) return null;
 
         Discount disc = null;
+        double percentFor10thTicket = (50.0 / numberOfTickets);
         if (isUserRegistered(user)) {
             int boughtTickets = user.getTickets().size();
 
-            //check if first bought ticket is the tenth or ese if any other is the tenth
-            boughtTickets += 1;
-            numberOfTickets--;
-            if (boughtTickets % 10 == 0 || (boughtTickets % 10) + numberOfTickets >= 10) {
-                disc = new Discount("Every10TicketStrategy", (byte) 50);
+            int a = boughtTickets / 10;
+            int b = (boughtTickets + (int) numberOfTickets) / 10;
+            int numberOfTicketsWithDiscount = b - a;
+            byte resultingDiscount = (byte) (percentFor10thTicket * numberOfTicketsWithDiscount);
+            if (resultingDiscount != 0) {
+                disc = new Discount("Every10TicketStrategy", resultingDiscount);
             }
-
         } else if (numberOfTickets >= 10) {
-            disc = new Discount("Every10TicketStrategy", (byte) 50);
+            disc = new Discount("Every10TicketStrategy", (byte) percentFor10thTicket);
         }
         return disc;
     }

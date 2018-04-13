@@ -104,11 +104,11 @@ public class TestEvery10TicketStrategy {
     }
 
     @Test
-    public void shouldReturn_50_OnGetDiscountCallForUser1() {
+    public void shouldReturn_16_OnGetDiscountCallForUser1() {
         Discount discount = discountService.getDiscount(user1, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 3);
 
-        assertEquals(50, discount.getPercent());
+        assertEquals(16, discount.getPercent());
     }
 
     @Test
@@ -120,11 +120,11 @@ public class TestEvery10TicketStrategy {
     }
 
     @Test
-    public void shouldReturn_50_OnGetDiscountCallForUser2() {
+    public void shouldReturn_5_OnGetDiscountCallForUser2() {
         Discount discount = discountService.getDiscount(user2, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 10);
 
-        assertEquals(50, discount.getPercent());
+        assertEquals(5, discount.getPercent());
     }
 
     @Test
@@ -145,19 +145,32 @@ public class TestEvery10TicketStrategy {
     }
 
     @Test
-    public void shouldReturn_50_OnGetDiscountCallForUnknownUser() {
+    public void shouldReturn_5_OnGetDiscountCallForUnknownUser1() {
+        Discount discount = discountService.getDiscount(null, event,
+                LocalDateTime.of(4018, 4, 4, 10, 20), 10);
+
+        assertEquals(5, discount.getPercent());
+    }
+
+    @Test
+    public void shouldReturn_2_OnGetDiscountCallForUnknownUser2() {
         User user = new User();
 
-        Discount discount1 = discountService.getDiscount(null, event,
-                LocalDateTime.of(4018, 4, 4, 10, 20), 10);
-        Discount discount2 = discountService.getDiscount(user, event,
+        Discount discount = discountService.getDiscount(user, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 25);
         user.setId(5L);
-        Discount discount3 = discountService.getDiscount(user, event,
+
+        assertEquals(2, discount.getPercent());
+    }
+
+    @Test
+    public void shouldReturn_5_OnGetDiscountCallForUnknownUser3() {
+        User user = new User();
+        user.setId(5L);
+
+        Discount discount = discountService.getDiscount(user, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 10);
 
-        assertEquals(50, discount1.getPercent());
-        assertEquals(50, discount2.getPercent());
-        assertEquals(50, discount3.getPercent());
+        assertEquals(5, discount.getPercent());
     }
 }
