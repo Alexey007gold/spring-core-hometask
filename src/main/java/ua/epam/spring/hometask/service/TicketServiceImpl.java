@@ -33,7 +33,7 @@ public class TicketServiceImpl extends AbstractDomainObjectServiceImpl<Ticket, T
 
     @Override
     public Collection<Ticket> getByEvent(@Nonnull Event event) {
-        return getByUserId(event.getId());
+        return getByEventId(event.getId());
     }
 
     @Override
