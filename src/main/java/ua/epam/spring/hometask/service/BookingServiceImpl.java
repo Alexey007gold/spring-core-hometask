@@ -20,14 +20,15 @@ public class BookingServiceImpl implements BookingService {
 
     private DiscountService discountService;
     private UserService userService;
+    private TicketService ticketService;
     private Map<EventRating, Double> eventRatingPriceRate;
     private double vipSeatPriceRate;
 
-    private Map<Event, Set<Ticket>> bookedTickets;
-
-    public BookingServiceImpl(DiscountService discountService, UserService userService) throws IOException {
+    public BookingServiceImpl(DiscountService discountService, UserService userService,
+                              TicketService ticketService) throws IOException {
         this.discountService = discountService;
         this.userService = userService;
+        this.ticketService = ticketService;
 
         Properties props = new Properties();
         props.load(this.getClass().getClassLoader().getResourceAsStream("application.properties"));
@@ -41,8 +42,6 @@ public class BookingServiceImpl implements BookingService {
         this.eventRatingPriceRate.put(LOW, lowRate);
 
         this.vipSeatPriceRate = Double.parseDouble(props.getProperty("vip_seat.price_rate"));
-
-        bookedTickets = new HashMap<>();
     }
 
     @Override
@@ -73,19 +72,12 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void bookTickets(@Nonnull Set<Ticket> tickets) {
-        for (Ticket ticket : tickets) {
-            bookTicket(ticket);
-        }
-    }
-
-    private Set<Ticket> getBookedTicketsForEvent(Event event) {
-        Set<Ticket> tickets = bookedTickets.get(event);
-        return tickets == null ? Collections.emptySet() : tickets;
+        tickets.forEach(this::bookTicket);
     }
 
     @Override
     public void bookTicket(@Nonnull Ticket ticket) {
-        if (!getBookedTicketsForEvent(ticket.getEvent()).contains(ticket)) {//if ticket is not booked yet
+        if (!getPurchasedTicketsForEvent(ticket.getEvent()).contains(ticket)) {//if ticket is not booked yet
             User user = ticket.getUser();
             if (user != null) {
                 Long userId = user.getId();
@@ -94,8 +86,6 @@ public class BookingServiceImpl implements BookingService {
                     userService.save(user);
                 }
             }
-            Set<Ticket> ticketSet = bookedTickets.computeIfAbsent(ticket.getEvent(), k -> new HashSet<>());
-            ticketSet.add(ticket);
         }
     }
 
@@ -105,8 +95,12 @@ public class BookingServiceImpl implements BookingService {
         if (!event.getAirDates().containsKey(dateTime))
             throw new IllegalArgumentException("This event will not happen on the specified date");
 
-        return getBookedTicketsForEvent(event).stream()
+        return getPurchasedTicketsForEvent(event).stream()
                 .filter(t -> t.getDateTime().equals(dateTime))
                 .collect(Collectors.toSet());
+    }
+
+    private Set<Ticket> getPurchasedTicketsForEvent(Event event) {
+        return ticketService.getByEvent(event).stream().collect(Collectors.toSet());
     }
 }

@@ -31,6 +31,8 @@ public class TestBookingServiceImpl {
     private UserService userService;
     @Autowired
     private EventService eventService;
+    @Autowired
+    private TicketService ticketService;
 
     private BookingService bookingService;
     private Event event;
@@ -49,7 +51,7 @@ public class TestBookingServiceImpl {
         user.setEmail("mail");
         user.setBirthDate(LocalDate.of(1990, 11, 11));
         userService.save(user);
-        bookingService = new BookingServiceImpl(discountService, userService);
+        bookingService = new BookingServiceImpl(discountService, userService, ticketService);
 
         AuditoriumService auditoriumService = new AuditoriumServiceImpl();
 
