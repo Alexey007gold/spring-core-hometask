@@ -9,6 +9,8 @@ import ua.epam.spring.hometask.service.UserService;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
@@ -23,26 +25,26 @@ public class Every10TicketStrategy implements DiscountStrategy {
     }
 
     @Override
-    public Discount getDiscount(@Nullable User user, @Nonnull Event event,
-                                @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
+    public List<Discount> getDiscount(@Nullable User user, @Nonnull Event event,
+                                     @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
         if (numberOfTickets == 0) return null;
 
-        Discount disc = null;
-        double percentFor10thTicket = (50.0 / numberOfTickets);
+        List<Discount> discountList = new ArrayList<>((int)numberOfTickets);
+        Discount disc = new Discount("Every10TicketStrategy", (byte) 50);
+        Discount noDisc = new Discount("Every10TicketStrategy", (byte) 50);
+        int boughtTickets = 0;
         if (isUserRegistered(user)) {
-            int boughtTickets = user.getTickets().size();
-
-            int a = boughtTickets / 10;
-            int b = (boughtTickets + (int) numberOfTickets) / 10;
-            int numberOfTicketsWithDiscount = b - a;
-            byte resultingDiscount = (byte) (percentFor10thTicket * numberOfTicketsWithDiscount);
-            if (resultingDiscount != 0) {
-                disc = new Discount("Every10TicketStrategy", resultingDiscount);
-            }
-        } else if (numberOfTickets >= 10) {
-            disc = new Discount("Every10TicketStrategy", (byte) percentFor10thTicket);
+            boughtTickets = user.getTickets().size();
         }
-        return disc;
+
+        for (long i = 1; i <= numberOfTickets; i++) {
+            if ((boughtTickets + i) % 10 == 0) {
+                discountList.add(disc);
+            } else {
+                discountList.add(noDisc);
+            }
+        }
+        return discountList;
     }
 
     private boolean isUserRegistered(@Nullable User user) {

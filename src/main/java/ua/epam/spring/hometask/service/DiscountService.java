@@ -7,6 +7,7 @@ import ua.epam.spring.hometask.domain.User;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author Yuriy_Tkach
@@ -27,6 +28,6 @@ public interface DiscountService {
      *            Number of tickets that user buys
      * @return discount value from 0 to 100
      */
-    Discount getDiscount(@Nullable User user, @Nonnull Event event, @Nonnull LocalDateTime airDateTime, long numberOfTickets);
+    List<Discount> getDiscount(@Nullable User user, @Nonnull Event event, @Nonnull LocalDateTime airDateTime, long numberOfTickets);
 
 }

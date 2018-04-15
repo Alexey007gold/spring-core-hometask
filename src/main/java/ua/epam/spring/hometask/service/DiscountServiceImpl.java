@@ -9,8 +9,8 @@ import ua.epam.spring.hometask.service.discount.strategy.DiscountStrategy;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
@@ -25,11 +25,21 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
-    public Discount getDiscount(@Nullable User user, @Nonnull Event event,
-                                @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
-        return discountStrategies.stream()
-                .map(s -> s.getDiscount(user, event, airDateTime, numberOfTickets))
-                .filter(Objects::nonNull)
-                .max(Discount::compareTo).orElse(null);
+    public List<Discount> getDiscount(@Nullable User user, @Nonnull Event event,
+                                      @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
+        List<Discount> discountList = new ArrayList<>((int) numberOfTickets);
+        Discount disc = new Discount();
+        for (long i = 0; i < numberOfTickets; i++) {
+            discountList.add(disc);
+        }
+        for (DiscountStrategy discountStrategy : discountStrategies) {
+            List<Discount> discounts = discountStrategy.getDiscount(user, event, airDateTime, numberOfTickets);
+            for (int i = 0; i < numberOfTickets; i++) {
+                if (discountList.get(i).compareTo(discounts.get(i)) < 0) {
+                    discountList.set(i, discounts.get(i));
+                }
+            }
+        }
+        return discountList;
     }
 }
