@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.service;
 
+import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.Ticket;
 import ua.epam.spring.hometask.domain.User;
@@ -7,12 +8,31 @@ import ua.epam.spring.hometask.domain.User;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author Yuriy_Tkach
  */
 public interface BookingService {
+
+    /**
+     * Generating tickets for supplied seats for particular event
+     *
+     * @param event
+     *            Event to get base ticket price, vip seats and other
+     *            information
+     * @param dateTime
+     *            Date and time of event air
+     * @param user
+     *            User could be needed to calculate discount.
+     *            Can be <code>null</code>
+     * @param seats
+     *            Set of seat numbers
+     * @return total price
+     */
+    public List<Ticket> generateTickets(@Nonnull Event event, @Nonnull LocalDateTime dateTime, @Nullable User user,
+                                        @Nonnull Set<Long> seats);
 
     /**
      * Getting price when buying all supplied seats for particular event
@@ -25,21 +45,23 @@ public interface BookingService {
      * @param user
      *            User that buys ticket could be needed to calculate discount.
      *            Can be <code>null</code>
-     * @param seats
-     *            Set of seat numbers that user wants to buy
+     * @param tickets
+     *            List of tickets that user wants to buy
      * @return total price
      */
-    public double getTicketsPrice(@Nonnull Event event, @Nonnull LocalDateTime dateTime, @Nullable User user,
-            @Nonnull Set<Long> seats);
+    public double getTicketsPriceWithDiscount(@Nonnull Event event, @Nonnull LocalDateTime dateTime, @Nullable User user,
+                                              @Nonnull List<Ticket> tickets);
 
     /**
      * Books tickets in internal system. If user is not
      * <code>null</code> in a ticket then booked tickets are saved with it
-     * 
+     *
      * @param tickets
-     *            Set of tickets
+     *            List of tickets
+     * @param discounts
+     *            List of discounts
      */
-    public void bookTickets(@Nonnull Set<Ticket> tickets);
+    public void bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts);
 
     /**
      * Books a ticket in internal system. If user is not
@@ -48,7 +70,7 @@ public interface BookingService {
      * @param ticket
      *            The ticket
      */
-    public void bookTicket(@Nonnull Ticket ticket);
+    public void bookTicket(@Nonnull Ticket ticket, @Nonnull Discount discount);
 
     /**
      * Getting all purchased tickets for event on specific air date and time
@@ -60,5 +82,14 @@ public interface BookingService {
      * @return set of all purchased tickets
      */
     public @Nonnull Set<Ticket> getPurchasedTicketsForEvent(@Nonnull Event event, @Nonnull LocalDateTime dateTime);
+
+    /**
+     * Getting all purchased tickets for event
+     *
+     * @param event
+     *            Event to get tickets for
+     * @return set of all purchased tickets
+     */
+    public @Nonnull Set<Ticket> getPurchasedTicketsForEvent(@Nonnull Event event);
 
 }

@@ -45,8 +45,19 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public double getTicketsPrice(@Nonnull Event event, @Nonnull LocalDateTime dateTime,
-                                  @Nullable User user, @Nonnull Set<Long> seats) {
+    public List<Ticket> generateTickets(@Nonnull Event event, @Nonnull LocalDateTime dateTime,
+                                        @Nullable User user, @Nonnull Set<Long> seats) {
+        List<Ticket> ticketList = new ArrayList<>(seats.size());
+        for (Long seat : seats) {
+            Ticket ticket = new Ticket(user, event, dateTime, seat, event.getBasePrice());
+            ticketList.add(ticket);
+        }
+        return ticketList;
+    }
+
+    @Override
+    public double getTicketsPriceWithDiscount(@Nonnull Event event, @Nonnull LocalDateTime dateTime,
+                                              @Nullable User user, @Nonnull List<Ticket> tickets) {
         if (!event.getAirDates().containsKey(dateTime))
             throw new IllegalArgumentException("This event will not happen on the specified date");
 
@@ -57,26 +68,27 @@ public class BookingServiceImpl implements BookingService {
         Set<Long> vipSeats = auditorium.getVipSeats();
 
         double totalPrice = 0;
-        Discount discount = discountService.getDiscount(user, event, dateTime, seats.size());
+        List<Discount> discount = discountService.getDiscount(user, event, dateTime, tickets.size());
 
-        for (Long seat : seats) {
-            totalPrice += vipSeats.contains(seat) ? vipSeatPrice : normalSeatPrice;
-        }
-
-        if (discount != null) {
-            totalPrice *= ((100 - discount.getPercent()) / 100.0);
+        double ticketPrice;
+        for (int i = 0; i < tickets.size(); i++) {
+            ticketPrice = vipSeats.contains(tickets.get(i).getSeat()) ? vipSeatPrice : normalSeatPrice;
+            ticketPrice *= ((100 - discount.get(i).getPercent()) / 100.0);
+            totalPrice += ticketPrice;
         }
 
         return totalPrice;
     }
 
     @Override
-    public void bookTickets(@Nonnull Set<Ticket> tickets) {
-        tickets.forEach(this::bookTicket);
+    public void bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts) {
+        for (int i = 0; i < tickets.size(); i++) {
+            bookTicket(tickets.get(i), discounts.get(i));
+        }
     }
 
     @Override
-    public void bookTicket(@Nonnull Ticket ticket) {
+    public void bookTicket(@Nonnull Ticket ticket, @Nonnull Discount discount) {
         if (!getPurchasedTicketsForEvent(ticket.getEvent()).contains(ticket)) {//if ticket is not booked yet
             User user = ticket.getUser();
             if (user != null) {
@@ -100,7 +112,9 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toSet());
     }
 
-    private Set<Ticket> getPurchasedTicketsForEvent(Event event) {
-        return ticketService.getByEvent(event).stream().collect(Collectors.toSet());
+    @Nonnull
+    @Override
+    public Set<Ticket> getPurchasedTicketsForEvent(@Nonnull Event event) {
+        return new HashSet<>(ticketService.getByEvent(event));
     }
 }
