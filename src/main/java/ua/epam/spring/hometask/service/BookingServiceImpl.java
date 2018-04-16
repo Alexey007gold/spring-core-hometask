@@ -87,13 +87,13 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    @Override
-    public void bookTicket(@Nonnull Ticket ticket, @Nonnull Discount discount) {
+    private void bookTicket(@Nonnull Ticket ticket, @Nonnull Discount discount) {
         if (!getPurchasedTicketsForEvent(ticket.getEvent()).contains(ticket)) {//if ticket is not booked yet
             User user = ticket.getUser();
             if (user != null) {
                 Long userId = user.getId();
                 if (userId != null && userService.getById(userId) != null) {//if user is registered
+                    ticket.setPrice(ticket.getPrice() * ((100 - discount.getPercent()) / 100.0));
                     user.getTickets().add(ticket);
                     userService.save(user);
                 }
