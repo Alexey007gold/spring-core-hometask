@@ -8,16 +8,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ua.epam.spring.hometask.configuration.AppConfiguration;
-import ua.epam.spring.hometask.domain.Event;
-import ua.epam.spring.hometask.domain.EventDate;
-import ua.epam.spring.hometask.domain.Ticket;
-import ua.epam.spring.hometask.domain.User;
+import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.service.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
@@ -37,6 +36,8 @@ public class TestLuckyWinnerAspect {
     private BookingService bookingService;
     @Autowired
     private EventService eventService;
+    @Autowired
+    private DiscountService discountService;
 
     private Event event;
     private User user;
@@ -69,12 +70,12 @@ public class TestLuckyWinnerAspect {
 
     @Test
     public void ticketPriceShouldBeZeroAfterBookTicketCall() {
-        Ticket ticket = new Ticket(user, event,
-                LocalDateTime.of(4018, 4, 3, 10, 30),
-                1, 40);
+        LocalDateTime dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
+        Ticket ticket = new Ticket(user, event, dateTime, 1, 40);
 
         LuckyWinnerAspect.bound = 1;
-        bookingService.bookTicket(ticket);
+        List<Discount> discount = discountService.getDiscount(user, event, dateTime, 1);
+        bookingService.bookTickets(Collections.singletonList(ticket), discount);
         assertEquals(0, ticket.getPrice(), 0);
     }
 }

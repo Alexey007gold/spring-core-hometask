@@ -9,10 +9,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ua.epam.spring.hometask.configuration.AppConfiguration;
 import ua.epam.spring.hometask.domain.*;
-import ua.epam.spring.hometask.service.DiscountCounterService;
-import ua.epam.spring.hometask.service.DiscountService;
-import ua.epam.spring.hometask.service.EventService;
-import ua.epam.spring.hometask.service.UserService;
+import ua.epam.spring.hometask.service.*;
+import ua.epam.spring.hometask.util.Utils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -35,6 +33,8 @@ public class TestDiscountAspect {
     @Autowired
     private DiscountService discountService;
     @Autowired
+    private BookingService bookingService;
+    @Autowired
     private UserService userService;
     @Autowired
     private EventService eventService;
@@ -53,7 +53,7 @@ public class TestDiscountAspect {
         NavigableSet<Ticket> tickets = new TreeSet<>();
         for (int i = 0; i < 7; i++) {
             Event event = new Event();
-            event.setName(randomStr());
+            event.setName(Utils.randomStr());
             event.setRating(MID);
             eventService.save(event);
             tickets.add(new Ticket(user1, event, LocalDateTime.now(), 0, 40));
@@ -86,23 +86,12 @@ public class TestDiscountAspect {
         event = eventService.save(event);
     }
 
-    private String randomStr() {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
-        StringBuilder buffer = new StringBuilder(targetStringLength);
-        for (int i = 0; i < targetStringLength; i++) {
-            int randomLimitedInt = leftLimit + (int) (random.nextFloat() * (rightLimit - leftLimit + 1));
-            buffer.append((char) randomLimitedInt);
-        }
-        return buffer.toString();
-    }
-
     @Test
     public void discountStatTimesForUserShouldBe_1_afterGetDiscountCall() {
-        discountService.getDiscount(user1, event,
-                LocalDateTime.of(4018, 4, 4, 10, 20), 3);
+        LocalDateTime dateTime = LocalDateTime.of(4018, 4, 4, 10, 20);
+        List<Discount> discount = discountService.getDiscount(user1, event, dateTime, 3);
+        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user1, new HashSet<>(Arrays.asList(1L, 2L, 3L)));
+        bookingService.bookTickets(tickets, discount);
 
         Collection<DiscountStats> discountStatsForUser = discountCounterService.getDiscountStatsForUser(user1);
         assertEquals(1, discountStatsForUser.size());

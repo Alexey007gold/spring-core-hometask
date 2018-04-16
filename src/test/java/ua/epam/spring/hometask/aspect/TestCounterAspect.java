@@ -9,16 +9,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ua.epam.spring.hometask.configuration.AppConfiguration;
 import ua.epam.spring.hometask.domain.*;
-import ua.epam.spring.hometask.service.BookingService;
-import ua.epam.spring.hometask.service.EventCounterStatsService;
-import ua.epam.spring.hometask.service.EventService;
-import ua.epam.spring.hometask.service.UserService;
+import ua.epam.spring.hometask.service.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
@@ -43,6 +40,9 @@ public class TestCounterAspect {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private DiscountService discountService;
 
     private User user;
 
@@ -81,9 +81,9 @@ public class TestCounterAspect {
     @Test
     public void priceQueryCountShouldBeOne() {
         Event event = eventService.getByName("Titanik");
-        bookingService.getTicketsPrice(event,
-                LocalDateTime.of(4018, 4, 2, 18, 0),
-                user, new HashSet<>(Arrays.asList(1L, 3L, 4L)));
+        LocalDateTime dateTime = LocalDateTime.of(4018, 4, 2, 18, 0);
+        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, new HashSet<>(Arrays.asList(1L, 3L, 4L)));
+        bookingService.getTicketsPriceWithDiscount(event, dateTime, user, tickets);
 
         assertEquals(1, eventCounterStatsService.getAccessByNameCount(event));
         assertEquals(1, eventCounterStatsService.getPriceQueryCount(event));
@@ -93,16 +93,12 @@ public class TestCounterAspect {
     @Test
     public void bookedTicketsCountShouldBeTwo() {
         Event event = eventService.getByName("Titanik");
+        LocalDateTime dateTime = LocalDateTime.of(4018, 4, 2, 10, 30);
 
-        Set<Ticket> tickets = new HashSet<>();
-        tickets.add(new Ticket(user, event,
-                LocalDateTime.of(4018, 4, 2, 10, 30),
-                1, 40));
-        tickets.add(new Ticket(user, event,
-                LocalDateTime.of(4018, 4, 2, 18, 0),
-                2, 40));
+        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, new HashSet<>(Arrays.asList(1L, 2L)));
 
-        bookingService.bookTickets(tickets);
+        List<Discount> discount = discountService.getDiscount(user, event, dateTime, 2);
+        bookingService.bookTickets(tickets, discount);
 
         assertEquals(1, eventCounterStatsService.getAccessByNameCount(event));
         assertEquals(0, eventCounterStatsService.getPriceQueryCount(event));

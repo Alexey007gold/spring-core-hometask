@@ -31,7 +31,7 @@ public class Every10TicketStrategy implements DiscountStrategy {
 
         List<Discount> discountList = new ArrayList<>((int)numberOfTickets);
         Discount disc = new Discount("Every10TicketStrategy", (byte) 50);
-        Discount noDisc = new Discount("Every10TicketStrategy", (byte) 50);
+        Discount noDisc = new Discount("", (byte) 0);
         int boughtTickets = 0;
         if (isUserRegistered(user)) {
             boughtTickets = user.getTickets().size();

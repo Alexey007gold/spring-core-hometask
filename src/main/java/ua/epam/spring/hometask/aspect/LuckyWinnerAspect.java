@@ -6,8 +6,8 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 import ua.epam.spring.hometask.domain.Ticket;
 
+import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/8/2018.
@@ -29,7 +29,7 @@ public class LuckyWinnerAspect {
     @Before(value = "execution(* ua.epam.spring.hometask.service.BookingService.bookTickets(..))")
     public void bookTickets(JoinPoint joinPoint) {
         if (isLucky()) {
-            Set<Ticket> tickets = (Set<Ticket>) joinPoint.getArgs()[0];
+            List<Ticket> tickets = (List<Ticket>) joinPoint.getArgs()[0];
             tickets.stream().findFirst().ifPresent(ticket -> ticket.setPrice(0));
         }
     }

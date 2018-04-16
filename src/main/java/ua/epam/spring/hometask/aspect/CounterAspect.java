@@ -10,7 +10,7 @@ import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.Ticket;
 import ua.epam.spring.hometask.service.EventCounterStatsService;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/8/2018.
@@ -27,14 +27,14 @@ public class CounterAspect {
         eventCounterStatsService.incrementAccessByNameCount(retEvent);
     }
 
-    @Before(value = "execution(* ua.epam.spring.hometask.service.BookingService.getTicketsPrice(..))")
+    @Before(value = "execution(* ua.epam.spring.hometask.service.BookingService.getTicketsPriceWithDiscount(..))")
     public void eventPriceQueryCounter(JoinPoint joinPoint) {
         eventCounterStatsService.incrementPriceQueryCount((Event) joinPoint.getArgs()[0]);
     }
 
     @Before(value = "execution(* ua.epam.spring.hometask.service.BookingService.bookTickets(..))")
     public void eventBookTicketsCounter(JoinPoint joinPoint) {
-        for (Ticket ticket : ((Set<Ticket>) joinPoint.getArgs()[0])) {
+        for (Ticket ticket : ((List<Ticket>) joinPoint.getArgs()[0])) {
             eventCounterStatsService.incrementTicketsBookedTimesCount(ticket.getEvent());
         }
     }

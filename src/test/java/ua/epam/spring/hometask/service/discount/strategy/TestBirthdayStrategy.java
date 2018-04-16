@@ -14,12 +14,12 @@ import ua.epam.spring.hometask.service.UserService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
@@ -74,17 +74,21 @@ public class TestBirthdayStrategy {
 
     @Test
     public void shouldReturn_0_OnGetDiscountCall() {
-        Discount discount = discountStrategy.getDiscount(user1, event,
+        List<Discount> discount = discountStrategy.getDiscount(user1, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
 
-        assertNull(discount);
+        for (Discount d : discount) {
+            assertEquals(0, d.getPercent());
+        }
     }
 
     @Test
-    public void shouldReturn_5O_nGetDiscountCall() {
-        Discount discount = discountStrategy.getDiscount(user2, event,
+    public void shouldReturn_5_OnGetDiscountCall() {
+        List<Discount> discount = discountStrategy.getDiscount(user2, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
 
-        assertEquals(5, discount.getPercent());
+        for (Discount d : discount) {
+            assertEquals(5, d.getPercent());
+        }
     }
 }

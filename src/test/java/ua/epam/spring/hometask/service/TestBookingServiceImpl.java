@@ -35,14 +35,19 @@ public class TestBookingServiceImpl {
     private TicketService ticketService;
 
     private BookingService bookingService;
+    @Autowired
+    private DiscountService discountService;
     private Event event;
     private User user;
-    private Set<Ticket> tickets;
+    private List<Ticket> tickets;
+    private LocalDateTime dateTime;
 
     @Before
     public void init() throws IOException {
         List<DiscountStrategy> strategies = new ArrayList<>();
-        strategies.add((user, event, airDateTime, numberOfTickets) -> new Discount("a", (byte) 20));
+        Discount discount = new Discount("a", (byte) 20);
+        List<Discount> discountList = Arrays.asList(discount, discount, discount);
+        strategies.add((user, event, airDateTime, numberOfTickets) -> discountList);
         DiscountService discountService = new DiscountServiceImpl(strategies);
 
         user = new User();
@@ -55,10 +60,11 @@ public class TestBookingServiceImpl {
 
         AuditoriumService auditoriumService = new AuditoriumServiceImpl();
 
+        dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
         TreeSet<EventDate> airDates = new TreeSet<>(Arrays.asList(
                 new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditoriumService.getByName("1")),
                 new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditoriumService.getByName("1")),
-                new EventDate(LocalDateTime.of(4018, 4, 3, 10, 30), auditoriumService.getByName("1")),
+                new EventDate(dateTime, auditoriumService.getByName("1")),
                 new EventDate(LocalDateTime.of(4018, 4, 4, 10, 20), auditoriumService.getByName("1")),
                 new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditoriumService.getByName("1"))
         ));
@@ -71,41 +77,39 @@ public class TestBookingServiceImpl {
         event = eventService.save(event);
 
 
-        tickets = new HashSet<>();
-        tickets.add(new Ticket(user, event,
-                LocalDateTime.of(4018, 4, 3, 10, 30),
-                1, 40));
-        tickets.add(new Ticket(user, event,
-                LocalDateTime.of(4018, 4, 3, 10, 30),
-                2, 40));
+        tickets = new ArrayList<>();
+        tickets.add(new Ticket(user, event, dateTime, 1, 40));
+        tickets.add(new Ticket(user, event, dateTime, 2, 40));
     }
 
     @Test
     public void shouldReturn_115_2_OnGetTicketPriceCall() {
-        double price = bookingService.getTicketsPrice(event,
-                LocalDateTime.of(4018, 4, 3, 10, 30),
-                null, new HashSet<>(Arrays.asList(1L,2L,3L)));
+        LocalDateTime dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
+        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, new HashSet<>(Arrays.asList(1L, 2L,3L)));
+        double price = bookingService.getTicketsPriceWithDiscount(event, dateTime, null, tickets);
         assertEquals(115.2, price, 0.0000001);
     }
 
     @Test
     public void shouldReturn_153_6_OnGetTicketPriceCall() {
-        double price = bookingService.getTicketsPrice(event,
-                LocalDateTime.of(4018, 4, 3, 10, 30),
-                null, new HashSet<>(Arrays.asList(1L,2L,5L)));
+        LocalDateTime dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
+        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, new HashSet<>(Arrays.asList(1L, 2L,5L)));
+        double price = bookingService.getTicketsPriceWithDiscount(event, dateTime, null, tickets);
         assertEquals(153.6, price, 0.0000001);
     }
 
     @Test
     public void shouldAddTicketsToUserOnBookTicketsCall() {
-        bookingService.bookTickets(tickets);
+        List<Discount> discount = discountService.getDiscount(user, event, dateTime, 2);
+        bookingService.bookTickets(tickets, discount);
 
         assertEquals(2, userService.getUserByEmail(user.getEmail()).getTickets().size());
     }
 
     @Test
     public void shouldReturnPurchasedTicketsOnGetPurchasedTicketsForEventCall() {
-        bookingService.bookTickets(tickets);
+        List<Discount> discount = discountService.getDiscount(user, event, dateTime, 2);
+        bookingService.bookTickets(tickets, discount);
         Set<Ticket> purchasedTicketsForEvent = bookingService.getPurchasedTicketsForEvent(event,
                 LocalDateTime.of(4018, 4, 3, 10, 30));
 
@@ -114,7 +118,8 @@ public class TestBookingServiceImpl {
 
     @Test
     public void shouldReturnEmptySetOnGetPurchasedTicketsForEventCall1() {
-        bookingService.bookTickets(tickets);
+        List<Discount> discount = discountService.getDiscount(user, event, dateTime, 2);
+        bookingService.bookTickets(tickets, discount);
         Set<Ticket> purchasedTicketsForEvent = bookingService.getPurchasedTicketsForEvent(event,
                 LocalDateTime.of(4018, 4, 2, 10, 30));
 

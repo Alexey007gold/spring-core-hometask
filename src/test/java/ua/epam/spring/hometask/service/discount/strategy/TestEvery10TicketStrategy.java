@@ -12,13 +12,13 @@ import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.service.DiscountService;
 import ua.epam.spring.hometask.service.EventService;
 import ua.epam.spring.hometask.service.UserService;
+import ua.epam.spring.hometask.util.Utils;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 import static ua.epam.spring.hometask.domain.EventRating.MID;
 
@@ -49,7 +49,7 @@ public class TestEvery10TicketStrategy {
         NavigableSet<Ticket> tickets = new TreeSet<>();
         for (int i = 0; i < 7; i++) {
             Event event = new Event();
-            event.setName(randomStr());
+            event.setName(Utils.randomStr());
             event.setRating(MID);
             eventService.save(event);
             tickets.add(new Ticket(user1, event, LocalDateTime.now(), 0, 40));
@@ -82,95 +82,113 @@ public class TestEvery10TicketStrategy {
         event = eventService.save(event);
     }
 
-    private String randomStr() {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
-        StringBuilder buffer = new StringBuilder(targetStringLength);
-        for (int i = 0; i < targetStringLength; i++) {
-            int randomLimitedInt = leftLimit + (int) (random.nextFloat() * (rightLimit - leftLimit + 1));
-            buffer.append((char) randomLimitedInt);
-        }
-        return buffer.toString();
-    }
-
     @Test
     public void shouldReturn_0_OnGetDiscountCallForUser1() {
-        Discount discount = discountService.getDiscount(user1, event,
+        List<Discount> discount = discountService.getDiscount(user1, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 2);
 
-        assertNull(discount);
+        for (int i = 0; i < discount.size(); i++) {
+            assertEquals(0, discount.get(i).getPercent());
+        }
     }
 
     @Test
-    public void shouldReturn_16_OnGetDiscountCallForUser1() {
-        Discount discount = discountService.getDiscount(user1, event,
+    public void shouldReturn_50_OnGetDiscountCallForUser1() {
+        List<Discount> discount = discountService.getDiscount(user1, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 3);
 
-        assertEquals(16, discount.getPercent());
+        for (int i = 0; i < 2; i++) {
+            assertEquals(0, discount.get(i).getPercent());
+        }
+        assertEquals(50, discount.get(2).getPercent());
     }
 
     @Test
     public void shouldReturn_0_OnGetDiscountCallForUser2() {
-        Discount discount = discountService.getDiscount(user2, event,
+        List<Discount> discount = discountService.getDiscount(user2, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
 
-        assertNull(discount);
+        for (int i = 0; i < discount.size(); i++) {
+            assertEquals(0, discount.get(i).getPercent());
+        }
     }
 
     @Test
     public void shouldReturn_5_OnGetDiscountCallForUser2() {
-        Discount discount = discountService.getDiscount(user2, event,
+        List<Discount> discount = discountService.getDiscount(user2, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 10);
 
-        assertEquals(5, discount.getPercent());
+        for (int i = 0; i < 9; i++) {
+            assertEquals(0, discount.get(i).getPercent());
+        }
+        assertEquals(50, discount.get(9).getPercent());
     }
 
     @Test
     public void shouldReturn_0_OnGetDiscountCallForUnknownUser() {
         User user = new User();
 
-        Discount discount1 = discountService.getDiscount(null, event,
+        List<Discount> discount1 = discountService.getDiscount(null, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
-        Discount discount2 = discountService.getDiscount(user, event,
+        List<Discount> discount2 = discountService.getDiscount(user, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 4);
         user.setId(5L);
-        Discount discount3 = discountService.getDiscount(user, event,
+        List<Discount> discount3 = discountService.getDiscount(user, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 9);
 
-        assertNull(discount1);
-        assertNull(discount2);
-        assertNull(discount3);
+        for (Discount discount : discount1) {
+            assertEquals(0, discount.getPercent());
+        }
+        for (Discount discount : discount2) {
+            assertEquals(0, discount.getPercent());
+        }
+        for (Discount discount : discount3) {
+            assertEquals(0, discount.getPercent());
+        }
     }
 
     @Test
-    public void shouldReturn_5_OnGetDiscountCallForUnknownUser1() {
-        Discount discount = discountService.getDiscount(null, event,
+    public void shouldReturn_50_OnGetDiscountCallForUnknownUser1() {
+        List<Discount> discount = discountService.getDiscount(null, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 10);
 
-        assertEquals(5, discount.getPercent());
+        for (int i = 0; i < 9; i++) {
+            assertEquals(0, discount.get(i).getPercent());
+        }
+        assertEquals(50, discount.get(9).getPercent());
     }
 
     @Test
-    public void shouldReturn_2_OnGetDiscountCallForUnknownUser2() {
+    public void shouldReturn_50_OnGetDiscountCallForUnknownUser2() {
         User user = new User();
 
-        Discount discount = discountService.getDiscount(user, event,
+        List<Discount> discount = discountService.getDiscount(user, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 25);
         user.setId(5L);
 
-        assertEquals(2, discount.getPercent());
+        for (int i = 0; i < discount.size(); i++) {
+            if (i != 9 && i != 19) {
+                assertEquals(0, discount.get(i).getPercent());
+            } else {
+                assertEquals(50, discount.get(i).getPercent());
+            }
+        }
     }
 
     @Test
-    public void shouldReturn_5_OnGetDiscountCallForUnknownUser3() {
+    public void shouldReturn_50_OnGetDiscountCallForUnknownUser3() {
         User user = new User();
         user.setId(5L);
 
-        Discount discount = discountService.getDiscount(user, event,
+        List<Discount> discount = discountService.getDiscount(user, event,
                 LocalDateTime.of(4018, 4, 4, 10, 20), 10);
 
-        assertEquals(5, discount.getPercent());
+        for (int i = 0; i < discount.size(); i++) {
+            if (i != 9) {
+                assertEquals(0, discount.get(i).getPercent());
+            } else {
+                assertEquals(50, discount.get(i).getPercent());
+            }
+        }
     }
 }
