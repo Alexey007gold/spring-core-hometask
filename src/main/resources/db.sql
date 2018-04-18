@@ -33,7 +33,7 @@ DROP TABLE IF EXISTS public.tickets;
 CREATE TABLE public.tickets
 (
   id BIGSERIAL PRIMARY KEY NOT NULL,
-  user_id BIGINT NOT NULL,
+  user_id BIGINT,
   event_id BIGINT NOT NULL,
   time TIMESTAMP NOT NULL,
   seat BIGINT NOT NULL,

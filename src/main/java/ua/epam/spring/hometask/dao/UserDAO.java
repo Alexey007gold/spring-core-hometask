@@ -4,16 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ua.epam.spring.hometask.domain.Ticket;
 import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.EventService;
+import ua.epam.spring.hometask.service.TicketService;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -27,6 +30,8 @@ public class UserDAO extends DomainObjectDAO<User> {
 
     @Autowired
     private EventService eventService;
+    @Autowired
+    private TicketDAO ticketDAO;
 
     private RowMapper<Ticket> ticketRowMapper = (rs, i) -> {
         Ticket ticket = new Ticket(null,
@@ -119,6 +124,8 @@ public class UserDAO extends DomainObjectDAO<User> {
                 .collect(toList());
         String sql = "INSERT INTO tickets (user_id, event_id, time, seat, price) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.batchUpdate(sql, tickets);
+
+        user.setTickets(new TreeSet<>(ticketDAO.getBy(new String[] {"user_id"}, user.getId())));
     }
 
     public User getByEmail(String email) {

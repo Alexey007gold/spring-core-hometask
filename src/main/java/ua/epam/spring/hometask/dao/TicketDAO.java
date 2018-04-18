@@ -7,8 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ua.epam.spring.hometask.domain.Ticket;
-import ua.epam.spring.hometask.service.EventService;
-import ua.epam.spring.hometask.service.UserService;
 
 import java.sql.*;
 
@@ -19,17 +17,18 @@ import java.sql.*;
 public class TicketDAO extends DomainObjectDAO<Ticket> {
 
     @Autowired
-    private UserService userService;
+    private UserDAO userDAO;
 
     @Autowired
-    private EventService eventService;
+    private EventDAO eventDAO;
 
     private RowMapper<Ticket> rowMapper = new RowMapper<Ticket>() {
         @Override
         public Ticket mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Ticket ticket = new Ticket(userService.getById(rs.getLong(2)),
-                    eventService.getById(rs.getLong(3)),
-                    rs.getTimestamp(4).toLocalDateTime(), rs.getLong(5),
+            Ticket ticket = new Ticket(userDAO.getById(rs.getLong(2)),
+                    eventDAO.getById(rs.getLong(3)),
+                    rs.getTimestamp(4).toLocalDateTime(),
+                    rs.getLong(5),
                     rs.getDouble(6));
             ticket.setId(rs.getLong(1));
 
@@ -60,11 +59,15 @@ public class TicketDAO extends DomainObjectDAO<Ticket> {
             jdbcTemplate.update(con -> {
                 String sql = String.format("INSERT INTO %s (user_id, event_id, time, seat, price) VALUES (?, ?, ?, ?, ?)", getTableName());
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setLong(1, ticket.getUser().getId());
+                if (ticket.getUser() != null) {
+                    ps.setLong(1, ticket.getUser().getId());
+                } else {
+                    ps.setObject(1, null);
+                }
                 ps.setLong(2, ticket.getEvent().getId());
                 ps.setTimestamp(3, Timestamp.valueOf(ticket.getDateTime()));
                 ps.setLong(4, ticket.getSeat());
-                ps.setDouble(4, ticket.getPrice());
+                ps.setDouble(5, ticket.getPrice());
                 return ps;
             }, keyHolder);
 
