@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ua.epam.spring.hometask.configuration.AppConfiguration;
 import ua.epam.spring.hometask.domain.*;
-import ua.epam.spring.hometask.service.*;
+import ua.epam.spring.hometask.service.interf.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

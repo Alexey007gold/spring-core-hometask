@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ua.epam.spring.hometask.domain.EventDate;
-import ua.epam.spring.hometask.service.AuditoriumService;
+import ua.epam.spring.hometask.service.interf.AuditoriumService;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;

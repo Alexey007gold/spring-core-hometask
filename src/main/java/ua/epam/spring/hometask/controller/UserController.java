@@ -8,7 +8,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.epam.spring.hometask.domain.User;
-import ua.epam.spring.hometask.service.UserService;
+import ua.epam.spring.hometask.service.interf.UserService;
 
 import java.io.BufferedReader;
 import java.io.IOException;

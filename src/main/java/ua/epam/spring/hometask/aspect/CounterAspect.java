@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.Ticket;
-import ua.epam.spring.hometask.service.EventCounterStatsService;
+import ua.epam.spring.hometask.service.interf.EventCounterStatsService;
 
 import java.util.List;
 
@@ -27,19 +27,19 @@ public class CounterAspect {
         eventCounterStatsService.incrementAccessByNameCount(retEvent);
     }
 
-    @Before(value = "execution(* ua.epam.spring.hometask.service.BookingService.getTicketsPriceWithDiscount(..))")
+    @Before(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.getTicketsPriceWithDiscount(..))")
     public void eventPriceQueryCounter(JoinPoint joinPoint) {
         eventCounterStatsService.incrementPriceQueryCount((Event) joinPoint.getArgs()[0]);
     }
 
-    @Before(value = "execution(* ua.epam.spring.hometask.service.BookingService.bookTickets(..))")
+    @Before(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.bookTickets(..))")
     public void eventBookTicketsCounter(JoinPoint joinPoint) {
         for (Ticket ticket : ((List<Ticket>) joinPoint.getArgs()[0])) {
             eventCounterStatsService.incrementTicketsBookedTimesCount(ticket.getEvent());
         }
     }
 
-    @Before(value = "execution(* ua.epam.spring.hometask.service.BookingService.bookTicket(..))")
+    @Before(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.bookTicket(..))")
     public void eventBookTicketCounter(JoinPoint joinPoint) {
         eventCounterStatsService.incrementPriceQueryCount(((Ticket) joinPoint.getArgs()[0]).getEvent());
     }

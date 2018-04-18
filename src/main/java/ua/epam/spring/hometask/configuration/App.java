@@ -2,7 +2,7 @@ package ua.epam.spring.hometask.configuration;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ua.epam.spring.hometask.service.DiscountService;
+import ua.epam.spring.hometask.service.interf.DiscountService;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/6/2018.

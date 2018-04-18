@@ -11,8 +11,8 @@ import ua.epam.spring.hometask.domain.Auditorium;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.EventDate;
 import ua.epam.spring.hometask.domain.EventRating;
-import ua.epam.spring.hometask.service.AuditoriumService;
-import ua.epam.spring.hometask.service.EventService;
+import ua.epam.spring.hometask.service.interf.AuditoriumService;
+import ua.epam.spring.hometask.service.interf.EventService;
 
 import java.io.BufferedReader;
 import java.io.IOException;

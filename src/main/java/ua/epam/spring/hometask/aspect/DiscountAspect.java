@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Ticket;
-import ua.epam.spring.hometask.service.DiscountCounterService;
+import ua.epam.spring.hometask.service.interf.DiscountCounterService;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class DiscountAspect {
     @Autowired
     private DiscountCounterService discountCounterService;
 
-    @Around(value = "execution(* ua.epam.spring.hometask.service.BookingService.bookTickets(..))")
+    @Around(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.bookTickets(..))")
     public void discountCounter(ProceedingJoinPoint joinPoint) throws Throwable {
         joinPoint.proceed();
         List<Ticket> tickets = (List<Ticket>) joinPoint.getArgs()[0];

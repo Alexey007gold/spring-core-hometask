@@ -12,10 +12,10 @@ import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.Ticket;
 import ua.epam.spring.hometask.domain.User;
-import ua.epam.spring.hometask.service.BookingService;
-import ua.epam.spring.hometask.service.DiscountService;
-import ua.epam.spring.hometask.service.EventService;
-import ua.epam.spring.hometask.service.UserService;
+import ua.epam.spring.hometask.service.interf.BookingService;
+import ua.epam.spring.hometask.service.interf.DiscountService;
+import ua.epam.spring.hometask.service.interf.EventService;
+import ua.epam.spring.hometask.service.interf.UserService;
 
 import java.sql.Timestamp;
 import java.time.Instant;
