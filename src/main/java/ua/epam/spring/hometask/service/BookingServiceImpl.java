@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ua.epam.spring.hometask.domain.EventRating.*;
 
@@ -48,8 +47,17 @@ public class BookingServiceImpl implements BookingService {
     public List<Ticket> generateTickets(@Nonnull Event event, @Nonnull LocalDateTime dateTime,
                                         @Nullable User user, @Nonnull Set<Long> seats) {
         List<Ticket> ticketList = new ArrayList<>(seats.size());
+
+        double normalSeatPrice = event.getBasePrice() * eventRatingPriceRate.get(event.getRating());
+        double vipSeatPrice = normalSeatPrice * vipSeatPriceRate;
+
+        Auditorium auditorium = event.getAirDates().get(dateTime).getAuditorium();
+        Set<Long> vipSeats = auditorium.getVipSeats();
+
+        double ticketPrice;
         for (Long seat : seats) {
-            Ticket ticket = new Ticket(user, event, dateTime, seat, event.getBasePrice());
+            ticketPrice = vipSeats.contains(seat) ? vipSeatPrice : normalSeatPrice;
+            Ticket ticket = new Ticket(user, event, dateTime, seat, ticketPrice);
             ticketList.add(ticket);
         }
         return ticketList;
@@ -61,19 +69,12 @@ public class BookingServiceImpl implements BookingService {
         if (!event.getAirDates().containsKey(dateTime))
             throw new IllegalArgumentException("This event will not happen on the specified date");
 
-        double normalSeatPrice = event.getBasePrice() * eventRatingPriceRate.get(event.getRating());
-        double vipSeatPrice = normalSeatPrice * vipSeatPriceRate;
-
-        Auditorium auditorium = event.getAirDates().get(dateTime).getAuditorium();
-        Set<Long> vipSeats = auditorium.getVipSeats();
-
         double totalPrice = 0;
         List<Discount> discount = discountService.getDiscount(user, event, dateTime, tickets.size());
 
         double ticketPrice;
         for (int i = 0; i < tickets.size(); i++) {
-            ticketPrice = vipSeats.contains(tickets.get(i).getSeat()) ? vipSeatPrice : normalSeatPrice;
-            ticketPrice *= ((100 - discount.get(i).getPercent()) / 100.0);
+            ticketPrice = tickets.get(i).getPrice() * ((100 - discount.get(i).getPercent()) / 100.0);
             totalPrice += ticketPrice;
         }
 
@@ -81,24 +82,38 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts) {
-        for (int i = 0; i < tickets.size(); i++) {
-            bookTicket(tickets.get(i), discounts.get(i));
-        }
-    }
+    public Set<Long> bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts) {
+        Set<User> usersInvolved = new HashSet<>();
+        Set<Long> bookedSeats = new HashSet<>();
 
-    private void bookTicket(@Nonnull Ticket ticket, @Nonnull Discount discount) {
-        if (!getPurchasedTicketsForEvent(ticket.getEvent()).contains(ticket)) {//if ticket is not booked yet
-            User user = ticket.getUser();
-            if (user != null) {
-                Long userId = user.getId();
-                if (userId != null && userService.getById(userId) != null) {//if user is registered
-                    ticket.setPrice(ticket.getPrice() * ((100 - discount.getPercent()) / 100.0));
-                    user.getTickets().add(ticket);
-                    userService.save(user);
+        for (int i = 0; i < tickets.size(); i++) {
+            Ticket ticket = tickets.get(i);
+            if (!getPurchasedTicketsForEvent(ticket.getEvent(), ticket.getDateTime()).contains(ticket)) {//if ticket is not booked yet
+                applyDiscount(ticket, discounts.get(i));
+
+                User user = ticket.getUser();
+                if (user != null) {
+                    Long userId = user.getId();
+                    if (userId != null && userService.getById(userId) != null) {//if user is registered
+                        usersInvolved.add(user);
+                        user.getTickets().add(ticket);
+                    } else {
+                        ticketService.save(ticket);
+                    }
+                } else {
+                    ticketService.save(ticket);
                 }
+                bookedSeats.add(ticket.getSeat());
             }
         }
+        for (User user : usersInvolved) {
+            userService.save(user);
+        }
+        return bookedSeats;
+    }
+
+    private void applyDiscount(Ticket ticket, @Nonnull Discount discount) {
+        ticket.setPrice(ticket.getPrice() * ((100 - discount.getPercent()) / 100.0));
     }
 
     @Nonnull
@@ -107,9 +122,10 @@ public class BookingServiceImpl implements BookingService {
         if (!event.getAirDates().containsKey(dateTime))
             throw new IllegalArgumentException("This event will not happen on the specified date");
 
-        return getPurchasedTicketsForEvent(event).stream()
-                .filter(t -> t.getDateTime().equals(dateTime))
-                .collect(Collectors.toSet());
+        return new HashSet<>(ticketService.getByEventAndTime(event, dateTime));
+//        return getPurchasedTicketsForEvent(event).stream()
+//                .filter(t -> t.getDateTime().equals(dateTime))
+//                .collect(Collectors.toSet());
     }
 
     @Nonnull

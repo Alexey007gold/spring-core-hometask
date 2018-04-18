@@ -61,7 +61,7 @@ public interface BookingService {
      * @param discounts
      *            List of discounts
      */
-    public void bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts);
+    public Set<Long> bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts);
 
     /**
      * Getting all purchased tickets for event on specific air date and time

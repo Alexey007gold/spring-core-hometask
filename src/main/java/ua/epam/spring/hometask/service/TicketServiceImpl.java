@@ -7,7 +7,9 @@ import ua.epam.spring.hometask.domain.Ticket;
 import ua.epam.spring.hometask.domain.User;
 
 import javax.annotation.Nonnull;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,11 @@ public class TicketServiceImpl extends AbstractDomainObjectServiceImpl<Ticket, T
     @Override
     public Collection<Ticket> getByEventId(@Nonnull Long eventId) {
         return domainObjectDAO.getBy(new String[] {"event_id"}, eventId);
+    }
+
+    @Override
+    public Collection<Ticket> getByEventAndTime(Event event, LocalDateTime dateTime) {
+        return domainObjectDAO.getBy(new String[] {"event_id", "time"}, event.getId(), Timestamp.valueOf(dateTime));
     }
 
     @Override
