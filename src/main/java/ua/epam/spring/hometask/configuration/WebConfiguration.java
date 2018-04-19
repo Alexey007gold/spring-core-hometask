@@ -37,6 +37,7 @@ public class WebConfiguration implements WebMvcConfigurer {
         resolver.setCache(true);
         resolver.setPrefix("");
         resolver.setSuffix(".ftl");
+        resolver.setContentType("text/html;charset=UTF-8");
         return resolver;
     }
 
