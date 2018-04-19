@@ -14,6 +14,7 @@ import java.util.Properties;
 @ComponentScan(basePackages = {"ua.epam.spring.hometask.*"},
         excludeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)
 )
+@Import({SecurityConfig.class})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public class AppConfiguration {
 
