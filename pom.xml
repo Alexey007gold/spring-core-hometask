@@ -10,11 +10,18 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <spring.version>5.0.4.RELEASE</spring.version>
+        <spring.version>5.0.5.RELEASE</spring.version>
+        <spring.security.version>5.0.4.RELEASE</spring.security.version>
         <findbugs.version>3.0.1</findbugs.version>
         <junit.version>4.12</junit.version>
         <aspectj.version>1.9.0</aspectj.version>
         <jackson.version>2.9.5</jackson.version>
+        <freemarker.version>2.3.28</freemarker.version>
+        <itext.version>2.1.7</itext.version>
+        <javax.servlet-api.version>4.0.0</javax.servlet-api.version>
+        <commons-fileupload.version>1.3.3</commons-fileupload.version>
+        <h2database.version>1.4.197</h2database.version>
+        <postgresql.version>42.2.1</postgresql.version>
     </properties>
 
     <packaging>war</packaging>
@@ -96,32 +103,32 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>5.0.4.RELEASE</version>
+            <version>${spring.security.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>5.0.4.RELEASE</version>
+            <version>${spring.security.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>2.3.28</version>
+            <version>${freemarker.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.lowagie/itext -->
         <dependency>
             <groupId>com.lowagie</groupId>
             <artifactId>itext</artifactId>
-            <version>2.1.7</version>
+            <version>${itext.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.0</version>
+            <version>${javax.servlet-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -139,21 +146,21 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.3.3</version>
+            <version>${commons-fileupload.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.197</version>
+            <version>${h2database.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.1</version>
+            <version>${postgresql.version}</version>
         </dependency>
 
         <dependency>
