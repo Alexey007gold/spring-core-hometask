@@ -7,7 +7,12 @@
     <h4>Exception</h4>
 </div>
 <div id="content">
-    <p>${message}</p>
+    <p>Error has happened</p>
+    <#if message??>
+        <p>${message}</p>
+    <#else>
+        <p>No message provided</p>
+    </#if>
 </div>
 </body>
 </html>
