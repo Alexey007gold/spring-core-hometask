@@ -70,3 +70,12 @@ CREATE TABLE public.discount_stats
   times BIGINT NOT NULL
 );
 CREATE UNIQUE INDEX discount_stats_id_uindex ON public.discount_stats (id);
+
+DROP TABLE IF EXISTS persistent_logins;
+CREATE TABLE persistent_logins (
+  username varchar(64) not null,
+  series varchar(64) not null,
+  token varchar(64) not null,
+  last_used timestamp not null,
+  PRIMARY KEY (series)
+);

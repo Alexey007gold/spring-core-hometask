@@ -29,6 +29,10 @@
                     <tr><td>User:</td><td><input type="text" name="username" value=""></td></tr>
                     <tr><td>Password:</td><td><input type="password" name="password"></td></tr>
                     <tr><td colspan="2"><input name="submit" type="submit" value="Login"></td></tr>
+                    <tr>
+                        <td></td>
+                        <td>Remember Me: <input type="checkbox" name="remember-me" /></td>
+                    </tr>
                 </tbody>
             </table>
         </form>
