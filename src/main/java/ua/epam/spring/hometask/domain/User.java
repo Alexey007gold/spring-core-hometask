@@ -17,6 +17,10 @@ public class User extends DomainObject {
     private String email;
 
     private LocalDate birthDate;
+    
+    private String login;
+
+    private String password;
 
     private NavigableSet<Ticket> tickets = new TreeSet<>();
 
@@ -50,6 +54,22 @@ public class User extends DomainObject {
 
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public NavigableSet<Ticket> getTickets() {
@@ -97,6 +117,18 @@ public class User extends DomainObject {
             }
         } else if (!lastName.equals(other.lastName)) {
             return false;
+        }if (login == null) {
+            if (other.login != null) {
+                return false;
+            }
+        } else if (!login.equals(other.login)) {
+            return false;
+        }if (password == null) {
+            if (other.password != null) {
+                return false;
+            }
+        } else if (!password.equals(other.password)) {
+            return false;
         }
         if (birthDate == null) {
             if (other.birthDate != null) {
@@ -107,5 +139,4 @@ public class User extends DomainObject {
         }
         return true;
     }
-
 }

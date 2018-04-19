@@ -42,4 +42,10 @@ public class UserServiceImpl extends AbstractDomainObjectServiceImpl<User, UserD
     public List<User> getUsersByFirstAndLastName(@Nonnull String firstName, @Nonnull String lastName) {
         return domainObjectDAO.getBy(new String[] {"first_name", "last_name"}, firstName, lastName);
     }
+
+    @Nullable
+    @Override
+    public User getUserByLogin(String login) {
+        return domainObjectDAO.getOneBy(new String[] {"login"}, login);
+    }
 }

@@ -46,8 +46,10 @@ public class UserDAO extends DomainObjectDAO<User> {
         user.setFirstName(rs.getString(2));
         user.setLastName(rs.getString(3));
         user.setEmail(rs.getString(4));
+        user.setLogin(rs.getString(5));
+        user.setPassword(rs.getString(6));
 
-        Date date = rs.getDate(5);
+        Date date = rs.getDate(7);
         if (date != null) {
             user.setBirthDate(date.toLocalDate());
         }
@@ -85,13 +87,15 @@ public class UserDAO extends DomainObjectDAO<User> {
         } else {//save new user
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(con -> {
-                String sql = String.format("INSERT INTO %s (first_name, last_name, email, birth_date) VALUES (?, ?, ?, ?)",
+                String sql = String.format("INSERT INTO %s (first_name, last_name, email, login, password, birth_date) VALUES (?, ?, ?, ?, ?, ?)",
                         getTableName());
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ps.setObject(1, user.getFirstName());
                 ps.setString(2, user.getLastName());
                 ps.setString(3, user.getEmail());
-                ps.setDate(4, user.getBirthDate() != null ? Date.valueOf(user.getBirthDate()) : null);
+                ps.setString(4, user.getLogin());
+                ps.setString(5, user.getPassword());
+                ps.setDate(6, user.getBirthDate() != null ? Date.valueOf(user.getBirthDate()) : null);
                 return ps;
             }, keyHolder);
 
@@ -102,11 +106,11 @@ public class UserDAO extends DomainObjectDAO<User> {
     }
 
     private void update(User user) {
-        String sql = String.format("UPDATE %s SET first_name = ?, last_name = ?, email = ?, birth_date = ? WHERE id = %d",
+        String sql = String.format("UPDATE %s SET first_name = ?, last_name = ?, email = ?, login = ?, password = ?, birth_date = ? WHERE id = %d",
                 getTableName(), user.getId());
 
         jdbcTemplate.update(sql,
-                user.getFirstName(), user.getLastName(), user.getEmail(),
+                user.getFirstName(), user.getLastName(), user.getEmail(), user.getLogin(), user.getPassword(),
                 user.getBirthDate() != null ? Date.valueOf(user.getBirthDate()) : null);
     }
 
