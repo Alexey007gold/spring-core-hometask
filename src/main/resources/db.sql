@@ -5,9 +5,18 @@ CREATE TABLE public.users
   first_name VARCHAR(40) NOT NULL,
   last_name VARCHAR(40),
   email VARCHAR(60),
+  login VARCHAR(60) NOT NULL UNIQUE,
+  password VARCHAR(5000) NOT NULL,
   birth_date TIMESTAMP
 );
-CREATE UNIQUE INDEX users_id_uindex ON public.users (id);
+DROP TABLE IF EXISTS public.user_roles;
+CREATE TABLE public.user_roles
+(
+  id BIGSERIAL PRIMARY KEY NOT NULL,
+  user_id VARCHAR(40) NOT NULL,
+  role VARCHAR(40) NOT NULL
+);
+CREATE UNIQUE INDEX user_roles_id_uindex ON public.user_roles (id);
 
 DROP TABLE IF EXISTS public.events;
 CREATE TABLE public.events
