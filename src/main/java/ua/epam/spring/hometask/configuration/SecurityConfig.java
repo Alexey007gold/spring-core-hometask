@@ -37,6 +37,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/upload", "/events/upload").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and().formLogin().and().httpBasic().and().logout();
+
+        http.formLogin().loginPage("/login").permitAll()
+                .defaultSuccessUrl("/events/coming?until=999999999999999");
+
+        http.logout().permitAll()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true);
+
     }
 
 }
