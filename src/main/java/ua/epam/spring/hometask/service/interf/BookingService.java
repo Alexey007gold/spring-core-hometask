@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.service.interf;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.Ticket;
@@ -72,6 +73,7 @@ public interface BookingService {
      *            Date and time of airing of event
      * @return set of all purchased tickets
      */
+    @PreAuthorize("isAuthenticated() && hasAuthority('BOOKING_MANAGER')")
     public @Nonnull Set<Ticket> getPurchasedTicketsForEvent(@Nonnull Event event, @Nonnull LocalDateTime dateTime);
 
     /**
@@ -81,6 +83,7 @@ public interface BookingService {
      *            Event to get tickets for
      * @return set of all purchased tickets
      */
+    @PreAuthorize("isAuthenticated() && hasAuthority('BOOKING_MANAGER')")
     public @Nonnull Set<Ticket> getPurchasedTicketsForEvent(@Nonnull Event event);
 
 }

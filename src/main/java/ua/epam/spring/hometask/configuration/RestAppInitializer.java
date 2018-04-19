@@ -9,12 +9,12 @@ public class RestAppInitializer extends AbstractAnnotationConfigDispatcherServle
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[]{AppConfiguration.class};
+        return new Class<?>[]{WebConfiguration.class, AppConfiguration.class, SecurityConfig.class};
     }
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class<?>[]{WebConfiguration.class};
+        return new Class<?>[]{};
     }
 
     @Override

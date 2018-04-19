@@ -127,9 +127,6 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalArgumentException("This event will not happen on the specified date");
 
         return new HashSet<>(ticketService.getByEventAndTime(event, dateTime));
-//        return getPurchasedTicketsForEvent(event).stream()
-//                .filter(t -> t.getDateTime().equals(dateTime))
-//                .collect(Collectors.toSet());
     }
 
     @Nonnull
