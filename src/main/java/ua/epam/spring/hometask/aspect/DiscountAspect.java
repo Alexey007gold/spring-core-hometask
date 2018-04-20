@@ -10,6 +10,7 @@ import ua.epam.spring.hometask.domain.Ticket;
 import ua.epam.spring.hometask.service.interf.DiscountCounterService;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/8/2018.
@@ -18,18 +19,25 @@ import java.util.List;
 @Component
 public class DiscountAspect {
 
-    @Autowired
     private DiscountCounterService discountCounterService;
 
+    public DiscountAspect(DiscountCounterService discountCounterService) {
+        this.discountCounterService = discountCounterService;
+    }
+
     @Around(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.bookTickets(..))")
-    public void discountCounter(ProceedingJoinPoint joinPoint) throws Throwable {
-        joinPoint.proceed();
+    @SuppressWarnings("unchecked")
+    public Set<Long> discountCounter(ProceedingJoinPoint joinPoint) throws Throwable {
         List<Ticket> tickets = (List<Ticket>) joinPoint.getArgs()[0];
         List<Discount> discounts = (List<Discount>) joinPoint.getArgs()[1];
+
+        Set<Long> bookedTickets = (Set<Long>) joinPoint.proceed();
+
         for (int i = 0; i < discounts.size(); i++) {
             if (discounts.get(i).getPercent() != 0) {
                 discountCounterService.count(discounts.get(i).getDiscountType(), tickets.get(i).getUser());
             }
         }
+        return bookedTickets;
     }
 }

@@ -3,99 +3,57 @@ package ua.epam.spring.hometask.aspect;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
-import ua.epam.spring.hometask.configuration.AppConfiguration;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import ua.epam.spring.hometask.domain.*;
+import ua.epam.spring.hometask.service.impl.BookingServiceImpl;
+import ua.epam.spring.hometask.service.impl.DiscountCounterServiceImpl;
 import ua.epam.spring.hometask.service.interf.*;
-import ua.epam.spring.hometask.util.Utils;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
-import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
-import static ua.epam.spring.hometask.domain.EventRating.HIGH;
-import static ua.epam.spring.hometask.domain.EventRating.MID;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/8/2018.
  */
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {AppConfiguration.class})
-@Transactional(rollbackFor = Exception.class)
+@RunWith(MockitoJUnitRunner.class)
 public class TestDiscountAspect {
 
-    @Autowired
-    private DiscountCounterService discountCounterService;
-    @Autowired
-    private DiscountService discountService;
-    @Autowired
-    private BookingService bookingService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private EventService eventService;
-    private Event event;
+    private DiscountCounterService discountCounterService = mock(DiscountCounterServiceImpl.class);
+    private BookingService bookingService = mock(BookingServiceImpl.class);
 
-    private User user1;
-    private User user2;
+    private User user;
+    private List<Ticket> tickets;
 
     @Before
     public void init() {
-        user1 = new User();
-        user1.setFirstName("Johna");
-        user1.setLastName("Doe");
-        user1.setEmail("example@gmail.com");
+        AspectJProxyFactory factory = new AspectJProxyFactory(bookingService);
+        DiscountAspect discountAspect = new DiscountAspect(discountCounterService);
+        factory.addAspect(discountAspect);
+        bookingService = factory.getProxy();
 
-        NavigableSet<Ticket> tickets = new TreeSet<>();
-        for (int i = 0; i < 7; i++) {
-            Event event = new Event();
-            event.setName(Utils.randomStr());
-            event.setRating(MID);
-            eventService.save(event);
-            tickets.add(new Ticket(user1, event, LocalDateTime.now(), 0, 40));
-        }
-        user1.setTickets(tickets);
-        userService.save(user1);
+        user = new User();
 
-        user2 = new User();
-        user2.setFirstName("Jane");
-        user2.setLastName("Doe");
-        user2.setEmail("exampleJane@gmail.com");
-        userService.save(user2);
-
-        TreeSet<LocalDateTime> airDates = new TreeSet<>(Arrays.asList(
-                LocalDateTime.of(4018, 4, 2, 10, 30),
-                LocalDateTime.of(4018, 4, 2, 18, 0),
-                LocalDateTime.of(4018, 4, 3, 10, 30),
-                LocalDateTime.of(4018, 4, 4, 10, 20),
-                LocalDateTime.of(4018, 4, 5, 10, 30)
-        ));
-        Auditorium auditorium = new Auditorium();
-        auditorium.setName("1");
-        Set<EventDate> auditoriumMap = airDates.stream().map(e -> new EventDate(e, auditorium)).collect(toSet());
-
-        event = new Event();
-        event.setName("Titanik");
-        event.setBasePrice(40);
-        event.setRating(HIGH);
-        event.setAirDates(auditoriumMap);
-        event = eventService.save(event);
+        Event event = new Event();
+        this.tickets = Arrays.asList(new Ticket(user, event, null, 1, 0),
+                new Ticket(user, event, null, 2, 0),
+                new Ticket(user, event, null, 3, 0),
+                new Ticket(user, event, null, 4, 0));
     }
 
     @Test
-    public void discountStatTimesForUserShouldBe_1_afterGetDiscountCall() {
-        LocalDateTime dateTime = LocalDateTime.of(4018, 4, 4, 10, 20);
-        List<Discount> discount = discountService.getDiscount(user1, event, dateTime, 3);
-        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user1, new HashSet<>(Arrays.asList(1L, 2L, 3L)));
+    public void countMethodShouldBeCalled_3_times_afterBookTicketsCall() {
+        List<Discount> discount = Arrays.asList(new Discount("SomeStrategy", (byte) 5),
+                new Discount("AnotherStrategy", (byte) 6),
+                new Discount("SomeStrategy", (byte) 5),
+                new Discount("noDiscount", (byte) 0));
         bookingService.bookTickets(tickets, discount);
 
-        Collection<DiscountStats> discountStatsForUser = discountCounterService.getDiscountStatsForUser(user1);
-        assertEquals(1, discountStatsForUser.size());
-        assertEquals("Every10TicketStrategy", discountStatsForUser.stream().findFirst().get().getDiscountType());
-        assertEquals(1, (long) discountStatsForUser.stream().findFirst().get().getTimes());
+        verify(discountCounterService, times(2)).count("SomeStrategy", user);
+        verify(discountCounterService, times(1)).count("AnotherStrategy", user);
     }
 }
