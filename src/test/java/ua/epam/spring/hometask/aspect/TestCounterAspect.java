@@ -2,8 +2,6 @@ package ua.epam.spring.hometask.aspect;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import ua.epam.spring.hometask.dao.EventDAOImpl;
 import ua.epam.spring.hometask.dao.interf.EventDAO;
@@ -22,7 +20,6 @@ import static org.mockito.Mockito.*;
 /**
  * Created by Oleksii_Kovetskyi on 4/8/2018.
  */
-@RunWith(MockitoJUnitRunner.class)
 public class TestCounterAspect {
 
     private EventDAO eventDAO = mock(EventDAOImpl.class);

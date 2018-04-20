@@ -2,8 +2,6 @@ package ua.epam.spring.hometask.aspect;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Ticket;
@@ -18,7 +16,6 @@ import static org.mockito.Mockito.mock;
 /**
  * Created by Oleksii_Kovetskyi on 4/8/2018.
  */
-@RunWith(MockitoJUnitRunner.class)
 public class TestLuckyWinnerAspect {
 
     private BookingService bookingService = mock(BookingServiceImpl.class);

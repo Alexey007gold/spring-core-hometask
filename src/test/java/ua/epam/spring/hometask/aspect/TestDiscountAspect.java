@@ -2,25 +2,24 @@ package ua.epam.spring.hometask.aspect;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
-import ua.epam.spring.hometask.domain.*;
+import ua.epam.spring.hometask.domain.Discount;
+import ua.epam.spring.hometask.domain.Event;
+import ua.epam.spring.hometask.domain.Ticket;
+import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.impl.BookingServiceImpl;
 import ua.epam.spring.hometask.service.impl.DiscountCounterServiceImpl;
-import ua.epam.spring.hometask.service.interf.*;
+import ua.epam.spring.hometask.service.interf.BookingService;
+import ua.epam.spring.hometask.service.interf.DiscountCounterService;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/8/2018.
  */
-@RunWith(MockitoJUnitRunner.class)
 public class TestDiscountAspect {
 
     private DiscountCounterService discountCounterService = mock(DiscountCounterServiceImpl.class);
