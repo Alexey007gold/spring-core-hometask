@@ -35,6 +35,7 @@ public class CounterAspect {
     }
 
     @Before(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.bookTickets(..))")
+    @SuppressWarnings("unchecked")
     public void eventBookTicketsCounter(JoinPoint joinPoint) {
         for (Ticket ticket : ((List<Ticket>) joinPoint.getArgs()[0])) {
             eventCounterStatsService.incrementTicketsBookedTimesCount(ticket.getEvent());
