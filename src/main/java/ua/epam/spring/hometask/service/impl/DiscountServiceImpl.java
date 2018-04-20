@@ -27,7 +27,7 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public List<Discount> getDiscount(@Nullable User user, @Nonnull Event event,
-                                      @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
+                                      @Nonnull LocalDateTime airDateTime, int numberOfTickets) {
         List<Discount> discountList = new ArrayList<>((int) numberOfTickets);
         Discount disc = new Discount();
         for (long i = 0; i < numberOfTickets; i++) {

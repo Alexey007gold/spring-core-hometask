@@ -3,7 +3,6 @@ package ua.epam.spring.hometask.aspect;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Ticket;

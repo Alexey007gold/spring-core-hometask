@@ -15,5 +15,5 @@ import java.util.List;
 public interface DiscountStrategy {
 
     List<Discount> getDiscount(@Nullable User user, @Nonnull Event event,
-                               @Nonnull LocalDateTime airDateTime, long numberOfTickets);
+                               @Nonnull LocalDateTime airDateTime, int numberOfTickets);
 }

@@ -26,10 +26,10 @@ public class Every10TicketStrategy implements DiscountStrategy {
 
     @Override
     public List<Discount> getDiscount(@Nullable User user, @Nonnull Event event,
-                                     @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
+                                     @Nonnull LocalDateTime airDateTime, int numberOfTickets) {
         if (numberOfTickets == 0) return null;
 
-        List<Discount> discountList = new ArrayList<>((int)numberOfTickets);
+        List<Discount> discountList = new ArrayList<>(numberOfTickets);
         Discount disc = new Discount("Every10TicketStrategy", (byte) 50);
         Discount noDisc = new Discount("", (byte) 0);
         int boughtTickets = 0;

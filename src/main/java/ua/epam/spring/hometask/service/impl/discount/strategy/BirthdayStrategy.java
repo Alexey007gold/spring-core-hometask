@@ -19,18 +19,20 @@ import java.util.List;
 @Component
 public class BirthdayStrategy implements DiscountStrategy {
 
+    private static final String STRATEGY_NAME = "BirthdayStrategy";
+
     @Override
     public List<Discount> getDiscount(@Nullable User user, @Nonnull Event event,
-                                      @Nonnull LocalDateTime airDateTime, long numberOfTickets) {
-        List<Discount> discountList = new ArrayList<>((int)numberOfTickets);
+                                      @Nonnull LocalDateTime airDateTime, int numberOfTickets) {
+        List<Discount> discountList = new ArrayList<>(numberOfTickets);
         Discount discount = new Discount("", (byte) 0);
         if (user != null && user.getBirthDate() != null) {
             int days = Period.between(LocalDate.from(airDateTime), user.getBirthDate()).getDays();
             if (Math.abs(days) <= 5) {
-                discount = new Discount("BirthdayStrategy", (byte) 5);
+                discount = new Discount(STRATEGY_NAME, (byte) 5);
             }
         }
-        for (long i = 0; i < numberOfTickets; i++) {
+        for (int i = 0; i < numberOfTickets; i++) {
             discountList.add(discount);
         }
         return discountList;

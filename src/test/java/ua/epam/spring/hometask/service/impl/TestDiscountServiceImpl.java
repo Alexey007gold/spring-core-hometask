@@ -28,7 +28,7 @@ public class TestDiscountServiceImpl {
         strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("e", (byte) 6)));
         DiscountService discountService = new DiscountServiceImpl(strategies);
 
-        List<Discount> discount = discountService.getDiscount(null, new Event(), LocalDateTime.now(), 1L);
+        List<Discount> discount = discountService.getDiscount(null, new Event(), LocalDateTime.now(), 1);
         assertEquals(1, discount.size());
         assertEquals(8, discount.get(0).getPercent());
         assertEquals("b", discount.get(0).getDiscountType());
@@ -44,7 +44,7 @@ public class TestDiscountServiceImpl {
         strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("e", (byte) 6)));
         DiscountService discountService = new DiscountServiceImpl(strategies);
 
-        List<Discount> discount = discountService.getDiscount(null, new Event(), LocalDateTime.now(), 1L);
+        List<Discount> discount = discountService.getDiscount(null, new Event(), LocalDateTime.now(), 1);
         assertEquals(1, discount.size());
         assertEquals(14, discount.get(0).getPercent());
         assertEquals("d", discount.get(0).getDiscountType());
