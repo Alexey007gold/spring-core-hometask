@@ -19,14 +19,8 @@ public class LuckyWinnerAspect {
     public static int bound = 1000;
     private Random random = new Random();
 
-    @Before(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.bookTicket(..))")
-    public void bookTicket(JoinPoint joinPoint) {
-        if (isLucky()) {
-            ((Ticket) joinPoint.getArgs()[0]).setPrice(0);
-        }
-    }
-
     @Before(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.bookTickets(..))")
+    @SuppressWarnings("unchecked")
     public void bookTickets(JoinPoint joinPoint) {
         if (isLucky()) {
             List<Ticket> tickets = (List<Ticket>) joinPoint.getArgs()[0];
