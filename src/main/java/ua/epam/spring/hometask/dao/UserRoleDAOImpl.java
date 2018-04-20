@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.dao.interf.UserRoleDAO;
 import ua.epam.spring.hometask.domain.UserRole;
 
 import java.sql.PreparedStatement;
@@ -14,7 +15,7 @@ import java.sql.Statement;
  * Created by Oleksii_Kovetskyi on 4/19/2018.
  */
 @Component
-public class UserRoleDAO extends DomainObjectDAO<UserRole> {
+public class UserRoleDAOImpl extends AbstractDomainObjectDAO<UserRole> implements UserRoleDAO {
 
     private RowMapper<UserRole> rowMapper =
             (resultSet, i) -> {
@@ -23,7 +24,7 @@ public class UserRoleDAO extends DomainObjectDAO<UserRole> {
                 return userRole;
             };
 
-    public UserRoleDAO(JdbcTemplate jdbcTemplate) {
+    public UserRoleDAOImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
 

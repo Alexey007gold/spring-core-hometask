@@ -1,7 +1,7 @@
 package ua.epam.spring.hometask.service.impl;
 
 import org.springframework.stereotype.Service;
-import ua.epam.spring.hometask.dao.UserDAO;
+import ua.epam.spring.hometask.dao.interf.UserDAO;
 import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.interf.UserService;
 

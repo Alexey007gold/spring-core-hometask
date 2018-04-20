@@ -6,6 +6,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.dao.interf.EventDAO;
+import ua.epam.spring.hometask.dao.interf.TicketDAO;
+import ua.epam.spring.hometask.dao.interf.UserDAO;
 import ua.epam.spring.hometask.domain.Ticket;
 
 import java.sql.*;
@@ -14,7 +17,7 @@ import java.sql.*;
  * Created by Oleksii_Kovetskyi on 4/6/2018.
  */
 @Component
-public class TicketDAO extends DomainObjectDAO<Ticket> {
+public class TicketDAOImpl extends AbstractDomainObjectDAO<Ticket> implements TicketDAO {
 
     @Autowired
     private UserDAO userDAO;
@@ -36,7 +39,7 @@ public class TicketDAO extends DomainObjectDAO<Ticket> {
         }
     };
 
-    public TicketDAO(JdbcTemplate jdbcTemplate) {
+    public TicketDAOImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
 

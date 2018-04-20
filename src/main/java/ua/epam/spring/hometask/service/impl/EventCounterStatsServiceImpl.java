@@ -2,7 +2,7 @@ package ua.epam.spring.hometask.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ua.epam.spring.hometask.dao.EventStatsCounterDAO;
+import ua.epam.spring.hometask.dao.interf.EventStatsDAO;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.EventStats;
 import ua.epam.spring.hometask.service.interf.EventCounterStatsService;
@@ -14,7 +14,7 @@ import ua.epam.spring.hometask.service.interf.EventCounterStatsService;
 public class EventCounterStatsServiceImpl implements EventCounterStatsService {
 
     @Autowired
-    private EventStatsCounterDAO eventStatsCounterDAO;
+    private EventStatsDAO eventStatsCounterDAO;
 
     @Override
     public long getAccessByNameCount(Event event) {

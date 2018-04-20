@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.dao.interf.EventDAO;
+import ua.epam.spring.hometask.dao.interf.EventDateDAO;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.EventDate;
 import ua.epam.spring.hometask.domain.EventRating;
@@ -23,7 +25,7 @@ import static java.util.stream.Collectors.toList;
  * Created by Oleksii_Kovetskyi on 4/6/2018.
  */
 @Component
-public class EventDAO extends DomainObjectDAO<Event> {
+public class EventDAOImpl extends AbstractDomainObjectDAO<Event> implements EventDAO {
 
     @Autowired
     private AuditoriumService auditoriumService;
@@ -50,7 +52,7 @@ public class EventDAO extends DomainObjectDAO<Event> {
         return event;
     };
 
-    public EventDAO(JdbcTemplate jdbcTemplate) {
+    public EventDAOImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
 

@@ -2,7 +2,7 @@ package ua.epam.spring.hometask.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ua.epam.spring.hometask.dao.DiscountStatsDAO;
+import ua.epam.spring.hometask.dao.interf.DiscountStatsDAO;
 import ua.epam.spring.hometask.domain.DiscountStats;
 import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.interf.DiscountCounterService;

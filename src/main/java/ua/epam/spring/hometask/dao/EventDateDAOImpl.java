@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.dao.interf.EventDateDAO;
 import ua.epam.spring.hometask.domain.EventDate;
 import ua.epam.spring.hometask.service.interf.AuditoriumService;
 
@@ -17,7 +18,7 @@ import java.sql.Timestamp;
  * Created by Oleksii_Kovetskyi on 4/6/2018.
  */
 @Component
-public class EventDateDAO extends DomainObjectDAO<EventDate> {
+public class EventDateDAOImpl extends AbstractDomainObjectDAO<EventDate> implements EventDateDAO {
 
     @Autowired
     private AuditoriumService auditoriumService;
@@ -27,7 +28,7 @@ public class EventDateDAO extends DomainObjectDAO<EventDate> {
                 auditoriumService.getByName(rs.getString(3)))
     );
 
-    public EventDateDAO(JdbcTemplate jdbcTemplate) {
+    public EventDateDAOImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
 

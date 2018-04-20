@@ -3,6 +3,7 @@ package ua.epam.spring.hometask.dao;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import ua.epam.spring.hometask.dao.interf.DomainObjectDAO;
 import ua.epam.spring.hometask.domain.DomainObject;
 
 import java.util.List;
@@ -10,11 +11,11 @@ import java.util.List;
 /**
  * Created by Oleksii_Kovetskyi on 4/6/2018.
  */
-public abstract class DomainObjectDAO<T extends DomainObject> {
+public abstract class AbstractDomainObjectDAO<T extends DomainObject> implements DomainObjectDAO<T> {
 
     protected JdbcTemplate jdbcTemplate;
 
-    public DomainObjectDAO(JdbcTemplate jdbcTemplate) {
+    public AbstractDomainObjectDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -22,13 +23,13 @@ public abstract class DomainObjectDAO<T extends DomainObject> {
 
     protected abstract String getTableName();
 
-    public abstract void save(T object);
-
+    @Override
     public List<T> getAll() {
         String sql = String.format("SELECT * FROM %s", getTableName());
         return jdbcTemplate.query(sql, getRowMapper());
     }
 
+    @Override
     public void remove(T object) {
         try {
             String sql = String.format("DELETE FROM %s WHERE id = %d", getTableName(), object.getId());
@@ -36,6 +37,7 @@ public abstract class DomainObjectDAO<T extends DomainObject> {
         } catch (DataAccessException e) {}
     }
 
+    @Override
     public T getById(Long id) {
         try {
             String sql = String.format("SELECT * FROM %s WHERE id = %d", getTableName(), id);
@@ -45,6 +47,7 @@ public abstract class DomainObjectDAO<T extends DomainObject> {
         }
     }
 
+    @Override
     public List<T> getBy(String[] columnNames, Object... values) {
         StringBuilder builder = new StringBuilder();
         builder.append("SELECT * FROM ").append(getTableName()).append(" WHERE ");
@@ -61,6 +64,7 @@ public abstract class DomainObjectDAO<T extends DomainObject> {
         }
     }
 
+    @Override
     public T getOneBy(String[] columnNames, Object... values) {
         List<T> list = getBy(columnNames, values);
         return (list == null || list.isEmpty()) ? null : list.get(0);

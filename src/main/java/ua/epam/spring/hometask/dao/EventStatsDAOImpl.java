@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.dao.interf.EventStatsDAO;
 import ua.epam.spring.hometask.domain.EventStats;
 
 import java.sql.PreparedStatement;
@@ -14,7 +15,7 @@ import java.sql.Statement;
  * Created by Oleksii_Kovetskyi on 4/8/2018.
  */
 @Component
-public class EventStatsCounterDAO extends DomainObjectDAO<EventStats> {
+public class EventStatsDAOImpl extends AbstractDomainObjectDAO<EventStats> implements EventStatsDAO {
 
     private RowMapper<EventStats> rowMapper = (rs, rowNum) -> {
         EventStats eventStats = new EventStats();
@@ -26,10 +27,11 @@ public class EventStatsCounterDAO extends DomainObjectDAO<EventStats> {
         return eventStats;
     };
 
-    public EventStatsCounterDAO(JdbcTemplate jdbcTemplate) {
+    public EventStatsDAOImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
 
+    @Override
     public EventStats getByEventId(Long eventId) {
         return getOneBy(new String[] {"event_id"}, eventId);
     }

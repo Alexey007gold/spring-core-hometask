@@ -1,7 +1,7 @@
 package ua.epam.spring.hometask.service.impl;
 
 import org.springframework.stereotype.Service;
-import ua.epam.spring.hometask.dao.TicketDAO;
+import ua.epam.spring.hometask.dao.interf.TicketDAO;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.Ticket;
 import ua.epam.spring.hometask.domain.User;

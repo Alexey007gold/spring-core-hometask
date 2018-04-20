@@ -1,7 +1,7 @@
 package ua.epam.spring.hometask.service.impl;
 
 import org.springframework.stereotype.Service;
-import ua.epam.spring.hometask.dao.EventDAO;
+import ua.epam.spring.hometask.dao.interf.EventDAO;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.service.interf.EventService;
 

@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.dao.interf.DiscountStatsDAO;
 import ua.epam.spring.hometask.domain.DiscountStats;
 
 import java.sql.PreparedStatement;
@@ -15,7 +16,7 @@ import java.util.List;
  * Created by Oleksii_Kovetskyi on 4/8/2018.
  */
 @Component
-public class DiscountStatsDAO extends DomainObjectDAO<DiscountStats> {
+public class DiscountStatsDAOImpl extends AbstractDomainObjectDAO<DiscountStats> implements DiscountStatsDAO {
 
     private RowMapper<DiscountStats> rowMapper = (rs, rowNum) -> {
         DiscountStats discountStats = new DiscountStats();
@@ -26,18 +27,21 @@ public class DiscountStatsDAO extends DomainObjectDAO<DiscountStats> {
         return discountStats;
     };
 
-    public DiscountStatsDAO(JdbcTemplate jdbcTemplate) {
+    public DiscountStatsDAOImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
 
+    @Override
     public List<DiscountStats> getByUserId(Long userId) {
         return getBy(new String[] {"user_id"}, userId);
     }
 
+    @Override
     public List<DiscountStats> getByDiscountType(String discountType) {
         return getBy(new String[] {"discount_type"}, discountType);
     }
 
+    @Override
     public DiscountStats getByUserIdAndDiscountType(Long userId, String discountType) {
         return getOneBy(new String[] {"user_id", "discount_type"}, userId, discountType);
     }

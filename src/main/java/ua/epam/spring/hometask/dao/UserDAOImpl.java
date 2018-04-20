@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.dao.interf.TicketDAO;
+import ua.epam.spring.hometask.dao.interf.UserDAO;
 import ua.epam.spring.hometask.domain.Ticket;
 import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.interf.EventService;
@@ -23,7 +25,7 @@ import static java.util.stream.Collectors.toList;
  * Created by Oleksii_Kovetskyi on 4/6/2018.
  */
 @Component
-public class UserDAO extends DomainObjectDAO<User> {
+public class UserDAOImpl extends AbstractDomainObjectDAO<User> implements UserDAO {
 
     @Autowired
     private EventService eventService;
@@ -66,7 +68,7 @@ public class UserDAO extends DomainObjectDAO<User> {
         return user;
     };
 
-    public UserDAO(JdbcTemplate jdbcTemplate) {
+    public UserDAOImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
 
@@ -129,6 +131,7 @@ public class UserDAO extends DomainObjectDAO<User> {
         user.setTickets(new TreeSet<>(ticketDAO.getBy(new String[] {"user_id"}, user.getId())));
     }
 
+    @Override
     public User getByEmail(String email) {
         return getOneBy(new String[] {"email"}, email);
     }

@@ -22,7 +22,7 @@ public class CounterAspect {
     @Autowired
     private EventCounterStatsService eventCounterStatsService;
 
-    @AfterReturning(value = "execution(* ua.epam.spring.hometask.dao.EventDAO.getByName(..))", returning = "retEvent")
+    @AfterReturning(value = "execution(* ua.epam.spring.hometask.dao.interf.EventDAO.getByName(..))", returning = "retEvent")
     public void eventGetByNameCounter(Event retEvent) {
         eventCounterStatsService.incrementAccessByNameCount(retEvent);
     }
