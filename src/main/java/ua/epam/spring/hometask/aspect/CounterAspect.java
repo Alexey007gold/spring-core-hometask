@@ -4,7 +4,6 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.Ticket;
@@ -19,8 +18,11 @@ import java.util.List;
 @Component
 public class CounterAspect {
 
-    @Autowired
     private EventCounterStatsService eventCounterStatsService;
+
+    public CounterAspect(EventCounterStatsService eventCounterStatsService) {
+        this.eventCounterStatsService = eventCounterStatsService;
+    }
 
     @AfterReturning(value = "execution(* ua.epam.spring.hometask.dao.interf.EventDAO.getByName(..))", returning = "retEvent")
     public void eventGetByNameCounter(Event retEvent) {
@@ -37,10 +39,5 @@ public class CounterAspect {
         for (Ticket ticket : ((List<Ticket>) joinPoint.getArgs()[0])) {
             eventCounterStatsService.incrementTicketsBookedTimesCount(ticket.getEvent());
         }
-    }
-
-    @Before(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.bookTicket(..))")
-    public void eventBookTicketCounter(JoinPoint joinPoint) {
-        eventCounterStatsService.incrementPriceQueryCount(((Ticket) joinPoint.getArgs()[0]).getEvent());
     }
 }
