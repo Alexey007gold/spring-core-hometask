@@ -2,12 +2,7 @@ package ua.epam.spring.hometask.service.impl;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
-import ua.epam.spring.hometask.configuration.AppConfiguration;
+import ua.epam.spring.hometask.dao.EventDAOImpl;
 import ua.epam.spring.hometask.domain.Auditorium;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.EventDate;
@@ -15,28 +10,29 @@ import ua.epam.spring.hometask.service.interf.EventService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 import static ua.epam.spring.hometask.domain.EventRating.LOW;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/5/4018.
  */
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {AppConfiguration.class})
-@Transactional(rollbackFor = Exception.class)
 public class TestEventServiceImpl {
 
-    @Autowired
     private EventService eventService;
 
     @Before
     public void init() {
+        EventDAOImpl eventDAO = mock(EventDAOImpl.class);
+        eventService = new EventServiceImpl(eventDAO);
 
         Auditorium auditorium = new Auditorium();
         auditorium.setName("1");
@@ -67,34 +63,20 @@ public class TestEventServiceImpl {
         event1.setBasePrice(40);
         event1.setRating(HIGH);
         event1.setAirDates(airDates1);
-        eventService.save(event1);
 
         Event event2 = new Event();
         event2.setName("Santa Barbara");
         event2.setBasePrice(5);
         event2.setRating(LOW);
         event2.setAirDates(airDates2);
-        eventService.save(event2);
 
         Event event3 = new Event();
         event3.setName("Star Wars");
         event3.setBasePrice(45);
         event3.setRating(HIGH);
         event3.setAirDates(airDates3);
-        eventService.save(event3);
-    }
 
-    @Test
-    public void shouldReturnCorrectEventOnGetByNameCall() {
-        Event res1 = eventService.getByName("Titanik");
-        assertEquals("Titanik", res1.getName());
-        assertEquals(40, res1.getBasePrice(), 0);
-        assertEquals(HIGH, res1.getRating());
-
-        Event res2 = eventService.getByName("Santa Barbara");
-        assertEquals("Santa Barbara", res2.getName());
-        assertEquals(5, res2.getBasePrice(), 0);
-        assertEquals(LOW, res2.getRating());
+        when(eventDAO.getAll()).thenReturn(Arrays.asList(event1, event2, event3));
     }
 
     @Test

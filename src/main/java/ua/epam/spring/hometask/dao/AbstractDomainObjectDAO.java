@@ -52,7 +52,7 @@ public abstract class AbstractDomainObjectDAO<T extends DomainObject> implements
         StringBuilder builder = new StringBuilder();
         builder.append("SELECT * FROM ").append(getTableName()).append(" WHERE ");
         for (int i = 0; i < columnNames.length; i++) {
-            builder.append(columnNames[i]).append(" = ? ");
+            builder.append(columnNames[i]).append(" = ?");
             if (i + 1 < columnNames.length) {
                 builder.append(" and ");
             }

@@ -65,6 +65,7 @@ public class TestEvery10TicketStrategy {
 
     @Test
     public void shouldReturn_50_ForThirdTicket_OnGetDiscountCallForUser1() {
+        when(userService.isUserRegistered(user1)).thenReturn(true);
         List<Discount> discount = discountStrategy.getDiscount(user1, event, dateTime, 3);
 
         for (int i = 0; i < 2; i++) {
@@ -77,8 +78,8 @@ public class TestEvery10TicketStrategy {
     public void shouldReturn_0_OnGetDiscountCallForUser2() {
         List<Discount> discount = discountStrategy.getDiscount(user2, event, dateTime, 9);
 
-        for (int i = 0; i < discount.size(); i++) {
-            assertEquals(0, discount.get(i).getPercent());
+        for (Discount aDiscount : discount) {
+            assertEquals(0, aDiscount.getPercent());
         }
     }
 

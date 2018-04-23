@@ -2,15 +2,11 @@ package ua.epam.spring.hometask.service.impl;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
-import ua.epam.spring.hometask.configuration.AppConfiguration;
 import ua.epam.spring.hometask.domain.*;
-import ua.epam.spring.hometask.service.impl.discount.strategy.DiscountStrategy;
-import ua.epam.spring.hometask.service.interf.*;
+import ua.epam.spring.hometask.service.interf.BookingService;
+import ua.epam.spring.hometask.service.interf.DiscountService;
+import ua.epam.spring.hometask.service.interf.TicketService;
+import ua.epam.spring.hometask.service.interf.UserService;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -18,26 +14,20 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/5/2018.
  */
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {AppConfiguration.class})
-@Transactional(rollbackFor = Exception.class)
 public class TestBookingServiceImpl {
 
-    @Autowired
+    private BookingService bookingService;
+    private DiscountService discountService;
     private UserService userService;
-    @Autowired
-    private EventService eventService;
-    @Autowired
     private TicketService ticketService;
 
-    private BookingService bookingService;
-    @Autowired
-    private DiscountService discountService;
     private Event event;
     private User user;
     private List<Ticket> tickets;
@@ -45,29 +35,23 @@ public class TestBookingServiceImpl {
 
     @Before
     public void init() throws IOException {
-        List<DiscountStrategy> strategies = new ArrayList<>();
-        Discount discount = new Discount("a", (byte) 20);
-        List<Discount> discountList = Arrays.asList(discount, discount, discount);
-        strategies.add((user, event, airDateTime, numberOfTickets) -> discountList);
-        DiscountService discountService = new DiscountServiceImpl(strategies);
-
-        user = new User();
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setEmail("mail");
-        user.setBirthDate(LocalDate.of(1990, 11, 11));
-        userService.save(user);
+        discountService = mock(DiscountServiceImpl.class);
+        userService = mock(UserServiceImpl.class);
+        ticketService = mock(TicketServiceImpl.class);
         bookingService = new BookingServiceImpl(discountService, userService, ticketService);
 
-        AuditoriumService auditoriumService = new AuditoriumServiceImpl();
-
         dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
+
+        Auditorium auditorium = new Auditorium();
+        auditorium.setName("1");
+        auditorium.setNumberOfSeats(40);
+        auditorium.setVipSeats(new HashSet<>(Arrays.asList(4, 5, 34, 35)));
         TreeSet<EventDate> airDates = new TreeSet<>(Arrays.asList(
-                new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditoriumService.getByName("1")),
-                new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditoriumService.getByName("1")),
-                new EventDate(dateTime, auditoriumService.getByName("1")),
-                new EventDate(LocalDateTime.of(4018, 4, 4, 10, 20), auditoriumService.getByName("1")),
-                new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditoriumService.getByName("1"))
+                new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditorium),
+                new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditorium),
+                new EventDate(dateTime, auditorium),
+                new EventDate(LocalDateTime.of(4018, 4, 4, 10, 20), auditorium),
+                new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditorium)
         ));
 
         event = new Event();
@@ -75,8 +59,12 @@ public class TestBookingServiceImpl {
         event.setBasePrice(40);
         event.setRating(HIGH);
         event.setAirDates(airDates);
-        event = eventService.save(event);
 
+        user = new User();
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setEmail("mail");
+        user.setBirthDate(LocalDate.of(1990, 11, 11));
 
         tickets = new ArrayList<>();
         tickets.add(new Ticket(user, event, dateTime, 1, 40));
@@ -84,46 +72,88 @@ public class TestBookingServiceImpl {
     }
 
     @Test
+    public void shouldReturnSetOfTicketsOnGenerateTicketsCall() {
+        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, new HashSet<>(Arrays.asList(1, 2, 34)));
+        assertEquals(3, tickets.size());
+        assertEquals(1, tickets.get(0).getSeat());
+        assertEquals(2, tickets.get(1).getSeat());
+        assertEquals(34, tickets.get(2).getSeat());
+
+        assertEquals(48, tickets.get(0).getPrice(), 0.0000001);//high rate
+        assertEquals(48, tickets.get(1).getPrice(), 0.0000001);
+        assertEquals(96, tickets.get(2).getPrice(), 0.0000001);//VIP seat
+    }
+
+    @Test
     public void shouldReturn_115_2_OnGetTicketPriceCall() {
-        LocalDateTime dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
-        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, new HashSet<>(Arrays.asList(1L, 2L,3L)));
-        double price = bookingService.getTicketsPriceWithDiscount(event, dateTime, null, tickets);
+        Discount discount = new Discount("a", (byte) 20);
+        List<Discount> discountList = Arrays.asList(discount, discount, discount);
+        when(discountService.getDiscount(user, event, dateTime, 3)).thenReturn(discountList);
+
+        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, new HashSet<>(Arrays.asList(1, 2, 3)));
+        double price = bookingService.getTicketsPriceWithDiscount(event, dateTime, user, tickets);
         assertEquals(115.2, price, 0.0000001);
     }
 
     @Test
     public void shouldReturn_153_6_OnGetTicketPriceCall() {
-        LocalDateTime dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
-        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, new HashSet<>(Arrays.asList(1L, 2L,5L)));
-        double price = bookingService.getTicketsPriceWithDiscount(event, dateTime, null, tickets);
+        Discount discount = new Discount("a", (byte) 20);
+        List<Discount> discountList = Arrays.asList(discount, discount, discount);
+        when(discountService.getDiscount(user, event, dateTime, 3)).thenReturn(discountList);
+
+        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, new HashSet<>(Arrays.asList(1, 2, 34)));
+        double price = bookingService.getTicketsPriceWithDiscount(event, dateTime, user, tickets);
         assertEquals(153.6, price, 0.0000001);
     }
 
     @Test
-    public void shouldAddTicketsToUserOnBookTicketsCall() {
-        List<Discount> discount = discountService.getDiscount(user, event, dateTime, 2);
-        bookingService.bookTickets(tickets, discount);
+    public void shouldApplyDiscountAndAddTicketsToUserOnBookTicketsCall() {
+        when(userService.isUserRegistered(user)).thenReturn(true);
+        Discount discount = new Discount("a", (byte) 20);
+        List<Discount> discountList = Arrays.asList(discount, discount);
 
-        assertEquals(2, userService.getUserByEmail(user.getEmail()).getTickets().size());
+        bookingService.bookTickets(tickets, discountList);
+
+        verify(userService, times(1)).save(user);
+        verify(ticketService, times(0)).save(any());
+        assertEquals(2, user.getTickets().size());
+        for (Ticket ticket : tickets) {
+            assertTrue(user.getTickets().contains(ticket));
+            assertEquals(32, ticket.getPrice(), 0.0000001);
+        }
+    }
+
+    @Test
+    public void shouldApplyDiscountOnBookTicketsCallWithNullUser() {
+        when(userService.isUserRegistered(any())).thenReturn(false);
+        Discount discount = new Discount("a", (byte) 40);
+        List<Discount> discountList = Arrays.asList(discount, discount);
+
+        for (Ticket ticket : tickets) {
+            ticket.setUser(null);
+        }
+        bookingService.bookTickets(tickets, discountList);
+
+        verify(userService, times(0)).save(any());
+        for (Ticket ticket : tickets) {
+            verify(ticketService, times(1)).save(ticket);
+        }
+        for (Ticket ticket : tickets) {
+            assertEquals(24, ticket.getPrice(), 0.0000001);
+        }
     }
 
     @Test
     public void shouldReturnPurchasedTicketsOnGetPurchasedTicketsForEventCall() {
-        List<Discount> discount = discountService.getDiscount(user, event, dateTime, 2);
-        bookingService.bookTickets(tickets, discount);
-        Set<Ticket> purchasedTicketsForEvent = bookingService.getPurchasedTicketsForEvent(event,
-                LocalDateTime.of(4018, 4, 3, 10, 30));
+        Discount discount = new Discount("a", (byte) 20);
+        List<Discount> discountList = Arrays.asList(discount, discount);
 
+        bookingService.bookTickets(tickets, discountList);
+        verify(ticketService, times(2)).getByEventAndTime(event, dateTime);
+
+        when(ticketService.getByEventAndTime(event, dateTime)).thenReturn(tickets);
+        Set<Ticket> purchasedTicketsForEvent = bookingService.getPurchasedTicketsForEvent(event, dateTime);
+        verify(ticketService, times(3)).getByEventAndTime(event, dateTime);
         assertEquals(2, purchasedTicketsForEvent.size());
-    }
-
-    @Test
-    public void shouldReturnEmptySetOnGetPurchasedTicketsForEventCall1() {
-        List<Discount> discount = discountService.getDiscount(user, event, dateTime, 2);
-        bookingService.bookTickets(tickets, discount);
-        Set<Ticket> purchasedTicketsForEvent = bookingService.getPurchasedTicketsForEvent(event,
-                LocalDateTime.of(4018, 4, 2, 10, 30));
-
-        assertEquals(0, purchasedTicketsForEvent.size());
     }
 }

@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS public.user_roles;
 CREATE TABLE public.user_roles
 (
   id BIGSERIAL PRIMARY KEY NOT NULL,
-  user_id VARCHAR(40) NOT NULL,
+  user_id BIGINT NOT NULL,
   role VARCHAR(40) NOT NULL
 );
 CREATE UNIQUE INDEX user_roles_id_uindex ON public.user_roles (id);
