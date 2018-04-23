@@ -7,11 +7,11 @@ public class EventStats extends DomainObject {
 
     private long eventId;
 
-    private long accessByName;
+    private int accessByName;
 
-    private long priceQuery;
+    private int priceQuery;
 
-    private long ticketsBooked;
+    private int ticketsBooked;
 
     public EventStats() {
     }
@@ -24,11 +24,11 @@ public class EventStats extends DomainObject {
         this.eventId = eventId;
     }
 
-    public long getAccessByName() {
+    public int getAccessByName() {
         return accessByName;
     }
 
-    public void setAccessByName(long accessByName) {
+    public void setAccessByName(int accessByName) {
         this.accessByName = accessByName;
     }
 
@@ -36,11 +36,11 @@ public class EventStats extends DomainObject {
         this.accessByName++;
     }
 
-    public long getPriceQuery() {
+    public int getPriceQuery() {
         return priceQuery;
     }
 
-    public void setPriceQuery(long priceQuery) {
+    public void setPriceQuery(int priceQuery) {
         this.priceQuery = priceQuery;
     }
 
@@ -48,11 +48,11 @@ public class EventStats extends DomainObject {
         this.priceQuery++;
     }
 
-    public long getTicketsBooked() {
+    public int getTicketsBooked() {
         return ticketsBooked;
     }
 
-    public void setTicketsBooked(long ticketsBooked) {
+    public void setTicketsBooked(int ticketsBooked) {
         this.ticketsBooked = ticketsBooked;
     }
 

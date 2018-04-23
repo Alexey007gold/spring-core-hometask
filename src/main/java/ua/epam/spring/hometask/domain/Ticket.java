@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.domain;
 
+import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -14,12 +15,12 @@ public class Ticket extends DomainObject implements Comparable<Ticket> {
 
     private LocalDateTime dateTime;
 
-    private long seat;
+    private int seat;
 
     private double price;
 
     public Ticket(User user, Event event, LocalDateTime dateTime,
-                  long seat, double price) {
+                  int seat, double price) {
         this.user = user;
         this.event = event;
         this.dateTime = dateTime;
@@ -47,7 +48,7 @@ public class Ticket extends DomainObject implements Comparable<Ticket> {
         return dateTime;
     }
 
-    public long getSeat() {
+    public int getSeat() {
         return seat;
     }
 
@@ -100,17 +101,14 @@ public class Ticket extends DomainObject implements Comparable<Ticket> {
     }
 
     @Override
-    public int compareTo(Ticket other) {
-        if (other == null) {
-            return 1;
-        }
+    public int compareTo(@Nonnull Ticket other) {
         int result = dateTime.compareTo(other.getDateTime());
 
         if (result == 0) {
             result = event.getName().compareTo(other.getEvent().getName());
         }
         if (result == 0) {
-            result = Long.compare(seat, other.getSeat());
+            result = Integer.compare(seat, other.getSeat());
         }
         return result;
     }

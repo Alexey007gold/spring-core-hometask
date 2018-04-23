@@ -1,14 +1,13 @@
 package ua.epam.spring.hometask.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.dao.interf.AuditoriumDAO;
 import ua.epam.spring.hometask.dao.interf.EventDateDAO;
 import ua.epam.spring.hometask.domain.EventDate;
-import ua.epam.spring.hometask.service.interf.AuditoriumService;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -20,17 +19,20 @@ import java.sql.Timestamp;
 @Component
 public class EventDateDAOImpl extends AbstractDomainObjectDAO<EventDate> implements EventDateDAO {
 
-    @Autowired
-    private AuditoriumService auditoriumService;
+    private AuditoriumDAO auditoriumDAO;
 
-    private RowMapper<EventDate> rowMapper = ((rs, rowNum) ->
-        new EventDate(rs.getTimestamp(2).toLocalDateTime(),
-                auditoriumService.getByName(rs.getString(3)))
-    );
-
-    public EventDateDAOImpl(JdbcTemplate jdbcTemplate) {
+    public EventDateDAOImpl(JdbcTemplate jdbcTemplate, AuditoriumDAO auditoriumDAO) {
         super(jdbcTemplate);
+        this.auditoriumDAO = auditoriumDAO;
     }
+
+    private RowMapper<EventDate> rowMapper = (RowMapper<EventDate>) (rs, rowNum) -> {
+        EventDate eventDate = new EventDate(rs.getTimestamp(3).toLocalDateTime(),
+                auditoriumDAO.getByName(rs.getString(4)));
+        eventDate.setId(rs.getLong(1));
+        eventDate.setEventId(rs.getLong(2));
+        return eventDate;
+    };
 
     @Override
     protected RowMapper<EventDate> getRowMapper() {

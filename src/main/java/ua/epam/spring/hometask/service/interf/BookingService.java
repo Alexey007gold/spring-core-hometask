@@ -33,7 +33,7 @@ public interface BookingService {
      * @return total price
      */
     public List<Ticket> generateTickets(@Nonnull Event event, @Nonnull LocalDateTime dateTime, @Nullable User user,
-                                        @Nonnull Set<Long> seats);
+                                        @Nonnull Set<Integer> seats);
 
     /**
      * Getting price when buying all supplied seats for particular event
@@ -62,7 +62,7 @@ public interface BookingService {
      * @param discounts
      *            List of discounts
      */
-    public Set<Long> bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts);
+    public Set<Integer> bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts);
 
     /**
      * Getting all purchased tickets for event on specific air date and time

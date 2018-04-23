@@ -1,18 +1,18 @@
 package ua.epam.spring.hometask.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.dao.interf.AuditoriumDAO;
 import ua.epam.spring.hometask.dao.interf.EventDAO;
 import ua.epam.spring.hometask.dao.interf.EventDateDAO;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.EventDate;
 import ua.epam.spring.hometask.domain.EventRating;
-import ua.epam.spring.hometask.service.interf.AuditoriumService;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -27,15 +27,18 @@ import static java.util.stream.Collectors.toList;
 @Component
 public class EventDAOImpl extends AbstractDomainObjectDAO<Event> implements EventDAO {
 
-    @Autowired
-    private AuditoriumService auditoriumService;
-
-    @Autowired
+    private AuditoriumDAO auditoriumDAO;
     private EventDateDAO eventDateDAO;
+
+    public EventDAOImpl(JdbcTemplate jdbcTemplate, AuditoriumDAO auditoriumDAO, EventDateDAO eventDateDAO) {
+        super(jdbcTemplate);
+        this.auditoriumDAO = auditoriumDAO;
+        this.eventDateDAO = eventDateDAO;
+    }
 
     private RowMapper<EventDate> eventTimeRowMapper = (resultSet, i) ->
             new EventDate(resultSet.getTimestamp(3).toLocalDateTime(),
-                    auditoriumService.getByName(resultSet.getString(4)));
+                    auditoriumDAO.getByName(resultSet.getString(4)));
 
     private RowMapper<Event> rowMapper = (resultSet, i) -> {
         Event event = new Event();
@@ -45,15 +48,18 @@ public class EventDAOImpl extends AbstractDomainObjectDAO<Event> implements Even
         event.setBasePrice(resultSet.getDouble(4));
 
         String sql = String.format("SELECT * FROM event_dates WHERE event_id = %d", event.getId());
-        TreeSet<EventDate> airDates = new TreeSet<>(jdbcTemplate
-                .query(sql, eventTimeRowMapper));
+        TreeSet<EventDate> airDates = new TreeSet<>(jdbcTemplate.query(sql, eventTimeRowMapper));
 
         event.setAirDates(airDates);
         return event;
     };
 
-    public EventDAOImpl(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
+    @Override
+    public void remove(@Nonnull Event event) {
+        super.remove(event);
+        for (EventDate eventDate : eventDateDAO.getBy(new String[]{"event_id"}, event.getId())) {
+            eventDateDAO.remove(eventDate);
+        }
     }
 
     public Event getByName(String name) {

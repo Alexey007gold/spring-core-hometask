@@ -12,5 +12,5 @@ public interface DiscountCounterService {
     void count(String type, User user);
     Collection<DiscountStats> getDiscountStatsForUser(User user);
     Collection<DiscountStats> getDiscountStatsForType(String discountType);
-    long getTotalDiscountCountForType(String discountType);
+    int getTotalDiscountCountForType(String discountType);
 }

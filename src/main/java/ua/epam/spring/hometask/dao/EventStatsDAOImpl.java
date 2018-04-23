@@ -21,9 +21,9 @@ public class EventStatsDAOImpl extends AbstractDomainObjectDAO<EventStats> imple
         EventStats eventStats = new EventStats();
         eventStats.setId(rs.getLong(1));
         eventStats.setEventId(rs.getLong(2));
-        eventStats.setAccessByName(rs.getLong(3));
-        eventStats.setPriceQuery(rs.getLong(4));
-        eventStats.setTicketsBooked(rs.getLong(5));
+        eventStats.setAccessByName(rs.getInt(3));
+        eventStats.setPriceQuery(rs.getInt(4));
+        eventStats.setTicketsBooked(rs.getInt(5));
         return eventStats;
     };
 
@@ -56,9 +56,9 @@ public class EventStatsDAOImpl extends AbstractDomainObjectDAO<EventStats> imple
                 String sql = String.format("INSERT INTO %s (event_id, access_by_name, price_query, tickets_booked) VALUES (?, ?, ?, ?)", getTableName());
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ps.setLong(1, stats.getEventId());
-                ps.setLong(2, stats.getAccessByName());
-                ps.setLong(3, stats.getPriceQuery());
-                ps.setLong(4, stats.getTicketsBooked());
+                ps.setInt(2, stats.getAccessByName());
+                ps.setInt(3, stats.getPriceQuery());
+                ps.setInt(4, stats.getTicketsBooked());
                 return ps;
             }, keyHolder);
 

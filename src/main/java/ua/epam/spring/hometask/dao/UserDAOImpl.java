@@ -1,16 +1,15 @@
 package ua.epam.spring.hometask.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ua.epam.spring.hometask.dao.interf.EventDAO;
 import ua.epam.spring.hometask.dao.interf.TicketDAO;
 import ua.epam.spring.hometask.dao.interf.UserDAO;
 import ua.epam.spring.hometask.domain.Ticket;
 import ua.epam.spring.hometask.domain.User;
-import ua.epam.spring.hometask.service.interf.EventService;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -27,15 +26,19 @@ import static java.util.stream.Collectors.toList;
 @Component
 public class UserDAOImpl extends AbstractDomainObjectDAO<User> implements UserDAO {
 
-    @Autowired
-    private EventService eventService;
-    @Autowired
+    private EventDAO eventDAO;
     private TicketDAO ticketDAO;
+
+    public UserDAOImpl(JdbcTemplate jdbcTemplate, EventDAO eventDAO, TicketDAO ticketDAO) {
+        super(jdbcTemplate);
+        this.eventDAO = eventDAO;
+        this.ticketDAO = ticketDAO;
+    }
 
     private RowMapper<Ticket> ticketRowMapper = (rs, i) -> {
         Ticket ticket = new Ticket(null,
-                eventService.getById(rs.getLong(3)),
-                rs.getTimestamp(4).toLocalDateTime(), rs.getLong(5),
+                eventDAO.getById(rs.getLong(3)),
+                rs.getTimestamp(4).toLocalDateTime(), rs.getInt(5),
                 rs.getDouble(6));
         ticket.setId(rs.getLong(1));
 
@@ -57,8 +60,7 @@ public class UserDAOImpl extends AbstractDomainObjectDAO<User> implements UserDA
         }
 
         String sql = String.format("SELECT * FROM tickets WHERE user_id = %d", user.getId());
-        List<Ticket> tickets = jdbcTemplate
-                .query(sql, ticketRowMapper);
+        List<Ticket> tickets = jdbcTemplate.query(sql, ticketRowMapper);
         for (Ticket ticket : tickets) {
             ticket.setUser(user);
         }
@@ -67,10 +69,6 @@ public class UserDAOImpl extends AbstractDomainObjectDAO<User> implements UserDA
 
         return user;
     };
-
-    public UserDAOImpl(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
-    }
 
     @Override
     protected RowMapper<User> getRowMapper() {

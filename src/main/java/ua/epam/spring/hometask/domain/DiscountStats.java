@@ -7,7 +7,7 @@ public class DiscountStats extends DomainObject {
 
     private String discountType;
     private Long userId;
-    private long times;
+    private int times;
 
     public DiscountStats() {
     }
@@ -28,11 +28,11 @@ public class DiscountStats extends DomainObject {
         this.userId = userId;
     }
 
-    public Long getTimes() {
+    public Integer getTimes() {
         return times;
     }
 
-    public void setTimes(Long times) {
+    public void setTimes(Integer times) {
         this.times = times;
     }
 

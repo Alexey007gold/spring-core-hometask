@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
+import java.util.stream.IntStream;
 
 /**
  * @author Yuriy_Tkach
@@ -14,9 +14,9 @@ public class Auditorium {
 
     private String name;
 
-    private long numberOfSeats;
+    private int numberOfSeats;
 
-    private Set<Long> vipSeats = Collections.emptySet();
+    private Set<Integer> vipSeats = Collections.emptySet();
 
     public Auditorium() {
     }
@@ -28,8 +28,8 @@ public class Auditorium {
      *            Seats to process
      * @return number of vip seats in request
      */
-    public long countVipSeats(Collection<Long> seats) {
-        return seats.stream().filter(seat -> vipSeats.contains(seat)).count();
+    public int countVipSeats(Collection<Integer> seats) {
+        return (int) seats.stream().filter(seat -> vipSeats.contains(seat)).count();
     }
 
     public String getName() {
@@ -40,23 +40,23 @@ public class Auditorium {
         this.name = name;
     }
 
-    public long getNumberOfSeats() {
+    public int getNumberOfSeats() {
         return numberOfSeats;
     }
 
-    public void setNumberOfSeats(long numberOfSeats) {
+    public void setNumberOfSeats(int numberOfSeats) {
         this.numberOfSeats = numberOfSeats;
     }
     
-    public Set<Long> getAllSeats() {
-        return LongStream.range(1, numberOfSeats+1).boxed().collect(Collectors.toSet());
+    public Set<Integer> getAllSeats() {
+        return IntStream.range(1, numberOfSeats+1).boxed().collect(Collectors.toSet());
     }
 
-    public Set<Long> getVipSeats() {
+    public Set<Integer> getVipSeats() {
         return vipSeats;
     }
 
-    public void setVipSeats(Set<Long> vipSeats) {
+    public void setVipSeats(Set<Integer> vipSeats) {
         this.vipSeats = vipSeats;
     }
 

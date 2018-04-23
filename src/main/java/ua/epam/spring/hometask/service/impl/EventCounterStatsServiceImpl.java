@@ -1,6 +1,5 @@
 package ua.epam.spring.hometask.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.epam.spring.hometask.dao.interf.EventStatsDAO;
 import ua.epam.spring.hometask.domain.Event;
@@ -13,11 +12,14 @@ import ua.epam.spring.hometask.service.interf.EventCounterStatsService;
 @Service
 public class EventCounterStatsServiceImpl implements EventCounterStatsService {
 
-    @Autowired
     private EventStatsDAO eventStatsCounterDAO;
 
+    public EventCounterStatsServiceImpl(EventStatsDAO eventStatsCounterDAO) {
+        this.eventStatsCounterDAO = eventStatsCounterDAO;
+    }
+
     @Override
-    public long getAccessByNameCount(Event event) {
+    public int getAccessByNameCount(Event event) {
         EventStats stats = eventStatsCounterDAO.getByEventId(event.getId());
         return stats != null ? stats.getAccessByName() : 0;
     }
@@ -30,7 +32,7 @@ public class EventCounterStatsServiceImpl implements EventCounterStatsService {
     }
 
     @Override
-    public long getPriceQueryCount(Event event) {
+    public int getPriceQueryCount(Event event) {
         EventStats stats = eventStatsCounterDAO.getByEventId(event.getId());
         return stats != null ? stats.getPriceQuery() : 0;
     }
@@ -43,7 +45,7 @@ public class EventCounterStatsServiceImpl implements EventCounterStatsService {
     }
 
     @Override
-    public long getTicketsBookedTimesCount(Event event) {
+    public int getTicketsBookedTimesCount(Event event) {
         EventStats stats = eventStatsCounterDAO.getByEventId(event.getId());
         return stats != null ? stats.getTicketsBooked() : 0;
     }

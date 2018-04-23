@@ -26,11 +26,11 @@ public class DiscountAspect {
 
     @Around(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.bookTickets(..))")
     @SuppressWarnings("unchecked")
-    public Set<Long> discountCounter(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Set<Integer> discountCounter(ProceedingJoinPoint joinPoint) throws Throwable {
         List<Ticket> tickets = (List<Ticket>) joinPoint.getArgs()[0];
         List<Discount> discounts = (List<Discount>) joinPoint.getArgs()[1];
 
-        Set<Long> bookedTickets = (Set<Long>) joinPoint.proceed();
+        Set<Integer> bookedTickets = (Set<Integer>) joinPoint.proceed();
 
         for (int i = 0; i < discounts.size(); i++) {
             if (discounts.get(i).getPercent() != 0) {

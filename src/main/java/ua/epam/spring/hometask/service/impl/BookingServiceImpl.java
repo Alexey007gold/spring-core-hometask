@@ -49,17 +49,17 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Ticket> generateTickets(@Nonnull Event event, @Nonnull LocalDateTime dateTime,
-                                        @Nullable User user, @Nonnull Set<Long> seats) {
+                                        @Nullable User user, @Nonnull Set<Integer> seats) {
         List<Ticket> ticketList = new ArrayList<>(seats.size());
 
         double normalSeatPrice = event.getBasePrice() * eventRatingPriceRate.get(event.getRating());
         double vipSeatPrice = normalSeatPrice * vipSeatPriceRate;
 
         Auditorium auditorium = event.getAirDates().get(dateTime).getAuditorium();
-        Set<Long> vipSeats = auditorium.getVipSeats();
+        Set<Integer> vipSeats = auditorium.getVipSeats();
 
         double ticketPrice;
-        for (Long seat : seats) {
+        for (Integer seat : seats) {
             ticketPrice = vipSeats.contains(seat) ? vipSeatPrice : normalSeatPrice;
             Ticket ticket = new Ticket(user, event, dateTime, seat, ticketPrice);
             ticketList.add(ticket);
@@ -86,9 +86,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Set<Long> bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts) {
+    public Set<Integer> bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts) {
         Set<User> usersInvolved = new HashSet<>();
-        Set<Long> bookedSeats = new HashSet<>();
+        Set<Integer> bookedSeats = new HashSet<>();
 
         for (int i = 0; i < tickets.size(); i++) {
             Ticket ticket = tickets.get(i);
@@ -96,14 +96,9 @@ public class BookingServiceImpl implements BookingService {
                 applyDiscount(ticket, discounts.get(i));
 
                 User user = ticket.getUser();
-                if (user != null) {
-                    Long userId = user.getId();
-                    if (userId != null && userService.getById(userId) != null) {//if user is registered
-                        usersInvolved.add(user);
-                        user.getTickets().add(ticket);
-                    } else {
-                        ticketService.save(ticket);
-                    }
+                if (userService.isUserRegistered(user)) {
+                    usersInvolved.add(user);
+                    user.getTickets().add(ticket);
                 } else {
                     ticketService.save(ticket);
                 }

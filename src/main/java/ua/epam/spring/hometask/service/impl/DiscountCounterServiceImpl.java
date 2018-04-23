@@ -1,6 +1,5 @@
 package ua.epam.spring.hometask.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.epam.spring.hometask.dao.interf.DiscountStatsDAO;
 import ua.epam.spring.hometask.domain.DiscountStats;
@@ -15,8 +14,11 @@ import java.util.Collection;
 @Service
 public class DiscountCounterServiceImpl implements DiscountCounterService {
 
-    @Autowired
     private DiscountStatsDAO discountStatsDAO;
+
+    public DiscountCounterServiceImpl(DiscountStatsDAO discountStatsDAO) {
+        this.discountStatsDAO = discountStatsDAO;
+    }
 
     @Override
     public void count(String type, User user) {
@@ -37,7 +39,7 @@ public class DiscountCounterServiceImpl implements DiscountCounterService {
     }
 
     @Override
-    public long getTotalDiscountCountForType(String discountType) {
+    public int getTotalDiscountCountForType(String discountType) {
         return discountStatsDAO.getByUserIdAndDiscountType(null, discountType).getTimes();
     }
 

@@ -1,6 +1,5 @@
 package ua.epam.spring.hometask.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -19,11 +18,14 @@ import java.sql.*;
 @Component
 public class TicketDAOImpl extends AbstractDomainObjectDAO<Ticket> implements TicketDAO {
 
-    @Autowired
     private UserDAO userDAO;
-
-    @Autowired
     private EventDAO eventDAO;
+
+    public TicketDAOImpl(JdbcTemplate jdbcTemplate, UserDAO userDAO, EventDAO eventDAO) {
+        super(jdbcTemplate);
+        this.userDAO = userDAO;
+        this.eventDAO = eventDAO;
+    }
 
     private RowMapper<Ticket> rowMapper = new RowMapper<Ticket>() {
         @Override
@@ -31,17 +33,13 @@ public class TicketDAOImpl extends AbstractDomainObjectDAO<Ticket> implements Ti
             Ticket ticket = new Ticket(userDAO.getById(rs.getLong(2)),
                     eventDAO.getById(rs.getLong(3)),
                     rs.getTimestamp(4).toLocalDateTime(),
-                    rs.getLong(5),
+                    rs.getInt(5),
                     rs.getDouble(6));
             ticket.setId(rs.getLong(1));
 
             return ticket;
         }
     };
-
-    public TicketDAOImpl(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
-    }
 
     @Override
     protected RowMapper<Ticket> getRowMapper() {
@@ -69,7 +67,7 @@ public class TicketDAOImpl extends AbstractDomainObjectDAO<Ticket> implements Ti
                 }
                 ps.setLong(2, ticket.getEvent().getId());
                 ps.setTimestamp(3, Timestamp.valueOf(ticket.getDateTime()));
-                ps.setLong(4, ticket.getSeat());
+                ps.setInt(4, ticket.getSeat());
                 ps.setDouble(5, ticket.getPrice());
                 return ps;
             }, keyHolder);

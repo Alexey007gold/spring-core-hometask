@@ -1,6 +1,5 @@
 package ua.epam.spring.hometask.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -30,14 +29,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/tickets")
 public class BookingController {
 
-    @Autowired
     private BookingService bookingService;
-    @Autowired
     private EventService eventService;
-    @Autowired
     private UserService userService;
-    @Autowired
     private DiscountService discountService;
+
+    public BookingController(BookingService bookingService, EventService eventService,
+                             UserService userService, DiscountService discountService) {
+        this.bookingService = bookingService;
+        this.eventService = eventService;
+        this.userService = userService;
+        this.discountService = discountService;
+    }
 
     @RequestMapping("/booked")
     public String getBookedTickets(@ModelAttribute("model") ModelMap model,
@@ -59,14 +62,14 @@ public class BookingController {
 
     @RequestMapping("/available")
     @ResponseBody
-    public Set<Long> getAvailableSeats(@RequestParam Long eventId, @RequestParam Long time) {
+    public Set<Integer> getAvailableSeats(@RequestParam Long eventId, @RequestParam Long time) {
         Event event = eventService.getById(eventId);
         LocalDateTime dateTime = Timestamp.from(Instant.ofEpochSecond(time)).toLocalDateTime();
         Set<Ticket> bookedTickets = bookingService.getPurchasedTicketsForEvent(event, dateTime);
 
         long numberOfSeats = event.getAirDates().get(dateTime).getAuditorium().getNumberOfSeats();
-        Set<Long> availableSeats = new HashSet<>();
-        for (long i = 1; i <= numberOfSeats; i++) {
+        Set<Integer> availableSeats = new HashSet<>();
+        for (int i = 1; i <= numberOfSeats; i++) {
             availableSeats.add(i);
         }
         for (Ticket bookedTicket : bookedTickets) {
@@ -85,14 +88,14 @@ public class BookingController {
         if (userId != null) {
             user = userService.getById(userId);
         }
-        Set<Long> seatsSet = Arrays.stream(seats.split(",")).map(Long::parseLong).collect(Collectors.toSet());
+        Set<Integer> seatsSet = Arrays.stream(seats.split(",")).map(Integer::parseInt).collect(Collectors.toSet());
         List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, seatsSet);
         return bookingService.getTicketsPriceWithDiscount(event, dateTime, user, tickets);
     }
 
     @RequestMapping("/book")
     @ResponseBody
-    public Set<Long> bookTickets(@RequestParam Long eventId, @RequestParam Long time,
+    public Set<Integer> bookTickets(@RequestParam Long eventId, @RequestParam Long time,
                            @RequestParam(required = false) Long userId, @RequestParam String seats) {
         Event event = eventService.getById(eventId);
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(time), TimeZone.getDefault().toZoneId());
@@ -101,7 +104,7 @@ public class BookingController {
             user = userService.getById(userId);
         }
 
-        Set<Long> seatsSet = Arrays.stream(seats.split(",")).map(Long::parseLong).collect(Collectors.toSet());
+        Set<Integer> seatsSet = Arrays.stream(seats.split(",")).map(Integer::parseInt).collect(Collectors.toSet());
         List<Ticket> ticketList = bookingService.generateTickets(event, dateTime, user, seatsSet);
 
         List<Discount> discountList = discountService.getDiscount(user, event, dateTime, seats.length());

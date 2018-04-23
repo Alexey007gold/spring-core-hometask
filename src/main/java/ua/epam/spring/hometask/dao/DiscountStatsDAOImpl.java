@@ -23,7 +23,7 @@ public class DiscountStatsDAOImpl extends AbstractDomainObjectDAO<DiscountStats>
         discountStats.setId(rs.getLong(1));
         discountStats.setDiscountType(rs.getString(2));
         discountStats.setUserId(rs.getLong(3));
-        discountStats.setTimes(rs.getLong(4));
+        discountStats.setTimes(rs.getInt(4));
         return discountStats;
     };
 
@@ -67,7 +67,7 @@ public class DiscountStatsDAOImpl extends AbstractDomainObjectDAO<DiscountStats>
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, stats.getDiscountType());
                 ps.setObject(2, stats.getUserId());
-                ps.setLong(3, stats.getTimes());
+                ps.setInt(3, stats.getTimes());
                 return ps;
             }, keyHolder);
 
