@@ -31,4 +31,25 @@ public class UserRole extends DomainObject {
     public void setRole(String role) {
         this.role = role;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserRole userRole = (UserRole) o;
+
+        if (getId() != null && (userRole.getId() == null)) return false;
+        if (!getId().equals(userRole.getId())) return false;
+        if (!getUserId().equals(userRole.getUserId())) return false;
+        return getRole().equals(userRole.getRole());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result += getUserId().hashCode();
+        result = 31 * result + getRole().hashCode();
+        return result;
+    }
 }
