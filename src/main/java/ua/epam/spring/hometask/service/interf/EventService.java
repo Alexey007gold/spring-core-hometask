@@ -4,6 +4,8 @@ import ua.epam.spring.hometask.domain.Event;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -41,5 +43,12 @@ public interface EventService extends AbstractDomainObjectService<Event> {
      * @return Set of events
      */
      public @Nonnull Set<Event> getNextEvents(@Nonnull LocalDateTime to);
+
+    /**
+     * Parses events from inputStream and saves them
+     * @param inputStream inputStream with events data
+     * @throws IOException when an IO exception occurs
+     */
+     public void parseEventsFromInputStream(InputStream inputStream) throws IOException;
 
 }

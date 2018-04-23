@@ -4,6 +4,8 @@ import ua.epam.spring.hometask.domain.User;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -50,7 +52,24 @@ public interface UserService extends AbstractDomainObjectService<User> {
     public @Nullable
     List<User> getUsersByFirstAndLastName(@Nonnull String firstName, @Nonnull String lastName);
 
+    /**
+     * Finding user by login
+     * @param login login of the user
+     * @return found user or <code>null</code>
+     */
     public @Nullable User getUserByLogin(String login);
 
+    /**
+     * Checks whetheer a user is registered
+     * @param user a user to check
+     * @return true/false
+     */
     public boolean isUserRegistered(User user);
+
+    /**
+     * Parses users from inputStream and saves them
+     * @param inputStream inputStream with users data
+     * @throws IOException when an IO exception occurs
+     */
+    public void parseUsersFromInputStream(InputStream inputStream) throws IOException;
 }

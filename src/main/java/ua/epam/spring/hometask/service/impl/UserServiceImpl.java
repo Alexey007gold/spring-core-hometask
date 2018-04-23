@@ -1,12 +1,22 @@
 package ua.epam.spring.hometask.service.impl;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ua.epam.spring.hometask.dao.interf.UserDAO;
 import ua.epam.spring.hometask.domain.User;
+import ua.epam.spring.hometask.domain.UserRole;
+import ua.epam.spring.hometask.service.interf.UserRoleService;
 import ua.epam.spring.hometask.service.interf.UserService;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,8 +25,14 @@ import java.util.List;
 @Service
 public class UserServiceImpl extends AbstractDomainObjectServiceImpl<User, UserDAO> implements UserService {
 
-    public UserServiceImpl(UserDAO userDAO) {
-        super(userDAO);
+    private UserRoleService userRoleService;
+    private PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(UserDAO domainObjectDAO, UserRoleService userRoleService,
+                           PasswordEncoder passwordEncoder) {
+        super(domainObjectDAO);
+        this.userRoleService = userRoleService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Nullable
@@ -52,5 +68,30 @@ public class UserServiceImpl extends AbstractDomainObjectServiceImpl<User, UserD
     @Override
     public boolean isUserRegistered(User user) {
         return user != null && user.getId() != null && getById(user.getId()) != null;
+    }
+
+    @Override
+    public void parseUsersFromInputStream(InputStream inputStream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] split = line.split(",");
+            LocalDate dateTime = new Timestamp(Long.parseLong(split[5]) * 1000).toLocalDateTime().toLocalDate();
+            User user = new User();
+            user.setFirstName(split[0]);
+            user.setLastName(split[1]);
+            user.setEmail(split[2]);
+            user.setLogin(split[3]);
+            user.setPassword(passwordEncoder.encode(split[4]));
+            user.setBirthDate(dateTime);
+            save(user);
+
+            List<UserRole> userRoles = new ArrayList<>();
+            for (int i = 6; i < split.length; i++) {
+                userRoles.add(new UserRole(user.getId(), split[i]));
+            }
+            userRoles.forEach(ur -> userRoleService.save(ur));
+        }
+        reader.close();
     }
 }

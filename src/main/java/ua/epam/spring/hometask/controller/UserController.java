@@ -2,23 +2,15 @@ package ua.epam.spring.hometask.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.epam.spring.hometask.domain.User;
-import ua.epam.spring.hometask.domain.UserRole;
-import ua.epam.spring.hometask.service.interf.UserRoleService;
 import ua.epam.spring.hometask.service.interf.UserService;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,13 +22,9 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
-    private UserRoleService userRoleService;
-    private PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService, UserRoleService userRoleService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userRoleService = userRoleService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @RequestMapping
@@ -75,27 +63,7 @@ public class UserController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public void uploadUsers(@RequestParam("file") MultipartFile file) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] split = line.split(",");
-            LocalDate dateTime = new Timestamp(Long.parseLong(split[5]) * 1000).toLocalDateTime().toLocalDate();
-            User user = new User();
-            user.setFirstName(split[0]);
-            user.setLastName(split[1]);
-            user.setEmail(split[2]);
-            user.setLogin(split[3]);
-            user.setPassword(passwordEncoder.encode(split[4]));
-            user.setBirthDate(dateTime);
-            userService.save(user);
-
-            List<UserRole> userRoles = new ArrayList<>();
-            for (int i = 6; i < split.length; i++) {
-                userRoles.add(new UserRole(user.getId(), split[i]));
-            }
-            userRoles.forEach(ur -> userRoleService.save(ur));
-        }
-        reader.close();
+        userService.parseUsersFromInputStream(file.getInputStream());
     }
 
 
