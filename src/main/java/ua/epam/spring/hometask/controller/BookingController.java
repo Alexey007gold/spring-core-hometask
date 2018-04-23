@@ -7,19 +7,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.Ticket;
-import ua.epam.spring.hometask.domain.User;
+import ua.epam.spring.hometask.service.interf.BookingFacadeService;
 import ua.epam.spring.hometask.service.interf.BookingService;
-import ua.epam.spring.hometask.service.interf.DiscountService;
 import ua.epam.spring.hometask.service.interf.EventService;
 import ua.epam.spring.hometask.service.interf.UserService;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 /**
@@ -32,14 +33,14 @@ public class BookingController {
     private BookingService bookingService;
     private EventService eventService;
     private UserService userService;
-    private DiscountService discountService;
+    private BookingFacadeService bookingFacadeService;
 
     public BookingController(BookingService bookingService, EventService eventService,
-                             UserService userService, DiscountService discountService) {
+                             UserService userService, BookingFacadeService bookingFacadeService) {
         this.bookingService = bookingService;
         this.eventService = eventService;
         this.userService = userService;
-        this.discountService = discountService;
+        this.bookingFacadeService = bookingFacadeService;
     }
 
     @RequestMapping("/booked")
@@ -63,52 +64,28 @@ public class BookingController {
     @RequestMapping("/available")
     @ResponseBody
     public Set<Integer> getAvailableSeats(@RequestParam Long eventId, @RequestParam Long time) {
-        Event event = eventService.getById(eventId);
         LocalDateTime dateTime = Timestamp.from(Instant.ofEpochSecond(time)).toLocalDateTime();
-        Set<Ticket> bookedTickets = bookingService.getPurchasedTicketsForEvent(event, dateTime);
-
-        long numberOfSeats = event.getAirDates().get(dateTime).getAuditorium().getNumberOfSeats();
-        Set<Integer> availableSeats = new HashSet<>();
-        for (int i = 1; i <= numberOfSeats; i++) {
-            availableSeats.add(i);
-        }
-        for (Ticket bookedTicket : bookedTickets) {
-            availableSeats.remove(bookedTicket.getSeat());
-        }
-        return availableSeats;
+        return bookingFacadeService.getAvailableSeats(eventId, dateTime);
     }
 
     @RequestMapping("/price")
     @ResponseBody
     public double getPrice(@RequestParam Long eventId, @RequestParam Long time,
                            @RequestParam(required = false) Long userId, @RequestParam String seats) {
-        Event event = eventService.getById(eventId);
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(time), TimeZone.getDefault().toZoneId());
-        User user = null;
-        if (userId != null) {
-            user = userService.getById(userId);
-        }
+
         Set<Integer> seatsSet = Arrays.stream(seats.split(",")).map(Integer::parseInt).collect(Collectors.toSet());
-        List<Ticket> tickets = bookingService.generateTickets(event, dateTime, user, seatsSet);
-        return bookingService.getTicketsPriceWithDiscount(event, dateTime, user, tickets);
+        return bookingFacadeService.getTicketsPrice(eventId, dateTime, userId, seatsSet);
     }
 
     @RequestMapping("/book")
     @ResponseBody
     public Set<Integer> bookTickets(@RequestParam Long eventId, @RequestParam Long time,
                            @RequestParam(required = false) Long userId, @RequestParam String seats) {
-        Event event = eventService.getById(eventId);
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(time), TimeZone.getDefault().toZoneId());
-        User user = null;
-        if (userId != null) {
-            user = userService.getById(userId);
-        }
 
         Set<Integer> seatsSet = Arrays.stream(seats.split(",")).map(Integer::parseInt).collect(Collectors.toSet());
-        List<Ticket> ticketList = bookingService.generateTickets(event, dateTime, user, seatsSet);
-
-        List<Discount> discountList = discountService.getDiscount(user, event, dateTime, seats.length());
-        return bookingService.bookTickets(ticketList, discountList);
+        return bookingFacadeService.bookTickets(eventId, dateTime, userId, seatsSet);
     }
 
 
