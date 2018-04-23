@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.controller;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -45,19 +46,39 @@ public class BookingController {
 
     @RequestMapping("/booked")
     public String getBookedTickets(@ModelAttribute("model") ModelMap model,
-                                   @RequestParam(required = false) Long userId,
+                                   Authentication authentication,
                                    @RequestParam(required = false) Long eventId,
-                                   @RequestParam(required = false) Long time) {
-        model.addAttribute("ticketList", getTicketsByUserIdAndEvent(userId, eventId, time));
+                                   @RequestParam(required = false) Long time,
+                                   @RequestParam(required = false, defaultValue = "true") boolean onlyMyTickets) {
+        Long userId = null;
+        LocalDateTime dateTime = null;
+        if (onlyMyTickets) {
+            userId = userService.getUserByLogin(authentication.getName()).getId();
+        }
+        if (time != null) {
+            dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(time), TimeZone.getDefault().toZoneId());
+        }
+
+        model.addAttribute("ticketList", getTicketsByUserIdAndEvent(userId, eventId, dateTime));
         return "tickets";
     }
 
     @RequestMapping("/booked/pdf")
     public String getBookedTicketsPdf(Model model,
-                                   @RequestParam(required = false) Long userId,
-                                   @RequestParam(required = false) Long eventId,
-                                   @RequestParam(required = false) Long time) {
-        model.addAttribute("ticketList", getTicketsByUserIdAndEvent(userId, eventId, time));
+                                      Authentication authentication,
+                                      @RequestParam(required = false) Long eventId,
+                                      @RequestParam(required = false) Long time,
+                                      @RequestParam(required = false, defaultValue = "true") boolean onlyMyTickets) {
+        Long userId = null;
+        LocalDateTime dateTime = null;
+        if (onlyMyTickets) {
+            userId = userService.getUserByLogin(authentication.getName()).getId();
+        }
+        if (time != null) {
+            dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(time), TimeZone.getDefault().toZoneId());
+        }
+
+        model.addAttribute("ticketList", getTicketsByUserIdAndEvent(userId, eventId, dateTime));
         return "ticketPdfView";
     }
 
@@ -70,8 +91,9 @@ public class BookingController {
 
     @RequestMapping("/price")
     @ResponseBody
-    public double getPrice(@RequestParam Long eventId, @RequestParam Long time,
-                           @RequestParam(required = false) Long userId, @RequestParam String seats) {
+    public double getPrice(Authentication authentication, @RequestParam Long eventId,
+                           @RequestParam Long time, @RequestParam String seats) {
+        Long userId = userService.getUserByLogin(authentication.getName()).getId();
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(time), TimeZone.getDefault().toZoneId());
 
         Set<Integer> seatsSet = Arrays.stream(seats.split(",")).map(Integer::parseInt).collect(Collectors.toSet());
@@ -80,8 +102,9 @@ public class BookingController {
 
     @RequestMapping("/book")
     @ResponseBody
-    public Set<Integer> bookTickets(@RequestParam Long eventId, @RequestParam Long time,
-                           @RequestParam(required = false) Long userId, @RequestParam String seats) {
+    public Set<Integer> bookTickets(Authentication authentication, @RequestParam Long eventId,
+                                    @RequestParam Long time, @RequestParam String seats) {
+        Long userId = userService.getUserByLogin(authentication.getName()).getId();
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(time), TimeZone.getDefault().toZoneId());
 
         Set<Integer> seatsSet = Arrays.stream(seats.split(",")).map(Integer::parseInt).collect(Collectors.toSet());
@@ -89,23 +112,24 @@ public class BookingController {
     }
 
 
-    private Set<Ticket> getTicketsByUserIdAndEvent(Long userId, Long eventId, Long time) {
+    private Set<Ticket> getTicketsByUserIdAndEvent(Long userId, Long eventId, LocalDateTime dateTime) {
         Set<Ticket> tickets;
 
-        if (eventId != null) {
+        if (userId != null) {
+            tickets = userService.getById(userId).getTickets();
+            if (eventId != null) {
+                tickets.removeIf(t -> !t.getEvent().getId().equals(eventId));
+                if (dateTime != null) {
+                    tickets.removeIf(t -> !t.getDateTime().equals(dateTime));
+                }
+            }
+        } else if (eventId != null) {
             Event event = eventService.getById(eventId);
-            if (time != null) {
-                tickets = bookingService.getPurchasedTicketsForEvent(event,
-                        LocalDateTime.ofInstant(Instant.ofEpochSecond(time), TimeZone.getDefault().toZoneId()));
+            if (dateTime != null) {
+                tickets = bookingService.getPurchasedTicketsForEvent(event, dateTime);
             } else {
                 tickets = bookingService.getPurchasedTicketsForEvent(event);
             }
-
-            if (userId != null) {
-                tickets.removeIf(t -> !t.getUser().getId().equals(userId));
-            }
-        } else if (userId != null) {
-            tickets = userService.getById(userId).getTickets();
         } else {
             tickets = Collections.emptySet();
         }
