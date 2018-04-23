@@ -51,4 +51,6 @@ public interface UserService extends AbstractDomainObjectService<User> {
     List<User> getUsersByFirstAndLastName(@Nonnull String firstName, @Nonnull String lastName);
 
     public @Nullable User getUserByLogin(String login);
+
+    public boolean isUserRegistered(User user);
 }

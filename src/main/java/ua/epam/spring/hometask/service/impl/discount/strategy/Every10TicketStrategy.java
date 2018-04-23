@@ -33,11 +33,11 @@ public class Every10TicketStrategy implements DiscountStrategy {
         Discount disc = new Discount("Every10TicketStrategy", (byte) 50);
         Discount noDisc = new Discount("", (byte) 0);
         int boughtTickets = 0;
-        if (isUserRegistered(user)) {
+        if (userService.isUserRegistered(user)) {
             boughtTickets = user.getTickets().size();
         }
 
-        for (long i = 1; i <= numberOfTickets; i++) {
+        for (int i = 1; i <= numberOfTickets; i++) {
             if ((boughtTickets + i) % 10 == 0) {
                 discountList.add(disc);
             } else {
@@ -45,9 +45,5 @@ public class Every10TicketStrategy implements DiscountStrategy {
             }
         }
         return discountList;
-    }
-
-    private boolean isUserRegistered(@Nullable User user) {
-        return user != null && user.getId() != null && userService.getById(user.getId()) != null;
     }
 }
