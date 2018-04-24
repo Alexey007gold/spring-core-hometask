@@ -7,6 +7,8 @@ import ua.epam.spring.hometask.service.interf.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -63,6 +65,9 @@ public class BookingServiceImpl implements BookingService {
         double ticketPrice;
         for (Integer seat : seats) {
             ticketPrice = vipSeats.contains(seat) ? vipSeatPrice : normalSeatPrice;
+            ticketPrice = BigDecimal.valueOf(ticketPrice)
+                    .setScale(2, RoundingMode.FLOOR)
+                    .doubleValue();
             Ticket ticket = new Ticket(user, event, dateTime, seat, ticketPrice);
             ticketList.add(ticket);
         }
@@ -84,7 +89,9 @@ public class BookingServiceImpl implements BookingService {
             totalPrice += ticketPrice;
         }
 
-        return totalPrice;
+        return BigDecimal.valueOf(totalPrice)
+                .setScale(2, RoundingMode.FLOOR)
+                .doubleValue();
     }
 
     @Override
@@ -112,9 +119,11 @@ public class BookingServiceImpl implements BookingService {
         if (user != null) {
             UserAccount userAccount = userAccountService.getByUserId(user.getId());
             double balance = userAccount.getBalance();
-            double totalPrice = tickets.stream().mapToDouble(Ticket::getPrice).sum();
-            if (Double.compare(balance, totalPrice) < 1) {
-                throw new IllegalStateException(String.format("Not enough money. You have %s, but required %s", balance, totalPrice));
+            double totalPrice = BigDecimal.valueOf(tickets.stream().mapToDouble(Ticket::getPrice).sum())
+                    .setScale(2, RoundingMode.FLOOR)
+                    .doubleValue();
+            if (Double.compare(balance, totalPrice) < 0) {
+                throw new IllegalStateException(String.format("Not enough money. You have %.2f, but required %.2f", balance, totalPrice));
             }
             userAccount.setBalance(balance - totalPrice);
             userAccountService.save(userAccount);
@@ -128,13 +137,20 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkIsAnyTicketBooked(Event event, LocalDateTime dateTime, Set<Integer> seats) {
-        if (getPurchasedTicketsForEvent(event, dateTime).stream().anyMatch(t -> seats.contains(t.getSeat()))) {
-            throw new IllegalStateException("Some seats are booked already");
+        Set<Ticket> purchasedTicketsForEvent = getPurchasedTicketsForEvent(event, dateTime);
+        for (Ticket ticket : purchasedTicketsForEvent) {
+            if (seats.contains(ticket.getSeat())) {
+                throw new IllegalStateException("Some seats are booked already");
+            }
         }
     }
 
     private void applyDiscount(Ticket ticket, @Nonnull Discount discount) {
-        ticket.setPrice(ticket.getPrice() * ((100 - discount.getPercent()) / 100.0));
+        double price = ticket.getPrice() * ((100 - discount.getPercent()) / 100.0);
+        price = BigDecimal.valueOf(price)
+                .setScale(2, RoundingMode.FLOOR)
+                .doubleValue();
+        ticket.setPrice(price);
     }
 
     @Nonnull

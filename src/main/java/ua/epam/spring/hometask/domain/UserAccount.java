@@ -1,5 +1,8 @@
 package ua.epam.spring.hometask.domain;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Created by Oleksii_Kovetskyi on 4/24/2018.
  */
@@ -13,7 +16,7 @@ public class UserAccount extends DomainObject {
 
     public UserAccount(Long userId, double balance) {
         this.userId = userId;
-        this.balance = balance;
+        setBalance(balance);
     }
 
     public Long getUserId() {
@@ -29,6 +32,8 @@ public class UserAccount extends DomainObject {
     }
 
     public void setBalance(double balance) {
-        this.balance = balance;
+        this.balance = BigDecimal.valueOf(balance)
+            .setScale(2, RoundingMode.FLOOR)
+            .doubleValue();
     }
 }
