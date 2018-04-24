@@ -6,8 +6,12 @@ import ua.epam.spring.hometask.dao.EventDAOImpl;
 import ua.epam.spring.hometask.domain.Auditorium;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.EventDate;
+import ua.epam.spring.hometask.service.interf.AuditoriumService;
 import ua.epam.spring.hometask.service.interf.EventService;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -17,8 +21,7 @@ import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 import static ua.epam.spring.hometask.domain.EventRating.LOW;
 
@@ -28,11 +31,14 @@ import static ua.epam.spring.hometask.domain.EventRating.LOW;
 public class TestEventServiceImpl {
 
     private EventService eventService;
+    private EventDAOImpl eventDAO;
+    private AuditoriumService auditoriumService;
 
     @Before
     public void init() {
-        EventDAOImpl eventDAO = mock(EventDAOImpl.class);
-        eventService = new EventServiceImpl(eventDAO);
+        eventDAO = mock(EventDAOImpl.class);
+        auditoriumService = mock(AuditoriumServiceImpl.class);
+        eventService = new EventServiceImpl(eventDAO, auditoriumService);
 
         Auditorium auditorium = new Auditorium();
         auditorium.setName("1");
@@ -124,5 +130,18 @@ public class TestEventServiceImpl {
         assertEquals(45, res2Map.get("Star Wars").getBasePrice(), 0);
 
         assertEquals(0, res3.size());
+    }
+
+    @Test
+    public void shouldSaveEventsToDAO_OnParseEventsFromInputStreamCall() throws IOException {
+        String str = "Titanik,40.99,HIGH,434353443,1,4343534344,2\n" +
+                "Santa Barbara,20.99,LOW,434353943,1,4343934344,2";
+        InputStream inputStream = new ByteArrayInputStream(str.getBytes());
+        eventService.parseEventsFromInputStream(inputStream);
+
+        verify(auditoriumService, times(4)).getByName(any());
+        verify(auditoriumService, times(2)).getByName("1");
+        verify(auditoriumService, times(2)).getByName("2");
+        verify(eventDAO, times(2)).save(any());
     }
 }
