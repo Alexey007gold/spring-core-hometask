@@ -2,10 +2,7 @@ package ua.epam.spring.hometask.service.impl;
 
 import org.springframework.stereotype.Service;
 import ua.epam.spring.hometask.domain.*;
-import ua.epam.spring.hometask.service.interf.BookingService;
-import ua.epam.spring.hometask.service.interf.DiscountService;
-import ua.epam.spring.hometask.service.interf.TicketService;
-import ua.epam.spring.hometask.service.interf.UserService;
+import ua.epam.spring.hometask.service.interf.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,6 +10,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static java.util.stream.Collectors.toSet;
 import static ua.epam.spring.hometask.domain.EventRating.*;
 
 /**
@@ -23,14 +21,16 @@ public class BookingServiceImpl implements BookingService {
 
     private DiscountService discountService;
     private UserService userService;
+    private UserAccountService userAccountService;
     private TicketService ticketService;
     private Map<EventRating, Double> eventRatingPriceRate;
     private double vipSeatPriceRate;
 
     public BookingServiceImpl(DiscountService discountService, UserService userService,
-                              TicketService ticketService) throws IOException {
+                              UserAccountService userAccountService, TicketService ticketService) throws IOException {
         this.discountService = discountService;
         this.userService = userService;
+        this.userAccountService = userAccountService;
         this.ticketService = ticketService;
 
         Properties props = new Properties();
@@ -50,6 +50,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<Ticket> generateTickets(@Nonnull Event event, @Nonnull LocalDateTime dateTime,
                                         @Nullable User user, @Nonnull Set<Integer> seats) {
+        checkIsAnyTicketBooked(event, dateTime, seats);
+
         List<Ticket> ticketList = new ArrayList<>(seats.size());
 
         double normalSeatPrice = event.getBasePrice() * eventRatingPriceRate.get(event.getRating());
@@ -87,28 +89,48 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Set<Integer> bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts) {
-        Set<User> usersInvolved = new HashSet<>();
-        Set<Integer> bookedSeats = new HashSet<>();
-
-        for (int i = 0; i < tickets.size(); i++) {
-            Ticket ticket = tickets.get(i);
-            if (!getPurchasedTicketsForEvent(ticket.getEvent(), ticket.getDateTime()).contains(ticket)) {//if ticket is not booked yet
-                applyDiscount(ticket, discounts.get(i));
-
-                User user = ticket.getUser();
-                if (userService.isUserRegistered(user)) {
-                    usersInvolved.add(user);
-                    user.getTickets().add(ticket);
-                } else {
-                    ticketService.save(ticket);
-                }
-                bookedSeats.add(ticket.getSeat());
+        User user = tickets.get(0).getUser();
+        Event event = tickets.get(0).getEvent();
+        LocalDateTime dateTime = tickets.get(0).getDateTime();
+        for (Ticket ticket : tickets) {
+            if (!Objects.equals(ticket.getUser(), user) ||
+                    !Objects.equals(ticket.getEvent(), event) ||
+                    !Objects.equals(ticket.getDateTime(), dateTime)) {
+                throw new IllegalStateException("Please book tickets only for one user, event and time at a time");
             }
         }
-        for (User user : usersInvolved) {
-            userService.save(user);
+
+        checkIsAnyTicketBooked(event, dateTime, tickets.stream().mapToInt(Ticket::getSeat).boxed().collect(toSet()));
+
+        if (!userService.isUserRegistered(user)) {
+            user = null;
         }
-        return bookedSeats;
+
+        for (int i = 0; i < tickets.size(); i++) {
+            applyDiscount(tickets.get(i), discounts.get(i));
+        }
+        if (user != null) {
+            UserAccount userAccount = userAccountService.getByUserId(user.getId());
+            double balance = userAccount.getBalance();
+            double totalPrice = tickets.stream().mapToDouble(Ticket::getPrice).sum();
+            if (Double.compare(balance, totalPrice) < 1) {
+                throw new IllegalStateException(String.format("Not enough money. You have %s, but required %s", balance, totalPrice));
+            }
+            userAccount.setBalance(balance - totalPrice);
+            userAccountService.save(userAccount);
+            user.getTickets().addAll(tickets);
+            userService.save(user);
+        } else {//for unregistered user
+            tickets.forEach(t -> ticketService.save(t));
+        }
+
+        return tickets.stream().mapToInt(Ticket::getSeat).boxed().collect(toSet());
+    }
+
+    private void checkIsAnyTicketBooked(Event event, LocalDateTime dateTime, Set<Integer> seats) {
+        if (getPurchasedTicketsForEvent(event, dateTime).stream().anyMatch(t -> seats.contains(t.getSeat()))) {
+            throw new IllegalStateException("Some seats are booked already");
+        }
     }
 
     private void applyDiscount(Ticket ticket, @Nonnull Discount discount) {
