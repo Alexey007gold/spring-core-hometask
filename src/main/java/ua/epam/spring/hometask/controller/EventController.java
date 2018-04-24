@@ -8,7 +8,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.epam.spring.hometask.domain.Event;
-import ua.epam.spring.hometask.service.interf.AuditoriumService;
 import ua.epam.spring.hometask.service.interf.EventService;
 
 import java.io.IOException;
@@ -25,11 +24,9 @@ import java.util.TimeZone;
 public class EventController {
 
     private EventService eventService;
-    private AuditoriumService auditoriumService;
 
-    public EventController(EventService eventService, AuditoriumService auditoriumService) {
+    public EventController(EventService eventService) {
         this.eventService = eventService;
-        this.auditoriumService = auditoriumService;
     }
 
     @RequestMapping("/coming")
