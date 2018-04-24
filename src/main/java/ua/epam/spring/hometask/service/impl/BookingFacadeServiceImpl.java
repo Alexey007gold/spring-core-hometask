@@ -22,13 +22,16 @@ public class BookingFacadeServiceImpl implements BookingFacadeService {
     private EventService eventService;
     private UserService userService;
     private DiscountService discountService;
+    private TicketService ticketService;
 
     public BookingFacadeServiceImpl(BookingService bookingService, EventService eventService,
-                                    UserService userService, DiscountService discountService) {
+                                    UserService userService, DiscountService discountService,
+                                    TicketService ticketService) {
         this.bookingService = bookingService;
         this.eventService = eventService;
         this.userService = userService;
         this.discountService = discountService;
+        this.ticketService = ticketService;
     }
 
     @Override
@@ -46,7 +49,9 @@ public class BookingFacadeServiceImpl implements BookingFacadeService {
     @Override
     public Set<Integer> getAvailableSeats(Long eventId, LocalDateTime dateTime) {
         Event event = eventService.getById(eventId);
-        Set<Ticket> bookedTickets = bookingService.getPurchasedTicketsForEvent(event, dateTime);
+        if (event == null)
+            throw new IllegalArgumentException("No such event!");
+        Set<Ticket> bookedTickets = new HashSet<>(ticketService.getByEventAndTime(event, dateTime));
 
         int numberOfSeats = event.getAirDates().get(dateTime).getAuditorium().getNumberOfSeats();
         Set<Integer> availableSeats = new HashSet<>();
