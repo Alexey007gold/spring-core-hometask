@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -21,9 +22,8 @@ public class TicketDAOImpl extends AbstractDomainObjectDAO<Ticket> implements Ti
     private UserDAO userDAO;
     private EventDAO eventDAO;
 
-    public TicketDAOImpl(JdbcTemplate jdbcTemplate, UserDAO userDAO, EventDAO eventDAO) {
+    public TicketDAOImpl(JdbcTemplate jdbcTemplate, EventDAO eventDAO) {
         super(jdbcTemplate);
-        this.userDAO = userDAO;
         this.eventDAO = eventDAO;
     }
 
@@ -82,5 +82,10 @@ public class TicketDAOImpl extends AbstractDomainObjectDAO<Ticket> implements Ti
 
         jdbcTemplate.update(sql, ticket.getUser().getId(), ticket.getEvent().getId(),
                 Timestamp.valueOf(ticket.getDateTime()), ticket.getSeat(), ticket.getPrice());
+    }
+
+    @Autowired
+    public void setUserDAO(UserDAO userDAO) {
+        this.userDAO = userDAO;
     }
 }

@@ -10,7 +10,6 @@ import ua.epam.spring.hometask.dao.TicketDAOImpl;
 import ua.epam.spring.hometask.dao.UserDAOImpl;
 import ua.epam.spring.hometask.dao.interf.EventDAO;
 import ua.epam.spring.hometask.dao.interf.TicketDAO;
-import ua.epam.spring.hometask.dao.interf.UserDAO;
 import ua.epam.spring.hometask.domain.User;
 
 import java.io.IOException;
@@ -24,14 +23,15 @@ import static org.mockito.Mockito.mock;
  */
 public class TestUserDAOImpl {
 
-    private UserDAO userDAO;
+    private UserDAOImpl userDAO;
 
     @Before
     public void init() throws IOException {
         JdbcTemplate jdbcTemplate = AppConfiguration.jdbcTemplate(new AppConfiguration().getDataSource());
         EventDAO eventDAO = mock(EventDAOImpl.class);
         TicketDAO ticketDAO = mock(TicketDAOImpl.class);
-        userDAO = new UserDAOImpl(jdbcTemplate, eventDAO, ticketDAO);
+        userDAO = new UserDAOImpl(jdbcTemplate, eventDAO);
+        userDAO.setTicketDAO(ticketDAO);
         User user1 = new User();
         user1.setFirstName("John");
         user1.setLastName("Doe");

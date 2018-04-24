@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -24,17 +25,15 @@ import javax.sql.DataSource;
 )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private UserDetailsService userDetailsService;
     private DataSource dataSource;
 
-    public SecurityConfig(UserDetailsService userDetailsService, DataSource dataSource,
-                          AuthenticationManagerBuilder auth) throws Exception {
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig(DataSource dataSource) {
         this.dataSource = dataSource;
-        registerGlobalAuthentication(auth);
     }
 
-    private void registerGlobalAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+    @Autowired
+    public void registerGlobalAuthentication(AuthenticationManagerBuilder auth,
+                                             UserDetailsService userDetailsService) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(encoder());
     }
 

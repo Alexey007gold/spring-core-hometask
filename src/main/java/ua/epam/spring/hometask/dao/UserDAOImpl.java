@@ -1,5 +1,6 @@
 package ua.epam.spring.hometask.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -29,10 +30,9 @@ public class UserDAOImpl extends AbstractDomainObjectDAO<User> implements UserDA
     private EventDAO eventDAO;
     private TicketDAO ticketDAO;
 
-    public UserDAOImpl(JdbcTemplate jdbcTemplate, EventDAO eventDAO, TicketDAO ticketDAO) {
+    public UserDAOImpl(JdbcTemplate jdbcTemplate, EventDAO eventDAO) {
         super(jdbcTemplate);
         this.eventDAO = eventDAO;
-        this.ticketDAO = ticketDAO;
     }
 
     private RowMapper<Ticket> ticketRowMapper = (rs, i) -> {
@@ -132,5 +132,10 @@ public class UserDAOImpl extends AbstractDomainObjectDAO<User> implements UserDA
     @Override
     public User getByEmail(String email) {
         return getOneBy(new String[] {"email"}, email);
+    }
+
+    @Autowired
+    public void setTicketDAO(TicketDAO ticketDAO) {
+        this.ticketDAO = ticketDAO;
     }
 }
