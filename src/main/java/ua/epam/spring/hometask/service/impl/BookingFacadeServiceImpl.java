@@ -1,10 +1,7 @@
 package ua.epam.spring.hometask.service.impl;
 
 import org.springframework.stereotype.Service;
-import ua.epam.spring.hometask.domain.Discount;
-import ua.epam.spring.hometask.domain.Event;
-import ua.epam.spring.hometask.domain.Ticket;
-import ua.epam.spring.hometask.domain.User;
+import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.service.interf.*;
 
 import java.time.LocalDateTime;
@@ -21,15 +18,17 @@ public class BookingFacadeServiceImpl implements BookingFacadeService {
     private BookingService bookingService;
     private EventService eventService;
     private UserService userService;
+    private UserAccountService userAccountService;
     private DiscountService discountService;
     private TicketService ticketService;
 
     public BookingFacadeServiceImpl(BookingService bookingService, EventService eventService,
-                                    UserService userService, DiscountService discountService,
-                                    TicketService ticketService) {
+                                    UserService userService, UserAccountService userAccountService,
+                                    DiscountService discountService, TicketService ticketService) {
         this.bookingService = bookingService;
         this.eventService = eventService;
         this.userService = userService;
+        this.userAccountService = userAccountService;
         this.discountService = discountService;
         this.ticketService = ticketService;
     }
@@ -76,5 +75,14 @@ public class BookingFacadeServiceImpl implements BookingFacadeService {
 
         List<Discount> discountList = discountService.getDiscount(user, event, dateTime, seats.size());
         return bookingService.bookTickets(ticketList, discountList);
+    }
+
+    @Override
+    public void refillAccount(Long userId, double sum) {
+        UserAccount userAccount = userAccountService.getByUserId(userId);
+        if (userAccount != null) {
+            userAccount.setBalance(userAccount.getBalance() + sum);
+            userAccountService.save(userAccount);
+        }
     }
 }

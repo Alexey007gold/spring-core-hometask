@@ -12,4 +12,6 @@ public interface BookingFacadeService {
     Set<Integer> getAvailableSeats(Long eventId, LocalDateTime dateTime);
 
     Set<Integer> bookTickets(Long eventId, LocalDateTime dateTime, Long userId, Set<Integer> seats);
+
+    void refillAccount(Long userId, double sum);
 }
