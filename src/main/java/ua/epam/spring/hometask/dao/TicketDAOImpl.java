@@ -30,33 +30,33 @@ public class TicketDAOImpl extends AbstractDomainObjectDAO<Ticket> implements Ti
 
     private RowMapper<Ticket> rowMapper = (rs, rowNum) -> {
         User user = null;
-        if (rs.getObject(7) != null) {
+        if (rs.getObject(5) != null) {
             user = new User();
-            user.setId(rs.getLong(7));
-            user.setFirstName(rs.getString(8));
-            user.setLastName(rs.getString(9));
-            user.setEmail(rs.getString(10));
-            user.setLogin(rs.getString(11));
-            user.setPassword(rs.getString(12));
-            Date date = rs.getDate(13);
+            user.setId(rs.getLong(5));
+            user.setFirstName(rs.getString(6));
+            user.setLastName(rs.getString(7));
+            user.setEmail(rs.getString(8));
+            user.setLogin(rs.getString(9));
+            user.setPassword(rs.getString(10));
+            Date date = rs.getDate(11);
             if (date != null) {
                 user.setBirthDate(date.toLocalDate());
             }
         }
 
         Event event = null;
-        if (rs.getObject(14) != null) {
+        if (rs.getObject(12) != null) {
             event = new Event();
-            event.setId(rs.getLong(14));
-            event.setName(rs.getString(15));
-            event.setRating(EventRating.values()[rs.getInt(16)]);
-            event.setBasePrice(rs.getDouble(17));
+            event.setId(rs.getLong(12));
+            event.setName(rs.getString(13));
+            event.setRating(EventRating.values()[rs.getInt(14)]);
+            event.setBasePrice(rs.getDouble(15));
         }
 
         Ticket ticket = new Ticket(user, event,
-                rs.getTimestamp(4).toLocalDateTime(),
-                rs.getInt(5),
-                rs.getDouble(6));
+                rs.getTimestamp(2).toLocalDateTime(),
+                rs.getInt(3),
+                rs.getDouble(4));
         ticket.setId(rs.getLong(1));
 
         return ticket;
@@ -74,7 +74,7 @@ public class TicketDAOImpl extends AbstractDomainObjectDAO<Ticket> implements Ti
 
     @Override
     protected String getColumnNamesLine() {
-        return "tickets.id, tickets.user_id, tickets.event_id, tickets.time, tickets.seat, tickets.price, " +
+        return "tickets.id, tickets.time, tickets.seat, tickets.price, " +
                 "users.id, users.first_name, users.last_name, users.email, users.login, users.password, users.birth_date, " +
                 "events.id, events.name, events.rating, events.base_price";
     }
