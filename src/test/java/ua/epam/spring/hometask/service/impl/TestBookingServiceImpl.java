@@ -2,11 +2,11 @@ package ua.epam.spring.hometask.service.impl;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import ua.epam.spring.hometask.domain.*;
-import ua.epam.spring.hometask.service.interf.BookingService;
-import ua.epam.spring.hometask.service.interf.DiscountService;
-import ua.epam.spring.hometask.service.interf.TicketService;
-import ua.epam.spring.hometask.service.interf.UserService;
+import ua.epam.spring.hometask.exception.NotEnoughMoneyException;
+import ua.epam.spring.hometask.exception.SeatIsAlreadyBookedException;
+import ua.epam.spring.hometask.service.interf.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -26,6 +26,7 @@ public class TestBookingServiceImpl {
     private BookingService bookingService;
     private DiscountService discountService;
     private UserService userService;
+    private UserAccountService userAccountService;
     private TicketService ticketService;
 
     private Event event;
@@ -37,8 +38,9 @@ public class TestBookingServiceImpl {
     public void init() throws IOException {
         discountService = mock(DiscountServiceImpl.class);
         userService = mock(UserServiceImpl.class);
+        userAccountService = mock(UserAccountServiceImpl.class);
         ticketService = mock(TicketServiceImpl.class);
-        bookingService = new BookingServiceImpl(discountService, userService, ticketService);
+        bookingService = new BookingServiceImpl(discountService, userService, userAccountService, ticketService);
 
         dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
 
@@ -107,8 +109,9 @@ public class TestBookingServiceImpl {
     }
 
     @Test
-    public void shouldApplyDiscountAndAddTicketsToUserOnBookTicketsCall() {
+    public void shouldApplyDiscountAndAddTicketsToUserAndWithdrawMoneyOnBookTicketsCall() {
         when(userService.isUserRegistered(user)).thenReturn(true);
+        when(userAccountService.getByUserId(user.getId())).thenReturn(new UserAccount(user.getId(), 200));
         Discount discount = new Discount("a", (byte) 20);
         List<Discount> discountList = Arrays.asList(discount, discount);
 
@@ -116,11 +119,37 @@ public class TestBookingServiceImpl {
 
         verify(userService, times(1)).save(user);
         verify(ticketService, times(0)).save(any());
+        ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
+        verify(userAccountService, times(1)).save(captor.capture());
+        assertEquals(200 - 64, captor.getValue().getBalance(), 0.0000001);
         assertEquals(2, user.getTickets().size());
         for (Ticket ticket : tickets) {
             assertTrue(user.getTickets().contains(ticket));
             assertEquals(32, ticket.getPrice(), 0.0000001);
         }
+    }
+
+    @Test(expected = SeatIsAlreadyBookedException.class)
+    public void shouldThrowAnExceptionOnBookTicketsCallWhenATicketIsBooked() {
+        when(userService.isUserRegistered(user)).thenReturn(true);
+        when(userAccountService.getByUserId(user.getId())).thenReturn(new UserAccount(user.getId(), 200));
+        when(ticketService.getByEventAndTime(event, dateTime))
+                .thenReturn(Collections.singletonList(new Ticket(user, event, dateTime, 2, 40)));
+        Discount discount = new Discount("a", (byte) 20);
+        List<Discount> discountList = Arrays.asList(discount, discount);
+
+        bookingService.bookTickets(tickets, discountList);
+    }
+
+    @Test(expected = NotEnoughMoneyException.class)
+    public void shouldThrowAnExceptionOnBookTicketsCallWhenNotEnoughMoney() {
+        when(userService.isUserRegistered(user)).thenReturn(true);
+        when(userAccountService.getByUserId(user.getId())).thenReturn(new UserAccount(user.getId(), 63.99999));
+        when(ticketService.getByEventAndTime(event, dateTime)).thenReturn(Collections.emptyList());
+        Discount discount = new Discount("a", (byte) 20);
+        List<Discount> discountList = Arrays.asList(discount, discount);
+
+        bookingService.bookTickets(tickets, discountList);
     }
 
     @Test
@@ -149,11 +178,11 @@ public class TestBookingServiceImpl {
         List<Discount> discountList = Arrays.asList(discount, discount);
 
         bookingService.bookTickets(tickets, discountList);
-        verify(ticketService, times(2)).getByEventAndTime(event, dateTime);
+        verify(ticketService, times(1)).getByEventAndTime(event, dateTime);
 
         when(ticketService.getByEventAndTime(event, dateTime)).thenReturn(tickets);
         Set<Ticket> purchasedTicketsForEvent = bookingService.getPurchasedTicketsForEvent(event, dateTime);
-        verify(ticketService, times(3)).getByEventAndTime(event, dateTime);
+        verify(ticketService, times(2)).getByEventAndTime(event, dateTime);
         assertEquals(2, purchasedTicketsForEvent.size());
     }
 }
