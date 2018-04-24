@@ -2,9 +2,12 @@ package ua.epam.spring.hometask.service.impl;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.epam.spring.hometask.dao.interf.UserDAO;
 import ua.epam.spring.hometask.domain.User;
+import ua.epam.spring.hometask.domain.UserAccount;
 import ua.epam.spring.hometask.domain.UserRole;
+import ua.epam.spring.hometask.service.interf.UserAccountService;
 import ua.epam.spring.hometask.service.interf.UserRoleService;
 import ua.epam.spring.hometask.service.interf.UserService;
 
@@ -26,12 +29,14 @@ import java.util.List;
 public class UserServiceImpl extends AbstractDomainObjectServiceImpl<User, UserDAO> implements UserService {
 
     private UserRoleService userRoleService;
+    private UserAccountService userAccountService;
     private PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserDAO domainObjectDAO, UserRoleService userRoleService,
-                           PasswordEncoder passwordEncoder) {
+                           UserAccountService userAccountService, PasswordEncoder passwordEncoder) {
         super(domainObjectDAO);
         this.userRoleService = userRoleService;
+        this.userAccountService = userAccountService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -71,11 +76,13 @@ public class UserServiceImpl extends AbstractDomainObjectServiceImpl<User, UserD
     }
 
     @Override
+    @Transactional()
     public void parseUsersFromInputStream(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
         while ((line = reader.readLine()) != null) {
             String[] split = line.split(",");
+            if (getUserByLogin(split[3]) != null) continue;
             LocalDate dateTime = new Timestamp(Long.parseLong(split[5]) * 1000).toLocalDateTime().toLocalDate();
             User user = new User();
             user.setFirstName(split[0]);
@@ -91,6 +98,8 @@ public class UserServiceImpl extends AbstractDomainObjectServiceImpl<User, UserD
                 userRoles.add(new UserRole(user.getId(), split[i]));
             }
             userRoles.forEach(ur -> userRoleService.save(ur));
+
+            userAccountService.save(new UserAccount(user.getId(), 0));
         }
         reader.close();
     }
