@@ -141,10 +141,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkIsAnyTicketBooked(Event event, LocalDateTime dateTime, Set<Integer> seats) {
-        Set<Ticket> purchasedTicketsForEvent = getPurchasedTicketsForEvent(event, dateTime);
-        for (Ticket ticket : purchasedTicketsForEvent) {
-            if (seats.contains(ticket.getSeat())) {
-                throw new SeatIsAlreadyBookedException(ticket.getSeat());
+        for (Integer seat : ticketService.getBookedSeatsForEventAndDate(event.getId(), dateTime)) {
+            if (seats.contains(seat)) {
+                throw new SeatIsAlreadyBookedException(seat);
             }
         }
     }

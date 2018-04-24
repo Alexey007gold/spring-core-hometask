@@ -23,9 +23,18 @@ public abstract class AbstractDomainObjectDAO<T extends DomainObject> implements
 
     protected abstract String getTableName();
 
+    protected String getColumnNamesLine() {
+        return "*";
+    }
+
+    protected String getJoinLine() {
+        return "";
+    }
+
     @Override
     public List<T> getAll() {
-        String sql = String.format("SELECT * FROM %s", getTableName());
+        String sql = String.format("SELECT %s FROM %s %s",
+                getColumnNamesLine(), getTableName(), getJoinLine());
         return jdbcTemplate.query(sql, getRowMapper());
     }
 
@@ -40,7 +49,8 @@ public abstract class AbstractDomainObjectDAO<T extends DomainObject> implements
     @Override
     public T getById(Long id) {
         try {
-            String sql = String.format("SELECT * FROM %s WHERE id = %d", getTableName(), id);
+            String sql = String.format("SELECT %s FROM %s %s WHERE id = %d",
+                    getColumnNamesLine(), getTableName(), getJoinLine(), id);
             return jdbcTemplate.queryForObject(sql, getRowMapper());
         } catch (DataAccessException e) {
             return null;
@@ -50,7 +60,8 @@ public abstract class AbstractDomainObjectDAO<T extends DomainObject> implements
     @Override
     public List<T> getBy(String[] columnNames, Object... values) {
         StringBuilder builder = new StringBuilder();
-        builder.append("SELECT * FROM ").append(getTableName()).append(" WHERE ");
+        builder.append("SELECT ").append(getColumnNamesLine()).append(" FROM ").append(getTableName())
+                .append(" ").append(getJoinLine()).append(" WHERE ");
         for (int i = 0; i < columnNames.length; i++) {
             builder.append(columnNames[i]).append(" = ?");
             if (i + 1 < columnNames.length) {

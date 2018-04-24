@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -54,5 +55,10 @@ public class TicketServiceImpl extends AbstractDomainObjectServiceImpl<Ticket, T
         return domainObjectDAO.getAll().stream()
                 .filter(t -> (LocalDate.from(t.getDateTime()).isAfter(from) || LocalDate.from(t.getDateTime()).isEqual(from)) &&
                 (LocalDate.from(t.getDateTime()).isBefore(to) || LocalDate.from(t.getDateTime()).isEqual(to))).collect(Collectors.toSet());
+    }
+
+    @Override
+    public List<Integer> getBookedSeatsForEventAndDate(Long eventId, LocalDateTime dateTime) {
+        return domainObjectDAO.getBookedSeatsForEventAndDate(eventId, dateTime);
     }
 }

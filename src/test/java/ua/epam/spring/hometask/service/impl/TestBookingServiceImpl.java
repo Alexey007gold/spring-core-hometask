@@ -57,6 +57,7 @@ public class TestBookingServiceImpl {
         ));
 
         event = new Event();
+        event.setId(1L);
         event.setName("Titanik");
         event.setBasePrice(40);
         event.setRating(HIGH);
@@ -67,6 +68,7 @@ public class TestBookingServiceImpl {
         user.setLastName("Doe");
         user.setEmail("mail");
         user.setBirthDate(LocalDate.of(1990, 11, 11));
+        user.setTickets(new TreeSet<>());
 
         tickets = new ArrayList<>();
         tickets.add(new Ticket(user, event, dateTime, 1, 40));
@@ -133,8 +135,8 @@ public class TestBookingServiceImpl {
     public void shouldThrowAnExceptionOnBookTicketsCallWhenATicketIsBooked() {
         when(userService.isUserRegistered(user)).thenReturn(true);
         when(userAccountService.getByUserId(user.getId())).thenReturn(new UserAccount(user.getId(), 200));
-        when(ticketService.getByEventAndTime(event, dateTime))
-                .thenReturn(Collections.singletonList(new Ticket(user, event, dateTime, 2, 40)));
+        when(ticketService.getBookedSeatsForEventAndDate(event.getId(), dateTime))
+                .thenReturn(Collections.singletonList(2));
         Discount discount = new Discount("a", (byte) 20);
         List<Discount> discountList = Arrays.asList(discount, discount);
 
@@ -178,11 +180,11 @@ public class TestBookingServiceImpl {
         List<Discount> discountList = Arrays.asList(discount, discount);
 
         bookingService.bookTickets(tickets, discountList);
-        verify(ticketService, times(1)).getByEventAndTime(event, dateTime);
+        verify(ticketService, times(1)).getBookedSeatsForEventAndDate(event.getId(), dateTime);
 
         when(ticketService.getByEventAndTime(event, dateTime)).thenReturn(tickets);
         Set<Ticket> purchasedTicketsForEvent = bookingService.getPurchasedTicketsForEvent(event, dateTime);
-        verify(ticketService, times(2)).getByEventAndTime(event, dateTime);
+        verify(ticketService, times(1)).getByEventAndTime(event, dateTime);
         assertEquals(2, purchasedTicketsForEvent.size());
     }
 }

@@ -14,6 +14,7 @@ import ua.epam.spring.hometask.domain.User;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -39,6 +40,7 @@ public class TestUserDAOImpl {
         user1.setLogin("user1");
         user1.setPassword("1234");
         user1.setBirthDate(LocalDate.of(1990, 11, 11));
+        user1.setTickets(new TreeSet<>());
         userDAO.save(user1);
 
         User user2 = new User();
@@ -48,6 +50,7 @@ public class TestUserDAOImpl {
         user2.setLogin("user2");
         user2.setPassword("1234");
         user2.setBirthDate(LocalDate.of(1993, 1, 22));
+        user2.setTickets(new TreeSet<>());
         userDAO.save(user2);
     }
 

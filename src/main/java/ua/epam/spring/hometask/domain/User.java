@@ -3,7 +3,6 @@ package ua.epam.spring.hometask.domain;
 import java.time.LocalDate;
 import java.util.NavigableSet;
 import java.util.Objects;
-import java.util.TreeSet;
 
 /**
  * @author Yuriy_Tkach
@@ -22,7 +21,7 @@ public class User extends DomainObject {
 
     private String password;
 
-    private NavigableSet<Ticket> tickets = new TreeSet<>();
+    private NavigableSet<Ticket> tickets;
 
     public String getFirstName() {
         return firstName;

@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/6/2018.
@@ -25,4 +26,6 @@ public interface TicketService extends AbstractDomainObjectService<Ticket> {
     Collection<Ticket> getByEventAndTime(Event event, LocalDateTime dateTime);
 
     Collection<Ticket> getForDateRange(@Nonnull LocalDate from, @Nonnull LocalDate to);
+
+    List<Integer> getBookedSeatsForEventAndDate(Long eventId, LocalDateTime dateTime);
 }
