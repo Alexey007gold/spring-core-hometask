@@ -17,6 +17,14 @@ CREATE TABLE public.user_roles
   role VARCHAR(40) NOT NULL
 );
 CREATE UNIQUE INDEX user_roles_id_uindex ON public.user_roles (id);
+DROP TABLE IF EXISTS public.user_accounts;
+CREATE TABLE public.user_accounts
+(
+  id BIGSERIAL PRIMARY KEY NOT NULL,
+  user_id BIGINT NOT NULL,
+  balance DOUBLE PRECISION NOT NULL
+);
+CREATE UNIQUE INDEX user_accounts_id_uindex ON public.user_accounts (id);
 
 DROP TABLE IF EXISTS public.events;
 CREATE TABLE public.events
@@ -45,7 +53,7 @@ CREATE TABLE public.tickets
   user_id BIGINT,
   event_id BIGINT NOT NULL,
   time TIMESTAMP NOT NULL,
-  seat BIGINT NOT NULL,
+  seat INT NOT NULL,
   price DOUBLE PRECISION NOT NULL
 );
 CREATE UNIQUE INDEX tickets_id_uindex ON public.tickets (id);
@@ -55,9 +63,9 @@ CREATE TABLE public.event_stats
 (
   id BIGSERIAL PRIMARY KEY NOT NULL,
   event_id BIGINT NOT NULL,
-  access_by_name BIGINT NOT NULL,
-  price_query BIGINT NOT NULL,
-  tickets_booked BIGINT NOT NULL
+  access_by_name INT NOT NULL,
+  price_query INT NOT NULL,
+  tickets_booked INT NOT NULL
 );
 CREATE UNIQUE INDEX event_stats_id_uindex ON public.event_stats (id);
 
@@ -67,7 +75,7 @@ CREATE TABLE public.discount_stats
   id BIGSERIAL PRIMARY KEY NOT NULL,
   discount_type VARCHAR(60) NOT NULL,
   user_id BIGINT,
-  times BIGINT NOT NULL
+  times INT NOT NULL
 );
 CREATE UNIQUE INDEX discount_stats_id_uindex ON public.discount_stats (id);
 
