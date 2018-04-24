@@ -1,6 +1,7 @@
 package ua.epam.spring.hometask.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.exception.NotEnoughMoneyException;
 import ua.epam.spring.hometask.exception.SeatIsAlreadyBookedException;
@@ -97,6 +98,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public Set<Integer> bookTickets(@Nonnull List<Ticket> tickets, @Nonnull List<Discount> discounts) {
         User user = tickets.get(0).getUser();
         Event event = tickets.get(0).getEvent();
