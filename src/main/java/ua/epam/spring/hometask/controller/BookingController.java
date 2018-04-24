@@ -10,18 +10,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.Ticket;
-import ua.epam.spring.hometask.service.interf.BookingFacadeService;
-import ua.epam.spring.hometask.service.interf.BookingService;
-import ua.epam.spring.hometask.service.interf.EventService;
-import ua.epam.spring.hometask.service.interf.UserService;
+import ua.epam.spring.hometask.service.interf.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,13 +28,16 @@ public class BookingController {
     private BookingService bookingService;
     private EventService eventService;
     private UserService userService;
+    private TicketService ticketService;
     private BookingFacadeService bookingFacadeService;
 
     public BookingController(BookingService bookingService, EventService eventService,
-                             UserService userService, BookingFacadeService bookingFacadeService) {
+                             UserService userService, TicketService ticketService,
+                             BookingFacadeService bookingFacadeService) {
         this.bookingService = bookingService;
         this.eventService = eventService;
         this.userService = userService;
+        this.ticketService = ticketService;
         this.bookingFacadeService = bookingFacadeService;
     }
 
@@ -116,7 +113,7 @@ public class BookingController {
         Set<Ticket> tickets;
 
         if (userId != null) {
-            tickets = userService.getById(userId).getTickets();
+            tickets = new HashSet<>(ticketService.getByUserId(userId));
             if (eventId != null) {
                 tickets.removeIf(t -> !t.getEvent().getId().equals(eventId));
                 if (dateTime != null) {
