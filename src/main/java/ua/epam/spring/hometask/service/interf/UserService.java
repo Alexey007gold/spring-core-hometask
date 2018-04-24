@@ -58,6 +58,12 @@ public interface UserService extends AbstractDomainObjectService<User> {
      * @return found user or <code>null</code>
      */
     public @Nullable User getUserByLogin(String login);
+    /**
+     * Finding userId by login
+     * @param login login of the user
+     * @return found userId or <code>null</code>
+     */
+    public @Nullable Long getUserIdByLogin(String login);
 
     /**
      * Checks whetheer a user is registered

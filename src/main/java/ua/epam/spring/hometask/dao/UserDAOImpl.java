@@ -134,6 +134,12 @@ public class UserDAOImpl extends AbstractDomainObjectDAO<User> implements UserDA
         return getOneBy(new String[] {"email"}, email);
     }
 
+    @Override
+    public Long getUserIdByLogin(String login) {
+        String sql = "SELECT id FROM users WHERE login = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{login}, Long.class);
+    }
+
     @Autowired
     public void setTicketDAO(TicketDAO ticketDAO) {
         this.ticketDAO = ticketDAO;

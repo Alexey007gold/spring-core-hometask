@@ -7,4 +7,6 @@ import ua.epam.spring.hometask.domain.User;
  */
 public interface UserDAO extends DomainObjectDAO<User> {
     User getByEmail(String email);
+
+    Long getUserIdByLogin(String login);
 }

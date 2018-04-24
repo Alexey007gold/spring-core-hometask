@@ -70,6 +70,12 @@ public class UserServiceImpl extends AbstractDomainObjectServiceImpl<User, UserD
         return domainObjectDAO.getOneBy(new String[] {"login"}, login);
     }
 
+    @Nullable
+    @Override
+    public Long getUserIdByLogin(String login) {
+        return domainObjectDAO.getUserIdByLogin(login);
+    }
+
     @Override
     public boolean isUserRegistered(User user) {
         return user != null && user.getId() != null && getById(user.getId()) != null;

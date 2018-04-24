@@ -104,7 +104,7 @@ public class BookingController {
     @ResponseBody
     public Set<Integer> bookTickets(Authentication authentication, @RequestParam Long eventId,
                                     @RequestParam Long time, @RequestParam String seats) {
-        Long userId = userService.getUserByLogin(authentication.getName()).getId();
+        Long userId = userService.getUserIdByLogin(authentication.getName());
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(time), TimeZone.getDefault().toZoneId());
 
         Set<Integer> seatsSet = Arrays.stream(seats.split(",")).map(Integer::parseInt).collect(Collectors.toSet());
