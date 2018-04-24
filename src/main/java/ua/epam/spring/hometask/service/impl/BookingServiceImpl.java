@@ -2,6 +2,8 @@ package ua.epam.spring.hometask.service.impl;
 
 import org.springframework.stereotype.Service;
 import ua.epam.spring.hometask.domain.*;
+import ua.epam.spring.hometask.exception.NotEnoughMoneyException;
+import ua.epam.spring.hometask.exception.SeatIsAlreadyBookedException;
 import ua.epam.spring.hometask.service.interf.*;
 
 import javax.annotation.Nonnull;
@@ -123,7 +125,7 @@ public class BookingServiceImpl implements BookingService {
                     .setScale(2, RoundingMode.FLOOR)
                     .doubleValue();
             if (Double.compare(balance, totalPrice) < 0) {
-                throw new IllegalStateException(String.format("Not enough money. You have %.2f, but required %.2f", balance, totalPrice));
+                throw new NotEnoughMoneyException(totalPrice, balance);
             }
             userAccount.setBalance(balance - totalPrice);
             userAccountService.save(userAccount);
@@ -140,7 +142,7 @@ public class BookingServiceImpl implements BookingService {
         Set<Ticket> purchasedTicketsForEvent = getPurchasedTicketsForEvent(event, dateTime);
         for (Ticket ticket : purchasedTicketsForEvent) {
             if (seats.contains(ticket.getSeat())) {
-                throw new IllegalStateException("Some seats are booked already");
+                throw new SeatIsAlreadyBookedException(ticket.getSeat());
             }
         }
     }
