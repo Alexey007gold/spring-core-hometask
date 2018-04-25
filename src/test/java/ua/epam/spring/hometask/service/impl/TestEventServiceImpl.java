@@ -14,14 +14,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+import static ua.epam.spring.hometask.TestDataCreator.*;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 import static ua.epam.spring.hometask.domain.EventRating.LOW;
 
@@ -40,47 +38,12 @@ public class TestEventServiceImpl {
         auditoriumService = mock(AuditoriumServiceImpl.class);
         eventService = new EventServiceImpl(eventDAO, auditoriumService);
 
-        Auditorium auditorium = new Auditorium();
-        auditorium.setName("1");
-        TreeSet<EventDate> airDates1 = new TreeSet<EventDate>(){{
-            add(new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 3, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 4, 10, 20), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditorium));
-        }};
-        TreeSet<EventDate> airDates2 = new TreeSet<EventDate>() {{
-            add(new EventDate(LocalDateTime.of(4018, 4, 3, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 4, 10, 20), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditorium));
-        }};
-        TreeSet<EventDate> airDates3 = new TreeSet<EventDate>() {{
-            add(new EventDate(LocalDateTime.of(4018, 4, 8, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 9, 10, 20), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 10, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 11, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 12, 18, 0), auditorium));
-        }};
+        Auditorium auditorium = createAuditorium("1", 30, Collections.emptySet());
+        List<TreeSet<EventDate>> airDates = createAirDates(auditorium);
 
-        Event event1 = new Event();
-        event1.setName("Titanik");
-        event1.setBasePrice(40);
-        event1.setRating(HIGH);
-        event1.setAirDates(airDates1);
-
-        Event event2 = new Event();
-        event2.setName("Santa Barbara");
-        event2.setBasePrice(5);
-        event2.setRating(LOW);
-        event2.setAirDates(airDates2);
-
-        Event event3 = new Event();
-        event3.setName("Star Wars");
-        event3.setBasePrice(45);
-        event3.setRating(HIGH);
-        event3.setAirDates(airDates3);
+        Event event1 = createEvent(null, "Titanik", HIGH, 40, airDates.get(0));
+        Event event2 = createEvent(null, "Santa Barbara", LOW, 5, airDates.get(1));
+        Event event3 = createEvent(null, "Star Wars", HIGH, 45, airDates.get(2));
 
         when(eventDAO.getAll()).thenReturn(Arrays.asList(event1, event2, event3));
     }

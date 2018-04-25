@@ -5,8 +5,11 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.TreeSet;
 
 import static org.junit.Assert.*;
+import static ua.epam.spring.hometask.TestDataCreator.createEvent;
+import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
  * @author Yuriy_Tkach
@@ -17,10 +20,7 @@ public class TestEvent {
 
 	@Before
 	public void initEvent() {
-		event = new Event();
-		event.setBasePrice(1.1);
-		event.setName("aaa");
-		event.setRating(EventRating.HIGH);
+		event = createEvent(null, "aaa", HIGH, 1.1, new TreeSet<>());
 	
 		LocalDateTime now = LocalDateTime.now();
 

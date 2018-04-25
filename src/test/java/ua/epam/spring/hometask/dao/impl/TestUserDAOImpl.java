@@ -18,6 +18,7 @@ import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static ua.epam.spring.hometask.TestDataCreator.createUser;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/5/2018.
@@ -33,24 +34,10 @@ public class TestUserDAOImpl {
         TicketDAO ticketDAO = mock(TicketDAOImpl.class);
         userDAO = new UserDAOImpl(jdbcTemplate, eventDAO);
         userDAO.setTicketDAO(ticketDAO);
-        User user1 = new User();
-        user1.setFirstName("John");
-        user1.setLastName("Doe");
-        user1.setEmail("example@gmail.com");
-        user1.setLogin("user1");
-        user1.setPassword("1234");
-        user1.setBirthDate(LocalDate.of(1990, 11, 11));
-        user1.setTickets(new TreeSet<>());
-        userDAO.save(user1);
 
-        User user2 = new User();
-        user2.setFirstName("Jane");
-        user2.setLastName("Doe");
-        user2.setEmail("exampleJane@gmail.com");
-        user2.setLogin("user2");
-        user2.setPassword("1234");
-        user2.setBirthDate(LocalDate.of(1993, 1, 22));
-        user2.setTickets(new TreeSet<>());
+        User user1 = createUser("John", "Doe", "example@gmail.com", "user1", "1234", LocalDate.of(1990, 11, 11), new TreeSet<>());
+        User user2 = createUser("Jane", "Doe", "exampleJane@gmail.com", "user2", "1234", LocalDate.of(1993, 1, 22), new TreeSet<>());
+        userDAO.save(user1);
         userDAO.save(user2);
     }
 

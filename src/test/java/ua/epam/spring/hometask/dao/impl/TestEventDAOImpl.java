@@ -14,9 +14,11 @@ import ua.epam.spring.hometask.dao.interf.EventDateDAO;
 import ua.epam.spring.hometask.domain.Event;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static ua.epam.spring.hometask.TestDataCreator.createEvent;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 import static ua.epam.spring.hometask.domain.EventRating.LOW;
 
@@ -34,22 +36,11 @@ public class TestEventDAOImpl {
         EventDateDAO eventDateDAO = mock(EventDateDAOImpl.class);
         eventDAO = new EventDAOImpl(jdbcTemplate, auditoriumDAO, eventDateDAO);
 
-        Event event1 = new Event();
-        event1.setName("Titanik");
-        event1.setBasePrice(40);
-        event1.setRating(HIGH);
+        Event event1 = createEvent(null, "Titanik", HIGH, 40, Collections.emptySet());
+        Event event2 = createEvent(null, "Santa Barbara", LOW, 5, Collections.emptySet());
+        Event event3 = createEvent(null, "Star Wars", HIGH, 45, Collections.emptySet());
         eventDAO.save(event1);
-
-        Event event2 = new Event();
-        event2.setName("Santa Barbara");
-        event2.setBasePrice(5);
-        event2.setRating(LOW);
         eventDAO.save(event2);
-
-        Event event3 = new Event();
-        event3.setName("Star Wars");
-        event3.setBasePrice(45);
-        event3.setRating(HIGH);
         eventDAO.save(event3);
     }
 

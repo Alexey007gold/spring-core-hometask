@@ -3,6 +3,7 @@ package ua.epam.spring.hometask.service.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import ua.epam.spring.hometask.TestDataCreator;
 import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.exception.NotEnoughMoneyException;
 import ua.epam.spring.hometask.exception.SeatIsAlreadyBookedException;
@@ -16,6 +17,7 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
+import static ua.epam.spring.hometask.TestDataCreator.createAuditorium;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
@@ -44,10 +46,7 @@ public class TestBookingServiceImpl {
 
         dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
 
-        Auditorium auditorium = new Auditorium();
-        auditorium.setName("1");
-        auditorium.setNumberOfSeats(40);
-        auditorium.setVipSeats(new HashSet<>(Arrays.asList(4, 5, 34, 35)));
+        Auditorium auditorium = createAuditorium("1", 40, Arrays.asList(4, 5, 34, 35));
         TreeSet<EventDate> airDates = new TreeSet<>(Arrays.asList(
                 new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditorium),
                 new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditorium),
@@ -56,23 +55,11 @@ public class TestBookingServiceImpl {
                 new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditorium)
         ));
 
-        event = new Event();
-        event.setId(1L);
-        event.setName("Titanik");
-        event.setBasePrice(40);
-        event.setRating(HIGH);
-        event.setAirDates(airDates);
+        event = TestDataCreator.createEvent(1L, "Titanik", HIGH, 40, airDates);
+        user = TestDataCreator.createUser("John", "Doe", "mail", null, null,
+                LocalDate.of(1990, 11, 11), new TreeSet<>());
 
-        user = new User();
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setEmail("mail");
-        user.setBirthDate(LocalDate.of(1990, 11, 11));
-        user.setTickets(new TreeSet<>());
-
-        tickets = new ArrayList<>();
-        tickets.add(new Ticket(user, event, dateTime, 1, 40));
-        tickets.add(new Ticket(user, event, dateTime, 2, 40));
+        tickets = Arrays.asList(new Ticket(user, event, dateTime, 1, 40), new Ticket(user, event, dateTime, 2, 40));
     }
 
     @Test

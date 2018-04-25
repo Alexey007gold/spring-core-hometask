@@ -7,11 +7,10 @@ import ua.epam.spring.hometask.service.impl.discount.strategy.DiscountStrategy;
 import ua.epam.spring.hometask.service.interf.DiscountService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static ua.epam.spring.hometask.TestDataCreator.createMockDiscountStrategyList;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/5/2018.
@@ -20,12 +19,7 @@ public class TestDiscountServiceImpl {
 
     @Test
     public void shouldReturn_8_OnGetDiscountCall() {
-        List<DiscountStrategy> strategies = new ArrayList<>();
-        strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("a", (byte) 5)));
-        strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("b", (byte) 8)));
-        strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("c", (byte) 4)));
-        strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("d", (byte) 1)));
-        strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("e", (byte) 6)));
+        List<DiscountStrategy> strategies = createMockDiscountStrategyList(5, 8, 4, 1, 6);
         DiscountService discountService = new DiscountServiceImpl(strategies);
 
         List<Discount> discount = discountService.getDiscount(null, new Event(), LocalDateTime.now(), 1);
@@ -36,12 +30,7 @@ public class TestDiscountServiceImpl {
 
     @Test
     public void shouldReturn_14_OnGetDiscountCall() {
-        List<DiscountStrategy> strategies = new ArrayList<>();
-        strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("a", (byte) 5)));
-        strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("b", (byte) 8)));
-        strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("c", (byte) 4)));
-        strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("d", (byte) 14)));
-        strategies.add((user, event, airDateTime, numberOfTickets) -> Collections.singletonList(new Discount("e", (byte) 6)));
+        List<DiscountStrategy> strategies = createMockDiscountStrategyList(5, 8, 4, 14, 6);
         DiscountService discountService = new DiscountServiceImpl(strategies);
 
         List<Discount> discount = discountService.getDiscount(null, new Event(), LocalDateTime.now(), 1);
