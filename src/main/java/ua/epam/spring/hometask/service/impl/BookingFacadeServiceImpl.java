@@ -80,9 +80,10 @@ public class BookingFacadeServiceImpl implements BookingFacadeService {
     @Override
     public void refillAccount(Long userId, double sum) {
         UserAccount userAccount = userAccountService.getByUserId(userId);
-        if (userAccount != null) {
-            userAccount.setBalance(userAccount.getBalance() + sum);
-            userAccountService.save(userAccount);
+        if (userAccount == null) {
+            throw new IllegalArgumentException("User with such id does not exist");
         }
+        userAccount.setBalance(userAccount.getBalance() + sum);
+        userAccountService.save(userAccount);
     }
 }
