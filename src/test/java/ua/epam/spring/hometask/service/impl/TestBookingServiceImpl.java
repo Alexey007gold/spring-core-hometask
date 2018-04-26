@@ -56,7 +56,7 @@ public class TestBookingServiceImpl {
         ));
 
         event = TestDataCreator.createEvent(1L, "Titanik", HIGH, 40, airDates);
-        user = TestDataCreator.createUser("John", "Doe", "mail", null, null,
+        user = TestDataCreator.createUser(1L, "John", "Doe", "mail", null, null,
                 LocalDate.of(1990, 11, 11), new TreeSet<>());
 
         tickets = Arrays.asList(new Ticket(user, event, dateTime, 1, 40), new Ticket(user, event, dateTime, 2, 40));

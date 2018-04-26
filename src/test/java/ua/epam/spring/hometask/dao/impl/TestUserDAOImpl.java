@@ -35,8 +35,8 @@ public class TestUserDAOImpl {
         userDAO = new UserDAOImpl(jdbcTemplate, eventDAO);
         userDAO.setTicketDAO(ticketDAO);
 
-        User user1 = createUser("John", "Doe", "example@gmail.com", "user1", "1234", LocalDate.of(1990, 11, 11), new TreeSet<>());
-        User user2 = createUser("Jane", "Doe", "exampleJane@gmail.com", "user2", "1234", LocalDate.of(1993, 1, 22), new TreeSet<>());
+        User user1 = createUser(null, "John", "Doe", "example@gmail.com", "user1", "1234", LocalDate.of(1990, 11, 11), new TreeSet<>());
+        User user2 = createUser(null, "Jane", "Doe", "exampleJane@gmail.com", "user2", "1234", LocalDate.of(1993, 1, 22), new TreeSet<>());
         userDAO.save(user1);
         userDAO.save(user2);
     }

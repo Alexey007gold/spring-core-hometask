@@ -22,10 +22,11 @@ public class TestDataCreator {
         return event;
     }
 
-    public static User createUser(String firstName, String lastName, String mail,
+    public static User createUser(Long id, String firstName, String lastName, String mail,
                                   String login, String password, LocalDate birthDate,
                                   NavigableSet<Ticket> tickets) {
         User user = new User();
+        user.setId(id);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(mail);
