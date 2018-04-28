@@ -66,6 +66,11 @@ public class UserController {
         userService.parseUsersFromInputStream(file.getInputStream());
     }
 
+    @RequestMapping(value = "/upload", method = RequestMethod.GET)
+    public String uploadUsersPage() {
+        return "upload_users";
+    }
+
 
     private List<User> getUsersByFirstNameAndLastNameOrEmail(String firstName, String lastName, String email) {
         if (email != null) {

@@ -3,6 +3,7 @@
     <link rel="stylesheet" type="text/css" href="/resources/css/style.css">
 </head>
 <body>
+<a href="/home">Home</a>
 <div id="header">
     <h4>Exception</h4>
 </div>

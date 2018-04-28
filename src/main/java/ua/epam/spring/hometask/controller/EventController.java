@@ -47,6 +47,11 @@ public class EventController {
         eventService.parseEventsFromInputStream(file.getInputStream());
     }
 
+    @RequestMapping(value = "/upload", method = RequestMethod.GET)
+    public String uploadUsersPage() {
+        return "upload_events";
+    }
+
 
     private Set<Event> getEvents(Long until) {
         LocalDateTime to;

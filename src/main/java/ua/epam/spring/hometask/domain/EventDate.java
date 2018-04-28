@@ -1,6 +1,7 @@
 package ua.epam.spring.hometask.domain;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/6/2018.
@@ -29,6 +30,10 @@ public class EventDate extends DomainObject implements Comparable<EventDate> {
 
     public LocalDateTime getDateTime() {
         return dateTime;
+    }
+
+    public long getDateTimeAsSeconds() {
+        return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() / 1000;
     }
 
     public void setDateTime(LocalDateTime dateTime) {
