@@ -1,8 +1,8 @@
 package ua.epam.spring.hometask.domain;
 
 import java.time.LocalDate;
-import java.util.NavigableSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Yuriy_Tkach
@@ -21,7 +21,7 @@ public class User extends DomainObject {
 
     private String password;
 
-    private NavigableSet<Ticket> tickets;
+    private Set<Ticket> tickets;
 
     public String getFirstName() {
         return firstName;
@@ -71,11 +71,11 @@ public class User extends DomainObject {
         this.password = password;
     }
 
-    public NavigableSet<Ticket> getTickets() {
+    public Set<Ticket> getTickets() {
         return tickets;
     }
 
-    public void setTickets(NavigableSet<Ticket> tickets) {
+    public void setTickets(Set<Ticket> tickets) {
         this.tickets = tickets;
     }
 

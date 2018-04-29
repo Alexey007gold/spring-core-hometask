@@ -28,7 +28,7 @@ public class TestDataCreator {
 
     public static User createUser(Long id, String firstName, String lastName, String mail,
                                   String login, String password, LocalDate birthDate,
-                                  NavigableSet<Ticket> tickets) {
+                                  Set<Ticket> tickets) {
         User user = new User();
         user.setId(id);
         user.setFirstName(firstName);
