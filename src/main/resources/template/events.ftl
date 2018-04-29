@@ -22,7 +22,7 @@
                     <th>Rating</th>
                     <th>Air Date</th>
                 </tr>
-            <#list model["eventList"] as event>
+            <#list eventList as event>
                 <tr>
                     <td>${event.id}</td>
                     <td>${event.name}</td>
