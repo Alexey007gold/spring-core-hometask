@@ -7,11 +7,14 @@ import ua.epam.spring.hometask.domain.User;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/4/2018.
@@ -20,6 +23,15 @@ import java.util.List;
 public class BirthdayStrategy implements DiscountStrategy {
 
     private static final String STRATEGY_NAME = "BirthdayStrategy";
+    private byte percent;
+
+    @PostConstruct
+    public void init() throws IOException {
+        Properties props = new Properties();
+        props.load(this.getClass().getClassLoader().getResourceAsStream("auditoriums.properties"));
+
+        percent = Byte.parseByte(props.getProperty("discount.birthday"));
+    }
 
     @Override
     public List<Discount> getDiscount(@Nullable User user, @Nonnull Event event,
@@ -29,7 +41,7 @@ public class BirthdayStrategy implements DiscountStrategy {
         if (user != null && user.getBirthDate() != null) {
             int days = Period.between(LocalDate.from(airDateTime), user.getBirthDate()).getDays();
             if (Math.abs(days) <= 5) {
-                discount = new Discount(STRATEGY_NAME, (byte) 5);
+                discount = new Discount(STRATEGY_NAME, percent);
             }
         }
         for (int i = 0; i < numberOfTickets; i++) {
