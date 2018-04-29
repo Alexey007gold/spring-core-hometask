@@ -15,7 +15,7 @@
                     <th>Email</th>
                     <th>BirthDate</th>
                 </tr>
-            <#list model["userList"] as user>
+            <#list userList as user>
               <tr>
                   <td>${user.firstName}</td>
                   <td>${user.lastName}</td>
