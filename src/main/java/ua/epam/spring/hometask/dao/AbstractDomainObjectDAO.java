@@ -1,6 +1,6 @@
 package ua.epam.spring.hometask.dao;
 
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import ua.epam.spring.hometask.dao.interf.DomainObjectDAO;
@@ -40,19 +40,17 @@ public abstract class AbstractDomainObjectDAO<T extends DomainObject> implements
 
     @Override
     public void remove(T object) {
-        try {
-            String sql = String.format("DELETE FROM %s WHERE id = %d", getTableName(), object.getId());
-            jdbcTemplate.execute(sql);
-        } catch (DataAccessException e) {}
+        String sql = String.format("DELETE FROM %s WHERE id = %d", getTableName(), object.getId());
+        jdbcTemplate.execute(sql);
     }
 
     @Override
     public T getById(Long id) {
+        String sql = String.format("SELECT %s FROM %s %s WHERE id = %d",
+                getColumnNamesLine(), getTableName(), getJoinLine(), id);
         try {
-            String sql = String.format("SELECT %s FROM %s %s WHERE id = %d",
-                    getColumnNamesLine(), getTableName(), getJoinLine(), id);
             return jdbcTemplate.queryForObject(sql, getRowMapper());
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
@@ -68,11 +66,7 @@ public abstract class AbstractDomainObjectDAO<T extends DomainObject> implements
                 builder.append(" and ");
             }
         }
-        try {
-            return jdbcTemplate.query(builder.toString(), values, getRowMapper());
-        } catch (DataAccessException e) {
-            return null;
-        }
+        return jdbcTemplate.query(builder.toString(), values, getRowMapper());
     }
 
     @Override
