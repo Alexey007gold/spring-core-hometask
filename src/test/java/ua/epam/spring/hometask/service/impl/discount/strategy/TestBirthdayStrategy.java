@@ -6,6 +6,7 @@ import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.domain.User;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +25,7 @@ public class TestBirthdayStrategy {
     private User user2;
 
     @Before
-    public void init() {
+    public void init() throws IOException {
         user1 = new User();
         user1.setBirthDate(LocalDate.of(1990, 11, 11));
 

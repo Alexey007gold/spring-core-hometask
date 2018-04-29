@@ -9,9 +9,10 @@ import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.impl.UserServiceImpl;
 import ua.epam.spring.hometask.service.interf.UserService;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NavigableSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
@@ -32,7 +33,7 @@ public class TestEvery10TicketStrategy {
     private Event event;
 
     @Before
-    public void init() {
+    public void init() throws IOException {
         discountStrategy = new Every10TicketStrategy(userService);
         user1 = new User();
         user1.setId(1L);
@@ -40,7 +41,7 @@ public class TestEvery10TicketStrategy {
         event = new Event();
         event.setName("Event");
 
-        NavigableSet<Ticket> tickets = new TreeSet<>();
+        Set<Ticket> tickets = new TreeSet<>();
         for (int i = 0; i < 7; i++) {
             tickets.add(new Ticket(null, event, LocalDateTime.now(), i, 0));
         }

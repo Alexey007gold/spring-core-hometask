@@ -6,7 +6,6 @@ import ua.epam.spring.hometask.domain.Auditorium;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
 
@@ -18,7 +17,10 @@ public class AuditoriumDAOImpl implements AuditoriumDAO {
 
     private Map<String, Auditorium> auditoriumMap;
 
-    @PostConstruct
+    public AuditoriumDAOImpl() throws IOException {
+        init();
+    }
+
     public void init() throws IOException {
         auditoriumMap = new HashMap<>();
 

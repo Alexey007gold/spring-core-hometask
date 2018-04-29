@@ -7,7 +7,6 @@ import ua.epam.spring.hometask.domain.User;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,10 +24,13 @@ public class BirthdayStrategy implements DiscountStrategy {
     private static final String STRATEGY_NAME = "BirthdayStrategy";
     private byte percent;
 
-    @PostConstruct
+    public BirthdayStrategy() throws IOException {
+        init();
+    }
+
     public void init() throws IOException {
         Properties props = new Properties();
-        props.load(this.getClass().getClassLoader().getResourceAsStream("auditoriums.properties"));
+        props.load(this.getClass().getClassLoader().getResourceAsStream("application.properties"));
 
         percent = Byte.parseByte(props.getProperty("discount.birthday"));
     }

@@ -8,7 +8,6 @@ import ua.epam.spring.hometask.service.interf.UserService;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,14 +25,15 @@ public class Every10TicketStrategy implements DiscountStrategy {
     private UserService userService;
     private byte percent;
 
-    public Every10TicketStrategy(UserService userService) {
+    public Every10TicketStrategy(UserService userService) throws IOException {
         this.userService = userService;
+
+        init();
     }
 
-    @PostConstruct
     public void init() throws IOException {
         Properties props = new Properties();
-        props.load(this.getClass().getClassLoader().getResourceAsStream("auditoriums.properties"));
+        props.load(this.getClass().getClassLoader().getResourceAsStream("application.properties"));
 
         percent = Byte.parseByte(props.getProperty("discount.every10Ticket"));
     }

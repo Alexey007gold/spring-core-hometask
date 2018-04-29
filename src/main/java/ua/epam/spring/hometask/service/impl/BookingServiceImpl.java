@@ -9,7 +9,6 @@ import ua.epam.spring.hometask.service.interf.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -38,14 +37,15 @@ public class BookingServiceImpl implements BookingService {
     private double vipSeatPriceRate;
 
     public BookingServiceImpl(DiscountService discountService, UserService userService,
-                              UserAccountService userAccountService, TicketService ticketService) {
+                              UserAccountService userAccountService, TicketService ticketService) throws IOException {
         this.discountService = discountService;
         this.userService = userService;
         this.userAccountService = userAccountService;
         this.ticketService = ticketService;
+
+        init();
     }
 
-    @PostConstruct
     public void init() throws IOException {
         Properties props = new Properties();
         props.load(this.getClass().getClassLoader().getResourceAsStream("application.properties"));
