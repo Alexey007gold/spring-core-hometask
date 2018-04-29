@@ -25,6 +25,10 @@ public interface TicketService extends AbstractDomainObjectService<Ticket> {
 
     Collection<Ticket> getByEventAndTime(Event event, LocalDateTime dateTime);
 
+    Collection<Ticket> getByUserIdAndEventId(Long userId, Long eventId);
+
+    Collection<Ticket> getByUserIdAndEventIdAndDateTime(Long userId, Long eventId, LocalDateTime dateTime);
+
     Collection<Ticket> getForDateRange(@Nonnull LocalDate from, @Nonnull LocalDate to);
 
     List<Integer> getBookedSeatsForEventAndDate(Long eventId, LocalDateTime dateTime);

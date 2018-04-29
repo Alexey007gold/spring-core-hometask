@@ -16,7 +16,7 @@
             <th>Seat</th>
             <th>Price</th>
         </tr>
-            <#list model["ticketList"] as ticket>
+            <#list ticketList as ticket>
               <tr>
                   <#if (ticket.user)??>
                       <td>${ticket.user.getFirstName()} ${ticket.user.getLastName()}</td>

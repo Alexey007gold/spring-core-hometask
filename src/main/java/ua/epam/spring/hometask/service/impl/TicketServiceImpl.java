@@ -51,6 +51,16 @@ public class TicketServiceImpl extends AbstractDomainObjectServiceImpl<Ticket, T
     }
 
     @Override
+    public Collection<Ticket> getByUserIdAndEventId(Long userId, Long eventId) {
+        return domainObjectDAO.getBy(new String[] {"user_id", "event_id"}, userId, eventId);
+    }
+
+    @Override
+    public Collection<Ticket> getByUserIdAndEventIdAndDateTime(Long userId, Long eventId, LocalDateTime dateTime) {
+        return domainObjectDAO.getBy(new String[] {"user_id", "event_id", "time"}, userId, eventId, Timestamp.valueOf(dateTime));
+    }
+
+    @Override
     public Collection<Ticket> getForDateRange(@Nonnull LocalDate from, @Nonnull LocalDate to) {
         return domainObjectDAO.getAll().stream()
                 .filter(t -> (LocalDate.from(t.getDateTime()).isAfter(from) || LocalDate.from(t.getDateTime()).isEqual(from)) &&
