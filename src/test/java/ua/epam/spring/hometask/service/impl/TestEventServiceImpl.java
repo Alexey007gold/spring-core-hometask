@@ -2,6 +2,7 @@ package ua.epam.spring.hometask.service.impl;
 
 import org.junit.Before;
 import org.junit.Test;
+import ua.epam.spring.hometask.TestDataCreator;
 import ua.epam.spring.hometask.dao.EventDAOImpl;
 import ua.epam.spring.hometask.domain.Auditorium;
 import ua.epam.spring.hometask.domain.Event;
@@ -19,7 +20,6 @@ import java.util.*;
 import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
-import static ua.epam.spring.hometask.TestDataCreator.*;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 import static ua.epam.spring.hometask.domain.EventRating.LOW;
 
@@ -38,13 +38,13 @@ public class TestEventServiceImpl {
         auditoriumService = mock(AuditoriumServiceImpl.class);
         eventService = new EventServiceImpl(eventDAO, auditoriumService);
 
-        Auditorium auditorium = createAuditorium("1", 30, Collections.emptySet());
+        Auditorium auditorium = TestDataCreator.createAuditorium("1", 30, Collections.emptySet());
 
-        List<TreeSet<EventDate>> airDates = loadAirDates(auditorium, "testAirDates.csv");
+        List<TreeSet<EventDate>> airDates = TestDataCreator.loadAirDates(auditorium, "testAirDates.csv");
 
-        Event event1 = createEvent(null, "Titanik", HIGH, 40, airDates.get(0));
-        Event event2 = createEvent(null, "Santa Barbara", LOW, 5, airDates.get(1));
-        Event event3 = createEvent(null, "Star Wars", HIGH, 45, airDates.get(2));
+        Event event1 = TestDataCreator.createEvent(null, "Titanik", HIGH, 40, airDates.get(0));
+        Event event2 = TestDataCreator.createEvent(null, "Santa Barbara", LOW, 5, airDates.get(1));
+        Event event3 = TestDataCreator.createEvent(null, "Star Wars", HIGH, 45, airDates.get(2));
 
         when(eventDAO.getAll()).thenReturn(Arrays.asList(event1, event2, event3));
     }

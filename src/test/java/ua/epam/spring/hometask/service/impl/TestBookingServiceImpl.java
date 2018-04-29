@@ -17,7 +17,6 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
-import static ua.epam.spring.hometask.TestDataCreator.createAuditorium;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
@@ -46,7 +45,7 @@ public class TestBookingServiceImpl {
 
         dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
 
-        Auditorium auditorium = createAuditorium("1", 40, Arrays.asList(4, 5, 34, 35));
+        Auditorium auditorium = TestDataCreator.createAuditorium("1", 40, Arrays.asList(4, 5, 34, 35));
         TreeSet<EventDate> airDates = new TreeSet<>(Arrays.asList(
                 new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditorium),
                 new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditorium),

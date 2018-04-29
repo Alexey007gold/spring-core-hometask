@@ -2,13 +2,13 @@ package ua.epam.spring.hometask.domain;
 
 import org.junit.Before;
 import org.junit.Test;
+import ua.epam.spring.hometask.TestDataCreator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.TreeSet;
 
 import static org.junit.Assert.*;
-import static ua.epam.spring.hometask.TestDataCreator.createEvent;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
@@ -20,7 +20,7 @@ public class TestEvent {
 
 	@Before
 	public void initEvent() {
-		event = createEvent(null, "aaa", HIGH, 1.1, new TreeSet<>());
+		event = TestDataCreator.createEvent(null, "aaa", HIGH, 1.1, new TreeSet<>());
 	
 		LocalDateTime now = LocalDateTime.now();
 

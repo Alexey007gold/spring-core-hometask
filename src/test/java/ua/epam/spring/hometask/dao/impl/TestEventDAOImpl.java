@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
+import ua.epam.spring.hometask.TestDataCreator;
 import ua.epam.spring.hometask.configuration.AppConfiguration;
 import ua.epam.spring.hometask.dao.AuditoriumDAOImpl;
 import ua.epam.spring.hometask.dao.EventDAOImpl;
@@ -18,7 +19,6 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static ua.epam.spring.hometask.TestDataCreator.createEvent;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 import static ua.epam.spring.hometask.domain.EventRating.LOW;
 
@@ -36,9 +36,9 @@ public class TestEventDAOImpl {
         EventDateDAO eventDateDAO = mock(EventDateDAOImpl.class);
         eventDAO = new EventDAOImpl(jdbcTemplate, auditoriumDAO, eventDateDAO);
 
-        Event event1 = createEvent(null, "Titanik", HIGH, 40, Collections.emptySet());
-        Event event2 = createEvent(null, "Santa Barbara", LOW, 5, Collections.emptySet());
-        Event event3 = createEvent(null, "Star Wars", HIGH, 45, Collections.emptySet());
+        Event event1 = TestDataCreator.createEvent(null, "Titanik", HIGH, 40, Collections.emptySet());
+        Event event2 = TestDataCreator.createEvent(null, "Santa Barbara", LOW, 5, Collections.emptySet());
+        Event event3 = TestDataCreator.createEvent(null, "Star Wars", HIGH, 45, Collections.emptySet());
         eventDAO.save(event1);
         eventDAO.save(event2);
         eventDAO.save(event3);

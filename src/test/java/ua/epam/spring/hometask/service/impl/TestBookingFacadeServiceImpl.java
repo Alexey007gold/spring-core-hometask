@@ -3,6 +3,7 @@ package ua.epam.spring.hometask.service.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import ua.epam.spring.hometask.TestDataCreator;
 import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.exception.SeatIsAlreadyBookedException;
 import ua.epam.spring.hometask.service.interf.*;
@@ -10,11 +11,8 @@ import ua.epam.spring.hometask.service.interf.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
-import static ua.epam.spring.hometask.TestDataCreator.createAuditorium;
-import static ua.epam.spring.hometask.TestDataCreator.createEvent;
-import static ua.epam.spring.hometask.TestDataCreator.createUser;
 import static ua.epam.spring.hometask.domain.EventRating.HIGH;
 
 /**
@@ -50,7 +48,7 @@ public class TestBookingFacadeServiceImpl {
                 userAccountService, discountService, ticketService);
 
         List<Integer> vipSeats = Arrays.asList(1, 2, 9, 10);
-        Auditorium auditorium = createAuditorium("1", 10, vipSeats);
+        Auditorium auditorium = TestDataCreator.createAuditorium("1", 10, vipSeats);
         dateTime = LocalDateTime.of(4018, 4, 3, 10, 30);
 
         TreeSet<EventDate> airDates = new TreeSet<>(Arrays.asList(
@@ -61,8 +59,8 @@ public class TestBookingFacadeServiceImpl {
                 new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditorium)
         ));
 
-        event = createEvent(1L, "Titanik", HIGH, 40, airDates);
-        user = createUser(1L, "John", "Doe", "John@mail.ru", "login", "1234", null, new TreeSet<>());
+        event = TestDataCreator.createEvent(1L, "Titanik", HIGH, 40, airDates);
+        user = TestDataCreator.createUser(1L, "John", "Doe", "John@mail.ru", "login", "1234", null, new TreeSet<>());
         tickets = Arrays.asList(new Ticket(user, event, dateTime, 6, 40), new Ticket(user, event, dateTime, 7, 40),
                 new Ticket(user, event, dateTime, 8, 40));
         seatsToBook = new HashSet<>(Arrays.asList(6, 7, 8));

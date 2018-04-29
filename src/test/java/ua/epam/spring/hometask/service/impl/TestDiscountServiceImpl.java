@@ -1,6 +1,7 @@
 package ua.epam.spring.hometask.service.impl;
 
 import org.junit.Test;
+import ua.epam.spring.hometask.TestDataCreator;
 import ua.epam.spring.hometask.domain.Discount;
 import ua.epam.spring.hometask.domain.Event;
 import ua.epam.spring.hometask.service.impl.discount.strategy.DiscountStrategy;
@@ -10,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static ua.epam.spring.hometask.TestDataCreator.createMockDiscountStrategyList;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/5/2018.
@@ -19,7 +19,7 @@ public class TestDiscountServiceImpl {
 
     @Test
     public void shouldReturn_8_OnGetDiscountCall() {
-        List<DiscountStrategy> strategies = createMockDiscountStrategyList(5, 8, 4, 1, 6);
+        List<DiscountStrategy> strategies = TestDataCreator.createMockDiscountStrategyList(5, 8, 4, 1, 6);
         DiscountService discountService = new DiscountServiceImpl(strategies);
 
         List<Discount> discount = discountService.getDiscount(null, new Event(), LocalDateTime.now(), 1);
@@ -30,7 +30,7 @@ public class TestDiscountServiceImpl {
 
     @Test
     public void shouldReturn_14_OnGetDiscountCall() {
-        List<DiscountStrategy> strategies = createMockDiscountStrategyList(5, 8, 4, 14, 6);
+        List<DiscountStrategy> strategies = TestDataCreator.createMockDiscountStrategyList(5, 8, 4, 14, 6);
         DiscountService discountService = new DiscountServiceImpl(strategies);
 
         List<Discount> discount = discountService.getDiscount(null, new Event(), LocalDateTime.now(), 1);
