@@ -20,11 +20,13 @@ import java.util.Set;
 @Component
 public class TicketPdfView extends AbstractPdfView {
 
+	public static final String TICKET_LIST = "ticketList";
+
 	@Override
 	protected void buildPdfDocument(@Nonnull Map model, @Nonnull Document document,
 									@Nonnull PdfWriter writer, @Nonnull HttpServletRequest request,
 									@Nonnull HttpServletResponse response) throws Exception {
-		Set<Ticket> tickets = (Set<Ticket>) model.get("ticketList");
+		Set<Ticket> tickets = (Set<Ticket>) model.get(TICKET_LIST);
 		if (tickets.isEmpty()) {
 			document.add(new Paragraph("No tickets"));
 		} else {

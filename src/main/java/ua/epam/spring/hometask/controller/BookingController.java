@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ua.epam.spring.hometask.view.TicketPdfView.TICKET_LIST;
+
 /**
  * Created by Oleksii_Kovetskyi on 4/15/2018.
  */
@@ -50,7 +52,7 @@ public class BookingController {
                                   @RequestParam(required = false, defaultValue = "false") boolean pdf) {
         Set<Ticket> ticketsByUserIdAndEvent = getTickets(authentication.getName(), eventId, time, onlyMyTickets);
 
-        model.addAttribute("ticketList", ticketsByUserIdAndEvent);
+        model.addAttribute(TICKET_LIST, ticketsByUserIdAndEvent);
         return pdf ? "ticketPdfView" : "tickets";
     }
 

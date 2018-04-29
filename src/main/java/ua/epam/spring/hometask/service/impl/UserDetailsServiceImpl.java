@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    private static final String USER_WITH_LOGIN_S_NOT_FOUND = "User with login: %s not found!";
+
     private UserService userService;
     private UserRoleService userRoleService;
 
@@ -31,7 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         User userByLogin = userService.getUserByLogin(login);
         if (userByLogin == null)
-            throw new UsernameNotFoundException("User with login: " + login + " not found!");
+            throw new UsernameNotFoundException(String.format(USER_WITH_LOGIN_S_NOT_FOUND, login));
 
         List<GrantedAuthority> authorities = userRoleService.getByUserId(userByLogin.getId()).stream()
                 .map(ur -> new SimpleGrantedAuthority(ur.getRole()))

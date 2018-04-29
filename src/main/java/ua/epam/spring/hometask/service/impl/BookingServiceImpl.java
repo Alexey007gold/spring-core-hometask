@@ -25,6 +25,11 @@ import static ua.epam.spring.hometask.domain.EventRating.*;
 @Service
 public class BookingServiceImpl implements BookingService {
 
+    private static final String THIS_EVENT_WILL_NOT_HAPPEN_ON_THE_SPECIFIED_DATE =
+            "This event will not happen on the specified date";
+    private static final String PLEASE_BOOK_TICKETS_ONLY_FOR_ONE_USER_EVENT_AND_TIME_AT_A_TIME =
+            "Please book tickets only for one user, event and time at a time";
+
     private DiscountService discountService;
     private UserService userService;
     private UserAccountService userAccountService;
@@ -70,10 +75,7 @@ public class BookingServiceImpl implements BookingService {
         Set<Integer> vipSeats = auditorium.getVipSeats();
 
         for (Integer seat : seats) {
-            double ticketPrice = vipSeats.contains(seat) ? vipSeatPrice : normalSeatPrice;
-            ticketPrice = BigDecimal.valueOf(ticketPrice)
-                    .setScale(2, RoundingMode.FLOOR)
-                    .doubleValue();
+            double ticketPrice = formatPrice(vipSeats.contains(seat) ? vipSeatPrice : normalSeatPrice);
             Ticket ticket = new Ticket(user, event, dateTime, seat, ticketPrice);
             ticketList.add(ticket);
         }
@@ -84,7 +86,7 @@ public class BookingServiceImpl implements BookingService {
     public double getTicketsPriceWithDiscount(@Nonnull Event event, @Nonnull LocalDateTime dateTime,
                                               @Nullable User user, @Nonnull List<Ticket> tickets) {
         if (!event.getAirDates().containsKey(dateTime))
-            throw new IllegalArgumentException("This event will not happen on the specified date");
+            throw new IllegalArgumentException(THIS_EVENT_WILL_NOT_HAPPEN_ON_THE_SPECIFIED_DATE);
 
         double totalPrice = 0;
         List<Discount> discount = discountService.getDiscount(user, event, dateTime, tickets.size());
@@ -94,9 +96,7 @@ public class BookingServiceImpl implements BookingService {
             totalPrice += ticketPrice;
         }
 
-        return BigDecimal.valueOf(totalPrice)
-                .setScale(2, RoundingMode.FLOOR)
-                .doubleValue();
+        return formatPrice(totalPrice);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class BookingServiceImpl implements BookingService {
             if (!Objects.equals(ticket.getUser(), user) ||
                     !Objects.equals(ticket.getEvent(), event) ||
                     !Objects.equals(ticket.getDateTime(), dateTime)) {
-                throw new IllegalStateException("Please book tickets only for one user, event and time at a time");
+                throw new IllegalStateException(PLEASE_BOOK_TICKETS_ONLY_FOR_ONE_USER_EVENT_AND_TIME_AT_A_TIME);
             }
         }
 
@@ -125,9 +125,7 @@ public class BookingServiceImpl implements BookingService {
         if (user != null) {
             UserAccount userAccount = userAccountService.getByUserId(user.getId());
             double balance = userAccount.getBalance();
-            double totalPrice = BigDecimal.valueOf(tickets.stream().mapToDouble(Ticket::getPrice).sum())
-                    .setScale(2, RoundingMode.FLOOR)
-                    .doubleValue();
+            double totalPrice = formatPrice(tickets.stream().mapToDouble(Ticket::getPrice).sum());
             if (Double.compare(balance, totalPrice) < 0) {
                 throw new NotEnoughMoneyException(totalPrice, balance);
             }
@@ -151,10 +149,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void applyDiscount(Ticket ticket, @Nonnull Discount discount) {
-        double price = ticket.getPrice() * ((100 - discount.getPercent()) / 100.0);
-        price = BigDecimal.valueOf(price)
-                .setScale(2, RoundingMode.FLOOR)
-                .doubleValue();
+        double price = formatPrice(ticket.getPrice() * ((100 - discount.getPercent()) / 100.0));
         ticket.setPrice(price);
     }
 
@@ -162,7 +157,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Set<Ticket> getPurchasedTicketsForEvent(@Nonnull Event event, @Nonnull LocalDateTime dateTime) {
         if (!event.getAirDates().containsKey(dateTime))
-            throw new IllegalArgumentException("This event will not happen on the specified date");
+            throw new IllegalArgumentException(THIS_EVENT_WILL_NOT_HAPPEN_ON_THE_SPECIFIED_DATE);
 
         return new HashSet<>(ticketService.getByEventAndTime(event, dateTime));
     }
@@ -171,5 +166,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Set<Ticket> getPurchasedTicketsForEvent(@Nonnull Event event) {
         return new HashSet<>(ticketService.getByEvent(event));
+    }
+
+    private double formatPrice(double totalPrice) {
+        return BigDecimal.valueOf(totalPrice)
+                .setScale(2, RoundingMode.FLOOR)
+                .doubleValue();
     }
 }

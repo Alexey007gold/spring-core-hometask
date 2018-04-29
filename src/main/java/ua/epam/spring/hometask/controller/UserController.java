@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static ua.epam.spring.hometask.view.UserPdfView.USER_LIST;
+
 /**
  * Created by Oleksii_Kovetskyi on 4/15/2018.
  */
@@ -35,7 +37,7 @@ public class UserController {
         if (email != null && (firstName != null || lastName != null)) {
             throw new IllegalArgumentException("First and last name should not be specified when email is specified");
         }
-        model.addAttribute("userList", getUsersByFirstNameAndLastNameOrEmail(firstName, lastName, email));
+        model.addAttribute(USER_LIST, getUsersByFirstNameAndLastNameOrEmail(firstName, lastName, email));
 
         return pdf ? "userPdfView" : "users";
     }

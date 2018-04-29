@@ -23,11 +23,13 @@ import static com.lowagie.text.Element.ALIGN_CENTER;
 @Component
 public class EventPdfView extends AbstractPdfView {
 
+	public static final String EVENT_LIST = "eventList";
+
 	@Override
 	protected void buildPdfDocument(@Nonnull Map model, @Nonnull Document document,
 									@Nonnull PdfWriter writer, @Nonnull HttpServletRequest request,
 									@Nonnull HttpServletResponse response) throws Exception {
-		Set<Event> events = (Set<Event>) model.get("eventList");
+		Set<Event> events = (Set<Event>) model.get(EVENT_LIST);
 
 		if (events.isEmpty()) {
 			document.add(new Paragraph("No events"));

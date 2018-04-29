@@ -20,11 +20,13 @@ import java.util.Map;
 @Component
 public class UserPdfView extends AbstractPdfView {
 
+	public static final String USER_LIST = "userList";
+
 	@Override
 	protected void buildPdfDocument(@Nonnull Map model, @Nonnull Document document,
 									@Nonnull PdfWriter writer, @Nonnull HttpServletRequest request,
 									@Nonnull HttpServletResponse response) throws Exception {
-		List<User> users = (List<User>) model.get("userList");
+		List<User> users = (List<User>) model.get(USER_LIST);
 		if (users.isEmpty()) {
 			document.add(new Paragraph("No users"));
 		} else {

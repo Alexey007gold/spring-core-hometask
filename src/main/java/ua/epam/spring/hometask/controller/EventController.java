@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.TimeZone;
 
+import static ua.epam.spring.hometask.view.EventPdfView.EVENT_LIST;
+
 /**
  * Created by Oleksii_Kovetskyi on 4/16/2018.
  */
@@ -35,7 +37,7 @@ public class EventController {
     public String getComingEvents(Model model,
                                   @RequestParam(required = false) Long until,
                                   @RequestParam(required = false, defaultValue = "false") boolean pdf) {
-        model.addAttribute("eventList", getEvents(until));
+        model.addAttribute(EVENT_LIST, getEvents(until));
 
         return pdf ? "eventPdfView" : "events";
     }
