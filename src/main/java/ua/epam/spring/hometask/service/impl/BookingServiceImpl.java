@@ -9,6 +9,7 @@ import ua.epam.spring.hometask.service.interf.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -32,12 +33,15 @@ public class BookingServiceImpl implements BookingService {
     private double vipSeatPriceRate;
 
     public BookingServiceImpl(DiscountService discountService, UserService userService,
-                              UserAccountService userAccountService, TicketService ticketService) throws IOException {
+                              UserAccountService userAccountService, TicketService ticketService) {
         this.discountService = discountService;
         this.userService = userService;
         this.userAccountService = userAccountService;
         this.ticketService = ticketService;
+    }
 
+    @PostConstruct
+    public void init() throws IOException {
         Properties props = new Properties();
         props.load(this.getClass().getClassLoader().getResourceAsStream("application.properties"));
 
@@ -65,9 +69,8 @@ public class BookingServiceImpl implements BookingService {
         Auditorium auditorium = event.getAirDates().get(dateTime).getAuditorium();
         Set<Integer> vipSeats = auditorium.getVipSeats();
 
-        double ticketPrice;
         for (Integer seat : seats) {
-            ticketPrice = vipSeats.contains(seat) ? vipSeatPrice : normalSeatPrice;
+            double ticketPrice = vipSeats.contains(seat) ? vipSeatPrice : normalSeatPrice;
             ticketPrice = BigDecimal.valueOf(ticketPrice)
                     .setScale(2, RoundingMode.FLOOR)
                     .doubleValue();
@@ -86,9 +89,8 @@ public class BookingServiceImpl implements BookingService {
         double totalPrice = 0;
         List<Discount> discount = discountService.getDiscount(user, event, dateTime, tickets.size());
 
-        double ticketPrice;
         for (int i = 0; i < tickets.size(); i++) {
-            ticketPrice = tickets.get(i).getPrice() * ((100 - discount.get(i).getPercent()) / 100.0);
+            double ticketPrice = tickets.get(i).getPrice() * ((100 - discount.get(i).getPercent()) / 100.0);
             totalPrice += ticketPrice;
         }
 
