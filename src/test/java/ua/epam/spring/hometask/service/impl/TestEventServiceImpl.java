@@ -51,49 +51,47 @@ public class TestEventServiceImpl {
 
     @Test
     public void shouldReturnCorrectEventsOnGetForDateRangeCall() {
-        Set<Event> res1 = eventService.getForDateRange(LocalDate.of(4018, 4, 3),
-                LocalDate.of(4018, 4, 5));
-        Map<String, Event> res1Map = res1.stream().collect(toMap(Event::getName, e -> e));
-
-        Set<Event> res2 = eventService.getForDateRange(LocalDate.of(4018, 4, 8),
-                LocalDate.of(4018, 4, 9));
-        Map<String, Event> res2Map = res2.stream().collect(toMap(Event::getName, e -> e));
-
+        Map<String, Event> res1Map = eventService.getForDateRange(LocalDate.of(4018, 4, 3),
+                LocalDate.of(4018, 4, 5)).stream().collect(toMap(Event::getName, e -> e));
+        Map<String, Event> res2Map = eventService.getForDateRange(LocalDate.of(4018, 4, 8),
+                LocalDate.of(4018, 4, 9)).stream().collect(toMap(Event::getName, e -> e));
         Set<Event> res3 = eventService.getForDateRange(LocalDate.of(4018, 4, 15),
                 LocalDate.of(4018, 4, 25));
 
 
-        assertEquals(2, res1.size());
-        assertEquals(40, res1Map.get("Titanik").getBasePrice(), 0);
-        assertEquals(5, res1Map.get("Santa Barbara").getBasePrice(), 0);
-
-        assertEquals(1, res2.size());
-        assertEquals(45, res2Map.get("Star Wars").getBasePrice(), 0);
-
+        checkMapContainsEvents(res1Map, Arrays.asList(new Object[] {"Titanik", 40}, new Object[] {"Santa Barbara", 5}));
+        checkMapContainsEvents(res2Map, Collections.singletonList(new Object[] {"Star Wars", 45}));
         assertEquals(0, res3.size());
     }
 
     @Test
     public void shouldReturnCorrectEventsOnGetNextEventsCall() {
-        Set<Event> res1 = eventService.getNextEvents(LocalDateTime.of(4018, 4, 3, 9, 0));
-        Map<String, Event> res1Map = res1.stream().collect(toMap(Event::getName, e -> e));
+        LocalDateTime dateTime1 = LocalDateTime.of(4018, 4, 3, 9, 0);
+        LocalDateTime dateTime2 = LocalDateTime.of(4018, 4, 9, 9, 0);
+        LocalDateTime dateTime3 = LocalDateTime.of(4018, 4, 1, 10, 30);
 
-        Set<Event> res2 = eventService.getNextEvents(LocalDateTime.of(4018, 4, 9, 9, 0));
-        Map<String, Event> res2Map = res2.stream().collect(toMap(Event::getName, e -> e));
+        Map<String, Event> res1Map = eventService.getNextEvents(dateTime1).stream()
+                .collect(toMap(Event::getName, e -> e));
+        Map<String, Event> res2Map  = eventService.getNextEvents(dateTime2).stream()
+                .collect(toMap(Event::getName, e -> e));
+        Set<Event> res3 = eventService.getNextEvents(dateTime3);
 
-        Set<Event> res3 = eventService.getNextEvents(LocalDateTime.of(4018, 4, 1, 10, 30));
 
-
-        assertEquals(2, res1.size());
-        assertEquals(40, res1Map.get("Titanik").getBasePrice(), 0);
-        assertEquals(5, res1Map.get("Santa Barbara").getBasePrice(), 0);
-
-        assertEquals(3, res2.size());
-        assertEquals(40, res1Map.get("Titanik").getBasePrice(), 0);
-        assertEquals(5, res1Map.get("Santa Barbara").getBasePrice(), 0);
-        assertEquals(45, res2Map.get("Star Wars").getBasePrice(), 0);
-
+        checkMapContainsEvents(res1Map, Arrays.asList(
+                new Object[] {"Titanik", 40},
+                new Object[] {"Santa Barbara", 5}));
+        checkMapContainsEvents(res2Map, Arrays.asList(
+                new Object[] {"Titanik", 40},
+                new Object[] {"Santa Barbara", 5},
+                new Object[] {"Star Wars", 45}));
         assertEquals(0, res3.size());
+    }
+
+    private void checkMapContainsEvents(Map<String, Event> res, List<Object[]> paramsList) {
+        assertEquals(paramsList.size(), res.size());
+        for (Object[] params : paramsList) {
+            assertEquals((int) params[1], res.get(params[0]).getBasePrice(), 0.0000001);
+        }
     }
 
     @Test
