@@ -3,6 +3,10 @@ package ua.epam.spring.hometask;
 import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.service.impl.discount.strategy.DiscountStrategy;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -61,28 +65,29 @@ public class TestDataCreator {
         return strategies;
     }
 
-    public static List<TreeSet<EventDate>> createAirDates(Auditorium auditorium) {
-        TreeSet<EventDate> airDates1 = new TreeSet<EventDate>(){{
-            add(new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 3, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 4, 10, 20), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditorium));
-        }};
-        TreeSet<EventDate> airDates2 = new TreeSet<EventDate>() {{
-            add(new EventDate(LocalDateTime.of(4018, 4, 3, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 2, 18, 0), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 2, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 4, 10, 20), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 5, 10, 30), auditorium));
-        }};
-        TreeSet<EventDate> airDates3 = new TreeSet<EventDate>() {{
-            add(new EventDate(LocalDateTime.of(4018, 4, 8, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 9, 10, 20), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 10, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 11, 10, 30), auditorium));
-            add(new EventDate(LocalDateTime.of(4018, 4, 12, 18, 0), auditorium));
-        }};
-        return Arrays.asList(airDates1, airDates2, airDates3);
+    public static List<TreeSet<EventDate>> loadAirDates(Auditorium auditorium, String file) throws IOException {
+        InputStream inputStream = TestDataCreator.class.getClassLoader().getResourceAsStream(file);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        List<TreeSet<EventDate>> airDates = new ArrayList<>();
+        String line;
+        TreeSet<EventDate> set = new TreeSet<>();
+        reader.readLine();//skip first line
+        while ((line = reader.readLine()) != null) {
+            if (line.isEmpty()) {
+                airDates.add(set);
+                set = new TreeSet<>();
+            } else {
+                String[] split = line.split(",");
+                int year = Integer.parseInt(split[0]);
+                int month = Integer.parseInt(split[1]);
+                int dayOfMonth = Integer.parseInt(split[2]);
+                int hour = Integer.parseInt(split[3]);
+                int minute = Integer.parseInt(split[4]);
+                LocalDateTime dateTime = LocalDateTime.of(year, month, dayOfMonth, hour, minute);
+                set.add(new EventDate(dateTime, auditorium));
+            }
+        }
+        airDates.add(set);
+        return airDates;
     }
 }

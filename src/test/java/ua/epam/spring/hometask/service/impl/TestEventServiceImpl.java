@@ -33,13 +33,14 @@ public class TestEventServiceImpl {
     private AuditoriumService auditoriumService;
 
     @Before
-    public void init() {
+    public void init() throws IOException {
         eventDAO = mock(EventDAOImpl.class);
         auditoriumService = mock(AuditoriumServiceImpl.class);
         eventService = new EventServiceImpl(eventDAO, auditoriumService);
 
         Auditorium auditorium = createAuditorium("1", 30, Collections.emptySet());
-        List<TreeSet<EventDate>> airDates = createAirDates(auditorium);
+
+        List<TreeSet<EventDate>> airDates = loadAirDates(auditorium, "testAirDates.csv");
 
         Event event1 = createEvent(null, "Titanik", HIGH, 40, airDates.get(0));
         Event event2 = createEvent(null, "Santa Barbara", LOW, 5, airDates.get(1));
