@@ -20,7 +20,9 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -65,11 +67,15 @@ public class EventServiceImpl extends AbstractDomainObjectServiceImpl<Event, Eve
 
     @Override
     @Transactional
-    public void parseEventsFromInputStream(InputStream inputStream) throws IOException {
+    public List<Event> parseEventsFromInputStream(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        List<Event> addedEvents = new ArrayList<>();
         String line;
         while ((line = reader.readLine()) != null) {
             String[] split = line.split(",");
+            String eventName = split[0];
+            if (getByName(eventName) != null) continue;
+
             Set<EventDate> eventDateSet = new HashSet<>();
             for (int i = 3; i < split.length; i++) {
                 LocalDateTime dateTime = Timestamp.from(Instant.ofEpochSecond(Long.parseLong(split[i]))).toLocalDateTime();
@@ -77,12 +83,14 @@ public class EventServiceImpl extends AbstractDomainObjectServiceImpl<Event, Eve
                 eventDateSet.add(new EventDate(dateTime, auditorium));
             }
             Event event = new Event();
-            event.setName(split[0]);
+            event.setName(eventName);
             event.setBasePrice(Double.parseDouble(split[1]));
             event.setRating(EventRating.valueOf(split[2]));
             event.setAirDates(eventDateSet);
             save(event);
+            addedEvents.add(event);
         }
         reader.close();
+        return addedEvents;
     }
 }

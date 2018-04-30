@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -49,6 +50,6 @@ public interface EventService extends AbstractDomainObjectService<Event> {
      * @param inputStream inputStream with events data
      * @throws IOException when an IO exception occurs
      */
-     public void parseEventsFromInputStream(InputStream inputStream) throws IOException;
+     public List<Event> parseEventsFromInputStream(InputStream inputStream) throws IOException;
 
 }

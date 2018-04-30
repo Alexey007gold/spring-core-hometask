@@ -4,14 +4,16 @@
         <script>
             function onBookClicked(eventId, time) {
                 var seats = prompt("Please enter seats to book");
-                window.location.href = "http://localhost:8080/tickets/book?eventId=" + eventId + "&time=" + time + "&seats=" + seats;
+                if (seats != null) {
+                    window.location.href = "http://localhost:8080/tickets/book?eventId=" + eventId + "&time=" + time + "&seats=" + seats;
+                }
             }
         </script>
     </head>
     <body>
         <a href="/home">Home</a>
         <div id="header">
-            <h4>Events</h4>
+            <h4>${headerText}</h4>
         </div>
         <div id="content">
             <table class="datatable">

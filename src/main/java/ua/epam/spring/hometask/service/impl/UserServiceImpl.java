@@ -82,9 +82,10 @@ public class UserServiceImpl extends AbstractDomainObjectServiceImpl<User, UserD
     }
 
     @Override
-    @Transactional()
-    public void parseUsersFromInputStream(InputStream inputStream) throws IOException {
+    @Transactional
+    public List<User> parseUsersFromInputStream(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        List<User> addedUsers = new ArrayList<>();
         String line;
         while ((line = reader.readLine()) != null) {
             String[] split = line.split(",");
@@ -106,7 +107,9 @@ public class UserServiceImpl extends AbstractDomainObjectServiceImpl<User, UserD
             userRoles.forEach(ur -> userRoleService.save(ur));
 
             userAccountService.save(new UserAccount(user.getId(), 0));
+            addedUsers.add(user);
         }
         reader.close();
+        return addedUsers;
     }
 }

@@ -1,10 +1,12 @@
 package ua.epam.spring.hometask.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import ua.epam.spring.hometask.domain.User;
 import ua.epam.spring.hometask.service.interf.UserService;
@@ -22,6 +24,7 @@ import static ua.epam.spring.hometask.view.UserPdfView.USER_LIST;
 @RequestMapping("/users")
 public class UserController {
 
+    private static final String HEADER_TEXT = "headerText";
     private UserService userService;
 
     public UserController(UserService userService) {
@@ -38,6 +41,7 @@ public class UserController {
             throw new IllegalArgumentException("First and last name should not be specified when email is specified");
         }
         model.addAttribute(USER_LIST, getUsersByFirstNameAndLastNameOrEmail(firstName, lastName, email));
+        model.addAttribute(HEADER_TEXT, "Users");
 
         return pdf ? "userPdfView" : "users";
     }
@@ -50,9 +54,12 @@ public class UserController {
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(value = HttpStatus.OK)
-    public void uploadUsers(@RequestParam("file") MultipartFile file) throws IOException {
-        userService.parseUsersFromInputStream(file.getInputStream());
+    public String uploadUsers(Model model, @RequestParam("file") MultipartFile file) throws IOException {
+        List<User> addedUsers = userService.parseUsersFromInputStream(file.getInputStream());
+
+        model.addAttribute(USER_LIST, addedUsers);
+        model.addAttribute(HEADER_TEXT, "Added Users");
+        return "users";
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.GET)

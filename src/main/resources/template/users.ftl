@@ -5,7 +5,7 @@
     <body>
         <a href="/home">Home</a>
         <div id="header">
-            <h4>Users</h4>
+            <h4>${headerText}</h4>
         </div>
         <div id="content">
             <table class="datatable">

@@ -77,5 +77,5 @@ public interface UserService extends AbstractDomainObjectService<User> {
      * @param inputStream inputStream with users data
      * @throws IOException when an IO exception occurs
      */
-    public void parseUsersFromInputStream(InputStream inputStream) throws IOException;
+    public List<User> parseUsersFromInputStream(InputStream inputStream) throws IOException;
 }
