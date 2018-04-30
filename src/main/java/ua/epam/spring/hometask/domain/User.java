@@ -1,6 +1,7 @@
 package ua.epam.spring.hometask.domain;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -22,6 +23,10 @@ public class User extends DomainObject {
     private String password;
 
     private Set<Ticket> tickets;
+
+    public User() {
+        this.tickets = new HashSet<>();
+    }
 
     public String getFirstName() {
         return firstName;
