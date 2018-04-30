@@ -1,0 +1,3 @@
+INSERT INTO public.users (id, first_name, last_name, email, login, password, birth_date) VALUES (1, 'John', 'Doe', 'asa@gmail.com', 'user1', '$2a$10$xRasDGnmswfJSsf42sRvCef2GKqsz00pt./LU.jeuxuf7Qkvd6I8m', '1970-01-01 00:00:00.000000');
+INSERT INTO public.users (id, first_name, last_name, email, login, password, birth_date) VALUES (2, 'John', 'John', 'assa@gmail.com', 'user2', '$2a$10$ll4asjCyVRTdRckhNsgoourRbul8wWiUwrrH56tBd9B1phDrCiugO', '1970-08-20 00:00:00.000000');
+INSERT INTO public.users (id, first_name, last_name, email, login, password, birth_date) VALUES (3, 'Alex', 'Koveckiy', 'admin@gmail.com', 'admin', '$2a$10$P0PhrzABNQyGKXwaMa43x.fqEKSehywjhx1blu4bZh7ez0WGt5cFG', '1970-01-01 00:00:00.000000');
