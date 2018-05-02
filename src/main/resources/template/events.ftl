@@ -43,7 +43,7 @@
                                     <td>${date}</td>
                                     <td>${eventDate.auditorium.name}</td>
                                     <td><a href="/tickets/available?eventId=${event.id}&time=${eventDate.getDateTimeAsSeconds()?c}">Available seats</a> </td>
-                                    <td><a onclick="onBookClicked(${event.id}, ${eventDate.getDateTimeAsSeconds()?c})">Book</a> </td>
+                                    <td><input type="button" value="Book" onclick="onBookClicked(${event.id}, ${eventDate.getDateTimeAsSeconds()?c})"/> </td>
                                 </tr>
                             </#list>
                         </table>
