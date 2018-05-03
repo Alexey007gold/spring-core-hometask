@@ -26,7 +26,9 @@ public class CounterAspect {
 
     @AfterReturning(value = "execution(* ua.epam.spring.hometask.dao.interf.EventDAO.getByName(..))", returning = "retEvent")
     public void eventGetByNameCounter(Event retEvent) {
-        eventCounterStatsService.incrementAccessByNameCount(retEvent);
+        if (retEvent != null) {
+            eventCounterStatsService.incrementAccessByNameCount(retEvent);
+        }
     }
 
     @Before(value = "execution(* ua.epam.spring.hometask.service.interf.BookingService.getTicketsPriceWithDiscount(..))")
