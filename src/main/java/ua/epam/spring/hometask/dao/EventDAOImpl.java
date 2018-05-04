@@ -104,11 +104,11 @@ public class EventDAOImpl extends AbstractDomainObjectDAO<Event> implements Even
     }
 
     private void saveEventAirDates(Event event) {
-        List<Object[]> eventTimes = event.getAirDates().entrySet().stream()
-                .filter(entry -> eventDateDAO.getById(event.getId()) == null)
-                .map(entry -> new Object[]{event.getId(),
-                        Timestamp.valueOf(entry.getKey()),
-                        entry.getValue().getAuditorium().getName()})
+        List<Object[]> eventTimes = event.getAirDates().values().stream()
+                .filter(airDate -> eventDateDAO.getById(airDate.getId()) == null)
+                .map(airDate -> new Object[]{event.getId(),
+                        Timestamp.valueOf(airDate.getDateTime()),
+                        airDate.getAuditorium().getName()})
                 .collect(toList());
         String sql = "INSERT INTO event_dates (event_id, time, auditorium_name) VALUES (?, ?, ?)";
         jdbcTemplate.batchUpdate(sql, eventTimes);
