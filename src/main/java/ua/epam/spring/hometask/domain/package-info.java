@@ -5,6 +5,7 @@
         @XmlJavaTypeAdapter(type = LocalDateTime.class, value = LocalDateTimeAdapter.class),
         @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
 })
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://spring.io/guides/gs-producing-web-service", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package ua.epam.spring.hometask.domain;
 
 import ua.epam.spring.hometask.xmladapter.LocalDateAdapter;

@@ -1,12 +1,22 @@
 package ua.epam.spring.hometask.domain;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
  * @author Yuriy_Tkach
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "ticket", propOrder = {
+        "event",
+        "dateTime",
+        "price",
+        "seat",
+})
 public class Ticket extends DomainObject implements Comparable<Ticket> {
 
     @XmlTransient

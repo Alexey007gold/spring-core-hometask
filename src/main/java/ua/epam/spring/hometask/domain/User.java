@@ -1,6 +1,6 @@
 package ua.epam.spring.hometask.domain;
 
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
@@ -9,6 +9,15 @@ import java.util.Set;
 /**
  * @author Yuriy_Tkach
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "User", propOrder = {
+        "birthDate",
+        "email",
+        "firstName",
+        "lastName",
+        "login",
+        "tickets"
+})
 public class User extends DomainObject {
 
     private String firstName;
@@ -19,12 +28,12 @@ public class User extends DomainObject {
 
     private LocalDate birthDate;
 
-    @XmlTransient
     private String login;
 
     @XmlTransient
     private String password;
 
+    @XmlElement(nillable = true)
     private Set<Ticket> tickets;
 
     public User() {

@@ -1,11 +1,20 @@
 package ua.epam.spring.hometask.domain;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
  * Created by Oleksii_Kovetskyi on 4/6/2018.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "eventDate", propOrder = {
+        "auditorium",
+        "dateTime",
+        "eventId"
+})
 public class EventDate extends DomainObject implements Comparable<EventDate> {
 
     private Long eventId;
