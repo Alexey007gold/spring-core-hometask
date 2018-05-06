@@ -8,8 +8,8 @@
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://spring.io/guides/gs-producing-web-service", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package ua.epam.spring.hometask.domain;
 
-import ua.epam.spring.hometask.xmladapter.LocalDateAdapter;
-import ua.epam.spring.hometask.xmladapter.LocalDateTimeAdapter;
+import ua.epam.spring.hometask.soap.xmladapter.LocalDateAdapter;
+import ua.epam.spring.hometask.soap.xmladapter.LocalDateTimeAdapter;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;

@@ -1,6 +1,6 @@
 package ua.epam.spring.hometask.domain;
 
-import ua.epam.spring.hometask.xmladapter.AirDatesMapAdapter;
+import ua.epam.spring.hometask.soap.xmladapter.AirDatesMapAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
