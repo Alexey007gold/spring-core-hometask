@@ -4,7 +4,10 @@ import org.springframework.stereotype.Service;
 import ua.epam.spring.hometask.domain.*;
 import ua.epam.spring.hometask.service.interf.*;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -85,5 +88,36 @@ public class BookingFacadeServiceImpl implements BookingFacadeService {
         }
         userAccount.setBalance(userAccount.getBalance() + sum);
         userAccountService.save(userAccount);
+    }
+
+
+    public Set<Ticket> getTickets(String userLogin, Long eventId, Long time, boolean onlyMyTickets) {
+        Long userId = userService.getUserIdByLogin(userLogin);
+        LocalDateTime dateTime = null;
+        if (time != null) {
+            dateTime = Timestamp.from(Instant.ofEpochSecond(time)).toLocalDateTime();
+        }
+
+        if (onlyMyTickets) {
+            if (eventId != null) {
+                if (dateTime != null) {
+                    return new HashSet<>(ticketService.getByUserIdAndEventIdAndDateTime(userId, eventId, dateTime));
+                } else {
+                    return new HashSet<>(ticketService.getByUserIdAndEventId(userId, eventId));
+                }
+            } else {
+                if (userId == null)
+                    throw new IllegalStateException("Authenticated user is not found");
+                return new HashSet<>(ticketService.getByUserId(userId));
+            }
+        } else if (eventId != null) {
+            if (dateTime != null) {
+                return bookingService.getPurchasedTicketsForEvent(eventService.getById(eventId), dateTime);
+            } else {
+                return bookingService.getPurchasedTicketsForEvent(eventService.getById(eventId));
+            }
+        } else {
+            return Collections.emptySet();
+        }
     }
 }
