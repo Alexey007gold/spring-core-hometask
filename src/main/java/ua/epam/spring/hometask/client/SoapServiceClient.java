@@ -1,4 +1,4 @@
-package ua.epam.spring.hometask.soap;
+package ua.epam.spring.hometask.client;
 
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
