@@ -47,6 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
         .authorizeRequests()
                 .antMatchers("/users/upload", "/events/upload").hasAuthority("ADMIN")
+                .antMatchers("/ws/**").permitAll()
                 .anyRequest().authenticated()
                 .and().formLogin().and().httpBasic().and().logout();
 

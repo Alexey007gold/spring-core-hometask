@@ -1,7 +1,10 @@
 package ua.epam.spring.hometask.domain;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,13 +13,15 @@ import java.util.stream.IntStream;
 /**
  * @author Yuriy_Tkach
  */
+@XmlType(name = "Auditorium", propOrder = {"name", "numberOfSeats", "vipSeats"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Auditorium {
 
     private String name;
 
     private int numberOfSeats;
 
-    private Set<Integer> vipSeats = Collections.emptySet();
+    private Set<Integer> vipSeats = new HashSet<>();
 
     public Auditorium() {
     }

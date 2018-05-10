@@ -1,5 +1,11 @@
 package ua.epam.spring.hometask.domain;
 
+import ua.epam.spring.hometask.soap.xmladapter.AirDatesMapAdapter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -9,6 +15,8 @@ import static java.util.stream.Collectors.toMap;
 /**
  * @author Yuriy_Tkach
  */
+@XmlType(name = "Event", propOrder = {"name", "basePrice", "rating", "airDates"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Event extends DomainObject {
 
     private String name;
@@ -17,6 +25,7 @@ public class Event extends DomainObject {
 
     private EventRating rating;
 
+    @XmlJavaTypeAdapter(value = AirDatesMapAdapter.class)
     private Map<LocalDateTime, EventDate> airDates = new HashMap<>();
 
     /**

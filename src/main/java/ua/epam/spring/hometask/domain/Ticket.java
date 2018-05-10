@@ -1,14 +1,25 @@
 package ua.epam.spring.hometask.domain;
 
-import javax.annotation.Nonnull;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
  * @author Yuriy_Tkach
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "ticket", propOrder = {
+        "event",
+        "dateTime",
+        "price",
+        "seat",
+})
 public class Ticket extends DomainObject implements Comparable<Ticket> {
 
+    @XmlTransient
     private User user;
 
     private Event event;
@@ -18,6 +29,9 @@ public class Ticket extends DomainObject implements Comparable<Ticket> {
     private int seat;
 
     private double price;
+
+    public Ticket() {
+    }
 
     public Ticket(User user, Event event, LocalDateTime dateTime,
                   int seat, double price) {
@@ -101,7 +115,7 @@ public class Ticket extends DomainObject implements Comparable<Ticket> {
     }
 
     @Override
-    public int compareTo(@Nonnull Ticket other) {
+    public int compareTo(Ticket other) {
         int result = dateTime.compareTo(other.getDateTime());
 
         if (result == 0) {

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0"
+           targetNamespace="http://spring.io/guides/gs-producing-web-service"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="addEventRequest" type="addEventRequest"/>
+
+  <xs:element name="addEventResponse" type="addEventResponse"/>
+
+  <xs:element name="addUserRequest" type="addUserRequest"/>
+
+  <xs:element name="addUserResponse" type="addUserResponse"/>
+
+  <xs:element name="deleteEventRequest" type="deleteEventRequest"/>
+
+  <xs:element name="deleteEventResponse" type="deleteEventResponse"/>
+
+  <xs:element name="deleteUserRequest" type="deleteUserRequest"/>
+
+  <xs:element name="deleteUserResponse" type="deleteUserResponse"/>
+
+  <xs:element name="getEventRequest" type="getEventRequest"/>
+
+  <xs:element name="getEventResponse" type="getEventResponse"/>
+
+  <xs:element name="getUserRequest" type="getUserRequest"/>
+
+  <xs:element name="getUserResponse" type="getUserResponse"/>
+
+  <xs:complexType name="User">
+    <xs:complexContent>
+      <xs:extension base="domainObject">
+        <xs:sequence>
+          <xs:element name="birthDate" type="xs:string" form="unqualified" minOccurs="0"/>
+          <xs:element name="email" type="xs:string" form="unqualified" minOccurs="0"/>
+          <xs:element name="firstName" type="xs:string" form="unqualified" minOccurs="0"/>
+          <xs:element name="lastName" type="xs:string" form="unqualified" minOccurs="0"/>
+          <xs:element name="login" type="xs:string" form="unqualified" minOccurs="0"/>
+          <xs:element name="tickets" type="ticket" form="unqualified" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="domainObject">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="ticket">
+    <xs:complexContent>
+      <xs:extension base="domainObject">
+        <xs:sequence>
+          <xs:element name="event" type="Event" form="unqualified" minOccurs="0"/>
+          <xs:element name="dateTime" type="xs:string" form="unqualified" minOccurs="0"/>
+          <xs:element name="price" type="xs:double" form="unqualified"/>
+          <xs:element name="seat" type="xs:int" form="unqualified"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Event">
+    <xs:complexContent>
+      <xs:extension base="domainObject">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" form="unqualified" minOccurs="0"/>
+          <xs:element name="basePrice" type="xs:double" form="unqualified"/>
+          <xs:element name="rating" type="eventRating" form="unqualified" minOccurs="0"/>
+          <xs:element name="airDates" type="adaptedMap" form="unqualified" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="adaptedMap">
+    <xs:sequence>
+      <xs:element name="entry" type="entry" form="unqualified" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="entry">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string" form="unqualified" minOccurs="0"/>
+      <xs:element name="value" type="eventDate" form="unqualified" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="eventDate">
+    <xs:complexContent>
+      <xs:extension base="domainObject">
+        <xs:sequence>
+          <xs:element name="auditorium" type="Auditorium" form="unqualified" minOccurs="0"/>
+          <xs:element name="dateTime" type="xs:string" form="unqualified" minOccurs="0"/>
+          <xs:element name="eventId" type="xs:long" form="unqualified" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Auditorium">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" form="unqualified" minOccurs="0"/>
+      <xs:element name="numberOfSeats" type="xs:int" form="unqualified"/>
+      <xs:element name="vipSeats" type="xs:int" form="unqualified" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getEventRequest">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getEventResponse">
+    <xs:sequence>
+      <xs:element name="event" type="Event" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getUserRequest">
+    <xs:sequence>
+      <xs:element name="login" type="xs:string" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getUserResponse">
+    <xs:sequence>
+      <xs:element name="user" type="User" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addUserRequest">
+    <xs:sequence>
+      <xs:element name="user" type="User" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addUserResponse">
+    <xs:sequence>
+      <xs:element name="result" type="result" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="deleteUserRequest">
+    <xs:sequence>
+      <xs:element name="login" type="xs:string" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="deleteUserResponse">
+    <xs:sequence>
+      <xs:element name="result" type="result" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addEventRequest">
+    <xs:sequence>
+      <xs:element name="event" type="Event" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addEventResponse">
+    <xs:sequence>
+      <xs:element name="result" type="result" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="deleteEventRequest">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="deleteEventResponse">
+    <xs:sequence>
+      <xs:element name="result" type="result" form="unqualified"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="eventRating">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="LOW"/>
+      <xs:enumeration value="MID"/>
+      <xs:enumeration value="HIGH"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="result">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SUCCESS"/>
+      <xs:enumeration value="FAIL"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+
