@@ -49,6 +49,8 @@ public class TestCounterAspect {
 
     @Test
     public void accessByNameCountShouldBeOne() {
+        when(eventDAO.getByName("Titanik")).thenReturn(event);
+
         Event event = eventDAO.getByName("Titanik");
         verify(eventCounterStatsService, times(1)).incrementAccessByNameCount(event);
         verify(eventCounterStatsService, times(0)).incrementPriceQueryCount(any());
